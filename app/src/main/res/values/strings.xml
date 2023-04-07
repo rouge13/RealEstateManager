@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Real Estate Manager</string>
+    <string name="photo_profile">Carl Smith</string>
+    <string name="text_view_property_agent_name">Carl Smith</string>
+    <string name="text_view_property_agent_email">carlsmith@gmail.com</string>
+    <string name="show_map">Show map</string>
+    <string name="logout">Log out</string>
+    <string name="settings">Settings</string>
+    <string name="duplex">Duplex</string>
+    <string name="brooklyn">Brooklyn</string>
+    <string name="price">$13,990,000</string>
+    <string name="take_photo">Take photo</string>
+    <string name="drawer_open">Open the navigation drawer</string>
+    <string name="drawer_close">Close the navigation drawer</string>
 </resources>
