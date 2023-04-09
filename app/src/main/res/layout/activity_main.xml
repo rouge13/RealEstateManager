@@ -29,7 +29,7 @@
 
         <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/activity_main_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimaryDark"
@@ -40,13 +40,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Drawer menu icon -->
-            <ImageView
-                android:id="@+id/btn_menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_menu_white_24dp" />
-
             <!-- toolbar title -->
             <TextView
                 android:id="@+id/toolbar_title"
@@ -54,9 +47,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
                 android:textColor="@android:color/white"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:layout_gravity="left"
-                android:layout_marginStart="40dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
@@ -100,7 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             tools:layout="@layout/fragment_property_list"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintTop_toBottomOf="@id/activity_main_toolbar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

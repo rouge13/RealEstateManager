@@ -34,8 +34,18 @@ class MainActivity : AppCompatActivity() {
         // Loat the initial fragment into the fragment container
         loadInitialFragment()
 
+        // Configure the toolbar
+//        configureToolBar()
+
+
+
 
     }
+
+//    private fun configureToolBar() {
+//        setSupportActionBar(activityMainBinding.toolbar)
+//        actionBar?.setDisplayHomeAsUpEnabled(true)
+//    }
 
     private fun loadInitialFragment() {
         supportFragmentManager.beginTransaction()
@@ -56,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         val actionBarDrawerToggle = ActionBarDrawerToggle(
             this,
             drawerLayout,
-            activityMainBinding.toolbar,
+            activityMainBinding.activityMainToolbar,
             R.string.drawer_open,
             R.string.drawer_close
         )
