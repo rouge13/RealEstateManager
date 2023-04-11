@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
     android:layout_height="match_parent"
-    tools:context="com.openclassrooms.realestatemanager.MainActivity"
+    tools:context="com.openclassrooms.realestatemanager.ui.MainActivity"
     >
 
     <!-- Navigation drawer -->

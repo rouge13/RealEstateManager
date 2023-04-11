@@ -4,17 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/agent_info_filter"
-        app:showAsAction="ifRoom"
         tools:ignore="MenuTitle"
         android:background="@color/white"
-        >
+        app:showAsAction="ifRoom">
         <menu>
-            <item
-                android:id="@+id/nav_map"
-                android:icon="@drawable/ic_map_white_24dp"
-                android:title="@string/show_map"
-                android:textColor="@color/white"
-                />
             <item
                 android:id="@+id/nav_take_photo"
                 android:icon="@drawable/ic_photo_camera_white_24dp"
@@ -31,6 +24,12 @@
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_logout_white_24dp"
                 android:title="@string/logout"
+                android:textColor="@color/white"
+                />
+            <item
+                android:id="@+id/nav_login"
+                android:icon="@drawable/ic_login_white_24dp"
+                android:title="@string/login"
                 android:textColor="@color/white"
                 />
         </menu>

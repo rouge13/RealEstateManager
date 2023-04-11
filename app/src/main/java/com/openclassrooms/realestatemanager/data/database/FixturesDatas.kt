@@ -15,7 +15,7 @@ class FixturesDatas {
 
         val PROPERTY_LIST = listOf(
             PropertyEntity(
-                0,
+                1,
                 17000000,
                 250,
                 10,
@@ -33,7 +33,7 @@ class FixturesDatas {
                 1681057947516
             ),
             PropertyEntity(
-                1,
+                2,
                 25000000,
                 300,
                 14,
@@ -51,7 +51,7 @@ class FixturesDatas {
                 1681058041885
             ),
             PropertyEntity(
-                2,
+                3,
                 300000000,
                 3000,
                 25,
@@ -69,7 +69,7 @@ class FixturesDatas {
                 1681058941044
             ),
             PropertyEntity(
-                3,
+                4,
                 350000000,
                 3500,
                 22,
@@ -87,7 +87,7 @@ class FixturesDatas {
                 1681058511034
             ),
             PropertyEntity(
-                4,
+                5,
                 23000000,
                 320,
                 14,
@@ -105,7 +105,7 @@ class FixturesDatas {
                 1681058041885
             ),
             PropertyEntity(
-                5,
+                6,
                 24000000,
                 370,
                 9,

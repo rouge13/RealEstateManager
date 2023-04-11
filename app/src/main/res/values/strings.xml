@@ -12,4 +12,5 @@
     <string name="take_photo">Take photo</string>
     <string name="drawer_open">Open the navigation drawer</string>
     <string name="drawer_close">Close the navigation drawer</string>
+    <string name="login">Login</string>
 </resources>

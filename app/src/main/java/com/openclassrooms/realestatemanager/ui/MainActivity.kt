@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -8,7 +8,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.realestatemanager.R
 import com.example.realestatemanager.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
-import com.openclassrooms.realestatemanager.property_list.PropertyListFragment
+import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragment
+import com.openclassrooms.realestatemanager.ui.property_list.PropertyListModelFactory
+import com.openclassrooms.realestatemanager.ui.property_list.PropertyListViewModel
+import androidx.activity.viewModels
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -17,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,9 +42,9 @@ class MainActivity : AppCompatActivity() {
 //        configureToolBar()
 
 
-
-
     }
+
+
 
 //    private fun configureToolBar() {
 //        setSupportActionBar(activityMainBinding.toolbar)

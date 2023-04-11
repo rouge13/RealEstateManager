@@ -11,4 +11,8 @@ import kotlinx.coroutines.flow.Flow
  */
 class PropertyRepository(private val propertyDao: PropertyDao) {
     val allProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
+
+    suspend fun insert(property: PropertyEntity) {
+        propertyDao.insert(property)
+    }
 }
