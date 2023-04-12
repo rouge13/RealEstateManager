@@ -9,8 +9,8 @@ import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 class FixturesDatas {
     companion object {
         val AGENT_LIST = listOf(
-            AgentEntity(1, "Julien", "Hammer", "jhammer@gmail.com", "1234"),
-            AgentEntity(2, "Carl", "Smith", "csmith@gmail.com", "1234")
+            AgentEntity(1, "Julien", "Hammer", "jhammer@gmail.com", "ic_agent_1", "1234"),
+            AgentEntity(2, "Carl", "Smith", "csmith@gmail.com", "ic_agent_2jha", "1234")
         )
 
         val PROPERTY_LIST = listOf(

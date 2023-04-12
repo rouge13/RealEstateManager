@@ -11,16 +11,7 @@
     tools:context="com.openclassrooms.realestatemanager.ui.MainActivity"
     >
 
-    <!-- Navigation drawer -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/activity_main_nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/colorPrimary"
-        app:headerLayout="@layout/activity_main_nav_header"
-        app:menu="@menu/activity_main_agent_info_menu"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+
 
     <!-- Main content container -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -97,7 +88,42 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <!-- Fragment with the login container -->
+        <FrameLayout
+            android:id="@+id/login_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            tools:layout="@layout/fragment_login"
+            app:layout_constraintTop_toBottomOf="@id/activity_main_toolbar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Fragment with the register container -->
+        <FrameLayout
+            android:id="@+id/register_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            tools:layout="@layout/fragment_register"
+            app:layout_constraintTop_toBottomOf="@id/activity_main_toolbar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Navigation drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/activity_main_nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/colorPrimary"
+        app:headerLayout="@layout/activity_main_nav_header"
+        app:menu="@menu/activity_main_agent_info_menu"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
 

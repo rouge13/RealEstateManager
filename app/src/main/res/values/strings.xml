@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Real Estate Manager</string>
-    <string name="photo_profile">Carl Smith</string>
-    <string name="text_view_property_agent_name">Carl Smith</string>
-    <string name="text_view_property_agent_email">carlsmith@gmail.com</string>
+    <string name="photo_profile">Agent</string>
+    <string name="text_view_property_agent_name">Name</string>
+    <string name="text_view_property_agent_email">Email</string>
     <string name="show_map">Show map</string>
     <string name="logout">Log out</string>
     <string name="settings">Settings</string>
@@ -13,4 +13,20 @@
     <string name="drawer_open">Open the navigation drawer</string>
     <string name="drawer_close">Close the navigation drawer</string>
     <string name="login">Login</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="first_name_text">First Name :</string>
+    <string name="last_name_text">Last Name :</string>
+    <string name="email_text">Email :</string>
+    <string name="password_text">Password :</string>
+    <string name="register">Register</string>
+    <string name="login_text">Login</string>
+    <string name="agent_email_hint">Enter Email</string>
+    <string name="agent_password_hint">Enter Password</string>
+    <string name="signup">Sign Up !</string>
+    <string name="register_text">Agent\'s Register</string>
+    <string name="password_confirm_text">Password Confirmation</string>
+    <string name="password_confirm">Enter Password to confirm</string>
 </resources>

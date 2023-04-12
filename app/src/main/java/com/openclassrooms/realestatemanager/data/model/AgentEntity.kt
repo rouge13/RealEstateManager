@@ -13,7 +13,8 @@ data class AgentEntity(@PrimaryKey(autoGenerate = true)
                        val firstName: String,
                        val lastName: String,
                        val email: String,
+                       val photo: String,
                        val password: String) {
-    constructor() : this(0, "", "", "", "")
+    constructor() : this(0, "", "", "", "ic_no_image_available", "")
 
 }

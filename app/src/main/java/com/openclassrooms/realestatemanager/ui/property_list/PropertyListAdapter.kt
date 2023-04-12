@@ -20,7 +20,6 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyEntity>)
             binding.propertyType.text = get.typeOfHouse
             binding.propertySector.text = get.boroughs
             "$${get.price}".also { binding.propertyValue.text = it }
-
             // Set the image to the view
             setImageInRecyclerView(get)
         }

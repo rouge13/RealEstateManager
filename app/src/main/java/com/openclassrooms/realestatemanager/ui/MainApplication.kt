@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui
 
 import android.app.Application
 import com.openclassrooms.realestatemanager.data.database.PropertyDatabase
+import com.openclassrooms.realestatemanager.data.repository.AgentRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 
 /**
@@ -16,5 +17,10 @@ class MainApplication : Application() {
     // Initialize the propertyRepository
     val propertyRepository by lazy {
         PropertyRepository(database.propertyDao())
+    }
+
+    // Initialize the agentRepository
+    val agentRepository by lazy {
+        AgentRepository(database.agentDao())
     }
 }

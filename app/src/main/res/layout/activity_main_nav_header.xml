@@ -25,10 +25,9 @@
         android:id="@+id/photo_profile_image_view"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:background="@drawable/ic_property_agent_pict"
+        android:background="@drawable/ic_must_be_connected"
         android:contentDescription="@string/photo_profile"
         android:layout_marginLeft="5dp"
-
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
