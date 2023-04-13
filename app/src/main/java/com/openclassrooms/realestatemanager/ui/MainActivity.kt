@@ -15,13 +15,15 @@ import com.example.realestatemanager.R
 import com.example.realestatemanager.databinding.ActivityMainBinding
 import com.example.realestatemanager.databinding.ActivityMainNavHeaderBinding
 import com.google.android.material.navigation.NavigationView
+import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragment
 import com.openclassrooms.realestatemanager.ui.login.LoginFragment
 import com.openclassrooms.realestatemanager.ui.login.LoginFragmentListener
-import com.openclassrooms.realestatemanager.ui.login.LoginViewModel
-import com.openclassrooms.realestatemanager.ui.login.LoginViewModelFactory
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragment
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragmentListener
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import kotlin.math.log
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -32,10 +34,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var activityMainNavHeaderBinding: ActivityMainNavHeaderBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-    private val viewModel: LoginViewModel by viewModels {
-        LoginViewModelFactory((application as MainApplication).agentRepository)
+    private var logedIn: Boolean = false
+    private val sharedAgentViewModel: SharedAgentViewModel by viewModels {
+        ViewModelFactory((application as MainApplication).agentRepository, (application as MainApplication).propertyRepository)
     }
-
+    private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
+        ViewModelFactory((application as MainApplication).agentRepository, (application as MainApplication).propertyRepository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -51,22 +56,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Get the header view and bind it
         val headerView = navigationView.getHeaderView(0)
         activityMainNavHeaderBinding = ActivityMainNavHeaderBinding.bind(headerView)
-
         // Observe the loged agent to update the UI
         observeLogedAgent()
     }
 
     private fun observeLogedAgent() {
-        viewModel.logedAgent.observe(this) { agent ->
+        when(logedIn){
+            true -> {
+                observeTheAgentData()
+            }
+            false -> {
+                logOptions(navLogIn = true,navLogOut = false)
+            }
+        }
+    }
+
+    private fun observeTheAgentData() {
+        sharedAgentViewModel.logedAgent.observe(this) { agent ->
             if (agent != null) {
-                logOptions(navLogIn = false,navLogOut = true)
+                logOptions(navLogIn = false, navLogOut = true)
                 activityMainNavHeaderBinding.username.text = "${agent.firstName}  ${agent.lastName}"
                 activityMainNavHeaderBinding.userEmail.text = agent.email
                 activityMainNavHeaderBinding.photoProfileImageView.setImageResource(
                     this.resources.getIdentifier(agent.photo, "drawable", this.packageName)
                 )
             } else {
-                logOptions(navLogIn = true,navLogOut = false)
+                logOptions(navLogIn = true, navLogOut = false)
             }
         }
     }
@@ -100,9 +115,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(intent)
             }
             // Logout agent from his account
-//            R.id.nav_logout -> {
-//
-//            }
+            R.id.nav_logout -> {
+                sharedAgentViewModel.allAgents.removeObserver()
+                logedIn = false
+                observeLogedAgent()
+            }
             // Login agent to his account
             R.id.nav_login -> {
                 val loginFragment = LoginFragment()
@@ -157,10 +174,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun hideLoginScreen() {
         ShowTheGoodFrameLayout(fragmentPropertyListShow = true)
+        if (!logedIn){
+            logedIn = false
+        }
     }
 
     override fun onLoginSuccess() {
         hideLoginScreen()
+        logedIn = true
     }
 
     override fun onLoginCancel() {
@@ -173,6 +194,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onRegisterSuccess() {
         hideRegisterScreen()
+        hideLoginScreen()
+        logedIn = true
     }
 
     override fun onRegisterCancel() {
@@ -181,6 +204,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun hideRegisterScreen() {
         ShowTheGoodFrameLayout(loginContainerShow = true)
+        if (!logedIn){
+            logedIn = false
+        }
     }
 
     private fun ShowRegisterScreen() {

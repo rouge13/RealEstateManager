@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.realestatemanager.databinding.FragmentPropertyListBinding
+import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -18,8 +21,8 @@ import com.openclassrooms.realestatemanager.ui.MainApplication
 class PropertyListFragment : Fragment() {
     private lateinit var binding: FragmentPropertyListBinding
     private lateinit var adapter: PropertyListAdapter
-    private val propertyListViewModel: PropertyListViewModel by viewModels {
-        PropertyListModelFactory((requireActivity().application as MainApplication).propertyRepository)
+    private val propertyListViewModel: SharedPropertyViewModel by activityViewModels {
+        ViewModelFactory((requireActivity().application as MainApplication).agentRepository, (requireActivity().application as MainApplication).propertyRepository)
     }
 
     override fun onCreateView(

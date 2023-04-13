@@ -8,17 +8,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import com.example.realestatemanager.databinding.FragmentLoginBinding
+import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
-    private val viewModel: LoginViewModel by activityViewModels {
-        LoginViewModelFactory((requireActivity().application as MainApplication).agentRepository)
+    private val viewModel: SharedAgentViewModel by activityViewModels {
+        ViewModelFactory((requireActivity().application as MainApplication).agentRepository, (requireActivity().application as MainApplication).propertyRepository)
     }
     companion object {
         const val LOGIN_SUCCESS = "login success."
