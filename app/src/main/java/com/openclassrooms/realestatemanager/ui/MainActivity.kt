@@ -1,11 +1,17 @@
 package com.openclassrooms.realestatemanager.ui
 
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +22,7 @@ import com.example.realestatemanager.databinding.ActivityMainBinding
 import com.example.realestatemanager.databinding.ActivityMainNavHeaderBinding
 import com.google.android.material.navigation.NavigationView
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
+import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragment
 import com.openclassrooms.realestatemanager.ui.login.LoginFragment
 import com.openclassrooms.realestatemanager.ui.login.LoginFragmentListener
@@ -23,7 +30,6 @@ import com.openclassrooms.realestatemanager.ui.register.RegisterFragment
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragmentListener
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
-import kotlin.math.log
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -34,7 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var activityMainNavHeaderBinding: ActivityMainNavHeaderBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-    private var logedIn: Boolean = false
+    val REQUEST_IMAGE_CAPTURE = 1
     private val sharedAgentViewModel: SharedAgentViewModel by viewModels {
         ViewModelFactory((application as MainApplication).agentRepository, (application as MainApplication).propertyRepository)
     }
@@ -53,84 +59,103 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setupDrawerContent(navigationView)
         // Loat the initial fragment into the fragment container
         loadInitialFragment()
-        // Get the header view and bind it
-        val headerView = navigationView.getHeaderView(0)
-        activityMainNavHeaderBinding = ActivityMainNavHeaderBinding.bind(headerView)
+        // Get the header view and bind it to the activityMainNavHeaderBinding
+        activityMainNavHeaderBinding = ActivityMainNavHeaderBinding.bind(navigationView.getHeaderView(0))
         // Observe the loged agent to update the UI
         observeLogedAgent()
     }
 
     private fun observeLogedAgent() {
-        when(logedIn){
-            true -> {
-                observeTheAgentData()
-            }
-            false -> {
-                logOptions(navLogIn = true,navLogOut = false)
-            }
+        sharedAgentViewModel.logedAgent.observeForever {
+            if (it != null) forAgentConnected(it) else forAgentNotConnected()
         }
     }
 
-    private fun observeTheAgentData() {
-        sharedAgentViewModel.logedAgent.observe(this) { agent ->
-            if (agent != null) {
-                logOptions(navLogIn = false, navLogOut = true)
-                activityMainNavHeaderBinding.username.text = "${agent.firstName}  ${agent.lastName}"
-                activityMainNavHeaderBinding.userEmail.text = agent.email
-                activityMainNavHeaderBinding.photoProfileImageView.setImageResource(
-                    this.resources.getIdentifier(agent.photo, "drawable", this.packageName)
-                )
-            } else {
-                logOptions(navLogIn = true, navLogOut = false)
-            }
-        }
+    private fun forAgentNotConnected() {
+        navigationView.menu.findItem(R.id.nav_login).isVisible = true
+        navigationView.menu.findItem(R.id.nav_logout).isVisible = false
+        activityMainNavHeaderBinding.username.text =
+            getString(R.string.text_view_property_agent_name)
+        activityMainNavHeaderBinding.userEmail.text =
+            getString(R.string.text_view_property_agent_email)
+        activityMainNavHeaderBinding.photoProfileImageView.setImageResource(
+            this.resources.getIdentifier(
+                "ic_must_be_connected",
+                "drawable",
+                this.packageName
+            )
+        )
     }
 
-    private fun logOptions(navLogIn: Boolean, navLogOut: Boolean) {
-        activityMainBinding.activityMainNavView.menu.findItem(R.id.nav_login).isVisible = navLogIn
-        activityMainBinding.activityMainNavView.menu.findItem(R.id.nav_logout).isVisible = navLogOut
+    private fun forAgentConnected(agent: AgentEntity) {
+        navigationView.menu.findItem(R.id.nav_login).isVisible = false
+        navigationView.menu.findItem(R.id.nav_logout).isVisible = true
+        activityMainNavHeaderBinding.username.text = "${agent.firstName} ${agent.lastName}"
+        activityMainNavHeaderBinding.userEmail.text = agent.email
+        activityMainNavHeaderBinding.photoProfileImageView.setImageResource(
+            this.resources.getIdentifier(agent.photo, "drawable", this.packageName)
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_main_agent_info_menu, menu)
-        menu?.findItem(R.id.nav_login)?.setOnMenuItemClickListener {
-            showLoginScreen()
-            true
-        }
         return true
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Close the drawer
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
+        when (item.itemId) {
+            android.R.id.home -> {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START)
+                    invalidateOptionsMenu()
+                }
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
+            // Run camera for photo
+            R.id.nav_take_photo -> {
+                dispatchTakePictureIntent()
+            }
             // Show settings from phone
             R.id.nav_settings -> {
-                val intent = Intent(Settings.ACTION_SETTINGS)
-                startActivity(intent)
+                startActivity(Intent(Settings.ACTION_SETTINGS))
             }
             // Logout agent from his account
             R.id.nav_logout -> {
-                sharedAgentViewModel.allAgents.removeObserver()
-                logedIn = false
-                observeLogedAgent()
+                logOutActions()
             }
             // Login agent to his account
             R.id.nav_login -> {
-                val loginFragment = LoginFragment()
-                showLoginScreen()
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.login_container, loginFragment)
-                    .commit()
+                logInActions()
             }
         }
+        drawerLayout = activityMainBinding.activityMainDrawerLayout
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun logInActions() {
+        val loginFragment = LoginFragment()
+        showLoginScreen()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.login_container, loginFragment)
+            .commit()
+    }
+
+    private fun logOutActions() {
+        navigationView.menu.findItem(R.id.nav_login).isVisible = true
+        sharedAgentViewModel.setLogedAgent(null)
+        observeLogedAgent()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
 
@@ -165,7 +190,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showLoginScreen() {
-        ShowTheGoodFrameLayout(loginContainerShow = true)
+        showTheGoodFrameLayout(loginContainerShow = true)
         supportFragmentManager.beginTransaction()
             .replace(R.id.login_container, LoginFragment())
             .addToBackStack(null)
@@ -173,15 +198,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun hideLoginScreen() {
-        ShowTheGoodFrameLayout(fragmentPropertyListShow = true)
-        if (!logedIn){
-            logedIn = false
-        }
+        showTheGoodFrameLayout(fragmentPropertyListShow = true)
     }
 
     override fun onLoginSuccess() {
         hideLoginScreen()
-        logedIn = true
     }
 
     override fun onLoginCancel() {
@@ -189,13 +210,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onLoginSignUp() {
-        ShowRegisterScreen()
+        showRegisterScreen()
     }
 
     override fun onRegisterSuccess() {
         hideRegisterScreen()
         hideLoginScreen()
-        logedIn = true
     }
 
     override fun onRegisterCancel() {
@@ -203,21 +223,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun hideRegisterScreen() {
-        ShowTheGoodFrameLayout(loginContainerShow = true)
-        if (!logedIn){
-            logedIn = false
-        }
+        showTheGoodFrameLayout(loginContainerShow = true)
     }
 
-    private fun ShowRegisterScreen() {
-        ShowTheGoodFrameLayout(registerContainerShow = true)
+    private fun showRegisterScreen() {
+        showTheGoodFrameLayout(registerContainerShow = true)
         supportFragmentManager.beginTransaction()
             .replace(R.id.register_container, RegisterFragment())
             .addToBackStack(null)
             .commit()
     }
 
-    private fun ShowTheGoodFrameLayout(
+    private fun showTheGoodFrameLayout(
         loginContainerShow: Boolean = false,
         registerContainerShow: Boolean = false,
         fragmentPropertyListShow: Boolean = false) {
@@ -232,6 +249,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (fragmentPropertyListShow) {
             true -> activityMainBinding.fragmentPropertyList.visibility = View.VISIBLE
             false -> activityMainBinding.fragmentPropertyList.visibility = View.GONE
+        }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    private fun dispatchTakePictureIntent() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        } catch (e: ActivityNotFoundException) {
+            // display error state to the user in a Toast
+            Toast.makeText(this, e.message.toString(), Toast.LENGTH_SHORT).show()
         }
     }
 }

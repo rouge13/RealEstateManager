@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-@Database(entities = [PropertyEntity::class, AgentEntity::class], version = 2, exportSchema = false)
+@Database(entities = [PropertyEntity::class, AgentEntity::class], version = 4, exportSchema = false)
 abstract class PropertyDatabase : RoomDatabase() {
     abstract fun propertyDao(): PropertyDao
     abstract fun agentDao(): AgentDao

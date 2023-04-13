@@ -9,12 +9,11 @@ import androidx.room.PrimaryKey
 // Make the AgentEntity a Room entity
 @Entity(tableName = "agent")
 data class AgentEntity(@PrimaryKey(autoGenerate = true)
-                       val id: Int = 0,
+                       val id: Int?,
                        val firstName: String,
                        val lastName: String,
                        val email: String,
-                       val photo: String,
+                       val photo: String = "ic_no_image_available",
                        val password: String) {
-    constructor() : this(0, "", "", "", "ic_no_image_available", "")
 
 }

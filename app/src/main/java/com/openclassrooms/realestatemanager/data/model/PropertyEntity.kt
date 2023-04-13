@@ -21,24 +21,21 @@ import java.util.*
     ],
 )
 data class PropertyEntity(@PrimaryKey(autoGenerate = true)
-                          val id: Int,
-                          var price: Int,
+                          val id: Int?,
+                          var price: Int? = 0,
                           var squareFeet: Int? = 0,
                           var rooms: Int? = 0,
                           var bedrooms: Int? = 0,
                           var bathrooms: Int? = 0,
-                          var description: String,
+                          var description: String? = "Must add description for this property in later time",
                           var address: String,
                           var boroughs: String,
                           var typeOfHouse: String,
-                          var isSold: Boolean,
-                          var dateStartSelling: String,
+                          var isSold: Boolean = false,
+                          var dateStartSelling: String = SimpleDateFormat("yyyy/MM/dd", Locale.US).format(Calendar.getInstance().time),
                           var dateSold: String,
                           var agentId: Int,
                           var primaryPhoto: String,
-                          var lastUpdate: Long = System.currentTimeMillis()
-)
+                          var lastUpdate: Long = System.currentTimeMillis()) {
 
-{
-    constructor() : this(0, 0, 0, 0, 0, 0, "", "", "", "", false, SimpleDateFormat("yyyy/MM/dd", Locale.US).format(Calendar.getInstance().time), "", 0, "",0)
 }
