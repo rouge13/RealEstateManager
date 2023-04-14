@@ -29,4 +29,8 @@
     <string name="register_text">Agent\'s Register</string>
     <string name="password_confirm_text">Password Confirmation</string>
     <string name="password_confirm">Enter Password to confirm</string>
+
+    <!-- BOTTOM NAVIGATION VIEW -->
+    <string name="bottom_navigation_menu_map_view">Map View</string>
+    <string name="bottom_navigation_menu_list_view">List View</string>
 </resources>

@@ -17,19 +17,22 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.realestatemanager.R
-import com.example.realestatemanager.databinding.ActivityMainBinding
-import com.example.realestatemanager.databinding.ActivityMainNavHeaderBinding
+import com.openclassrooms.realestatemanager.R
+
 import com.google.android.material.navigation.NavigationView
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
+import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
+import com.openclassrooms.realestatemanager.databinding.ActivityMainNavHeaderBinding
 import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragment
 import com.openclassrooms.realestatemanager.ui.login.LoginFragment
 import com.openclassrooms.realestatemanager.ui.login.LoginFragmentListener
+import com.openclassrooms.realestatemanager.ui.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragment
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragmentListener
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -72,8 +75,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun forAgentNotConnected() {
-        navigationView.menu.findItem(R.id.nav_login).isVisible = true
-        navigationView.menu.findItem(R.id.nav_logout).isVisible = false
+        showTheLogIn()
+        showDefaultNavHeaderNotConnected()
+        activityMainBinding.fragmentPropertyList.visibility = View.VISIBLE
+        activityMainBinding.bottomNavigationView.visibility = View.GONE
+    }
+
+    private fun showDefaultNavHeaderNotConnected() {
         activityMainNavHeaderBinding.username.text =
             getString(R.string.text_view_property_agent_name)
         activityMainNavHeaderBinding.userEmail.text =
@@ -87,9 +95,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
+    private fun showTheLogIn() {
+        navigationView.menu.findItem(R.id.nav_login).isVisible = true
+        navigationView.menu.findItem(R.id.nav_logout).isVisible = false
+    }
+
     private fun forAgentConnected(agent: AgentEntity) {
-        navigationView.menu.findItem(R.id.nav_login).isVisible = false
-        navigationView.menu.findItem(R.id.nav_logout).isVisible = true
+        activityMainBinding.fragmentPropertyList.visibility = View.GONE
+        showTheLogOut()
+        showAgentNavHeaderConnected(agent)
+        setupBottomNavigation()
+        // Set the current item of the viewPager to the desired position
+        activityMainBinding.viewPager.currentItem = 0 // or whichever position you want to switch to
+    }
+
+    private fun showAgentNavHeaderConnected(agent: AgentEntity) {
         activityMainNavHeaderBinding.username.text = "${agent.firstName} ${agent.lastName}"
         activityMainNavHeaderBinding.userEmail.text = agent.email
         activityMainNavHeaderBinding.photoProfileImageView.setImageResource(
@@ -97,10 +117,44 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
+    private fun showTheLogOut() {
+        navigationView.menu.findItem(R.id.nav_login).isVisible = false
+        navigationView.menu.findItem(R.id.nav_logout).isVisible = true
+    }
+
+    private fun setupBottomNavigation() {
+        activityMainBinding.bottomNavigationView.visibility = View.VISIBLE
+        val viewPager = activityMainBinding.viewPager
+        val adapter = ViewPagerAdapter(supportFragmentManager)
+        // Add the PropertyListFragment and MapFragment to the adapter
+        adapter.addFragment(PropertyListFragment(), "Property List")
+        adapter.addFragment(MapFragment(), "Map")
+        viewPager.adapter = adapter
+        // Set the OnItemSelectedListener for the BottomNavigationView
+        setOnItemSelectedListener()
+    }
+
+    private fun setOnItemSelectedListener() {
+        activityMainBinding.bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.list_fragment -> {
+                    activityMainBinding.viewPager.currentItem = 0
+                    true
+                }
+                R.id.map_fragment -> {
+                    activityMainBinding.viewPager.currentItem = 1
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_main_agent_info_menu, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
@@ -119,7 +173,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            // Run camera for photo
+            // Run camera to take a picture
             R.id.nav_take_photo -> {
                 dispatchTakePictureIntent()
             }
@@ -157,7 +211,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(intent)
         finish()
     }
-
 
     private fun loadInitialFragment() {
         supportFragmentManager.beginTransaction()

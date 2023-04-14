@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.realestatemanager.databinding.FragmentRegisterBinding
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
+import com.openclassrooms.realestatemanager.databinding.FragmentRegisterBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import kotlinx.coroutines.CoroutineScope

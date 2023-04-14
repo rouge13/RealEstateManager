@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.realestatemanager.databinding.ItemPropertyBinding
+import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 
 /**
