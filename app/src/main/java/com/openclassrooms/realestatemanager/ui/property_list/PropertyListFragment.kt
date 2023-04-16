@@ -52,5 +52,8 @@ class PropertyListFragment : Fragment() {
         propertyListViewModel.allProperties.observe(viewLifecycleOwner) { properties ->
             adapter.submitList(properties)
         }
+        propertyListViewModel.allAddresses.observe(viewLifecycleOwner) { addresses ->
+            adapter.submitList(addresses)
+        }
     }
 }

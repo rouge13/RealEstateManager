@@ -13,29 +13,34 @@ import java.util.*
 @Entity(
     tableName = "property",
     foreignKeys = [
-       ForeignKey(
+        ForeignKey(
             entity = AgentEntity::class,
             parentColumns = ["id"],
             childColumns = ["agentId"],
         )
-    ],
+    ]
 )
-data class PropertyEntity(@PrimaryKey(autoGenerate = true)
-                          val id: Int?,
-                          var price: Int? = 0,
-                          var squareFeet: Int? = 0,
-                          var rooms: Int? = 0,
-                          var bedrooms: Int? = 0,
-                          var bathrooms: Int? = 0,
-                          var description: String? = "Must add description for this property in later time",
-                          var address: String,
-                          var boroughs: String,
-                          var typeOfHouse: String,
-                          var isSold: Boolean = false,
-                          var dateStartSelling: String = SimpleDateFormat("yyyy/MM/dd", Locale.US).format(Calendar.getInstance().time),
-                          var dateSold: String,
-                          var agentId: Int,
-                          var primaryPhoto: String,
-                          var lastUpdate: Long = System.currentTimeMillis()) {
+data class PropertyEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int?,
+    var price: Int? = 0,
+    var squareFeet: Int? = 0,
+    var roomsCount: Int? = 0,
+    var bedroomsCount: Int? = 0,
+    var bathroomsCount: Int? = 0,
+    var description: String? = "Must add description for this property in later time",
+    // Photo and video will be in another entity
+    // Proximity in another entity
+    var typeOfHouse: String,
+    var isSold: Boolean? = false,
+    var dateStartSelling: String? = SimpleDateFormat(
+        "yyyy/MM/dd",
+        Locale.US
+    ).format(Calendar.getInstance().time),
+    var dateSold: String,
+    var agentId: Int,
+    var primaryPhoto: String,
+    var lastUpdate: Long = System.currentTimeMillis()
+) {
 
 }

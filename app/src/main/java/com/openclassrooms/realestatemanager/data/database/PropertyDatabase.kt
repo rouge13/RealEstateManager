@@ -5,8 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.openclassrooms.realestatemanager.data.dao.AddressDao
 import com.openclassrooms.realestatemanager.data.dao.AgentDao
 import com.openclassrooms.realestatemanager.data.dao.PropertyDao
+import com.openclassrooms.realestatemanager.data.dao.ProximityDao
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import kotlinx.coroutines.CoroutineScope
@@ -16,10 +18,12 @@ import kotlinx.coroutines.launch
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-@Database(entities = [PropertyEntity::class, AgentEntity::class], version = 4, exportSchema = false)
+@Database(entities = [PropertyEntity::class, AgentEntity::class], version = 5, exportSchema = false)
 abstract class PropertyDatabase : RoomDatabase() {
     abstract fun propertyDao(): PropertyDao
     abstract fun agentDao(): AgentDao
+    abstract fun addressDao(): AddressDao
+    abstract fun proximityDao(): ProximityDao
 
     companion object {
         @Volatile
@@ -38,14 +42,14 @@ abstract class PropertyDatabase : RoomDatabase() {
 
                 // Prepopulate the database directly after building the instance
                 CoroutineScope(Dispatchers.IO).launch {
-                    prepopulateDatabase(instance.propertyDao(), instance.agentDao())
+                    prepopulateDatabase(instance.propertyDao(), instance.agentDao(), instance.addressDao(), instance.proximityDao())
                 }
 
                 instance
             }
         }
 
-        private suspend fun prepopulateDatabase(propertyDao: PropertyDao, agentDao: AgentDao) {
+        private suspend fun prepopulateDatabase(propertyDao: PropertyDao, agentDao: AgentDao, addressDao: AddressDao, proximityDao: ProximityDao) {
             // Add agents
             FixturesDatas.AGENT_LIST.forEach { agent ->
                 agentDao.insert(agent)
@@ -53,6 +57,14 @@ abstract class PropertyDatabase : RoomDatabase() {
             // Add properties
             FixturesDatas.PROPERTY_LIST.forEach { property ->
                 propertyDao.insert(property)
+            }
+            // Add addresses
+            FixturesDatas.PROPERTY_ADDRESS_LIST.forEach { address ->
+                addressDao.insert(address)
+            }
+            // Add proximities
+            FixturesDatas.PROPERTY_PROXIMITY_LIST.forEach { proximity ->
+                proximityDao.insert(proximity)
             }
         }
     }

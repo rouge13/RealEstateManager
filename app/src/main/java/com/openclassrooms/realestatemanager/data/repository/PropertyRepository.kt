@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import com.openclassrooms.realestatemanager.data.dao.AddressDao
 import com.openclassrooms.realestatemanager.data.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class PropertyRepository(private val propertyDao: PropertyDao) {
+    // Get all the properties from the database
     val allProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
 
     suspend fun insert(property: PropertyEntity) {
