@@ -8,6 +8,7 @@ import com.openclassrooms.realestatemanager.data.model.ProximityEntity
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.data.repository.ProximityRepository
+import kotlinx.coroutines.launch
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -28,41 +29,26 @@ class SharedPropertyViewModel(
         proximityRepository.allProximity.asLiveData()
 
     // Create a LiveData for the combined data
-    val propertiesWithDetails: LiveData<List<PropertyWithDetails>> = MediatorLiveData<List<PropertyWithDetails>>().apply {
-        addSource(allProperties) { properties ->
-            combinePropertiesWithDetails(properties, allAddresses.value, allProximity.value)?.let {
-                value = it
+    val propertiesWithDetails: MediatorLiveData<List<PropertyWithDetails>> = MediatorLiveData<List<PropertyWithDetails>>().apply {
+        fun updateCombinedData() {
+            viewModelScope.launch {
+                val combinedData = combinePropertiesWithDetails(allProperties.value, allAddresses.value, allProximity.value)
+                postValue(combinedData)
             }
         }
-        addSource(allAddresses) { addresses ->
-            combinePropertiesWithDetails(allProperties.value, addresses, allProximity.value)?.let {
-                value = it
-            }
+
+        addSource(allProperties) { _ ->
+            updateCombinedData()
         }
-        addSource(allProximity) { proximity ->
-            combinePropertiesWithDetails(allProperties.value, allAddresses.value, proximity)?.let {
-                value = it
-            }
+        addSource(allAddresses) { _ ->
+            updateCombinedData()
+        }
+        addSource(allProximity) { _ ->
+            updateCombinedData()
         }
     }
 
-//    private fun combinePropertiesWithDetails(
-//        properties: List<PropertyEntity>?,
-//        addresses: List<AddressEntity>?,
-//        proximity: List<ProximityEntity>?
-//    ): List<PropertyWithDetails>? {
-//        if (properties == null || addresses == null || proximity == null) {
-//            return null
-//        }
-//
-//        return properties.map { property ->
-//            val address = addresses.find { it.propertyId == property.id }
-//            val proximityItem = proximity.find { it.propertyId == property.id }
-//            PropertyWithDetails(property, address ?: AddressEntity(), proximityItem ?: ProximityEntity())
-//        }
-//    }
-
-    private fun combinePropertiesWithDetails(
+    private suspend fun combinePropertiesWithDetails(
         properties: List<PropertyEntity>?,
         addresses: List<AddressEntity>?,
         proximity: List<ProximityEntity>?
@@ -76,11 +62,6 @@ class SharedPropertyViewModel(
             val proximityItem = proximity.find { it.propertyId == property.id }
             PropertyWithDetails(property, address ?: AddressEntity(), proximityItem ?: ProximityEntity())
         }
-
-        combinedData.forEach { propertyWithDetails ->
-            println("Property ID: ${propertyWithDetails.property.id}, Borough: ${propertyWithDetails.address.boroughs}")
-        }
-
         return combinedData
     }
 }

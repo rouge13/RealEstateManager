@@ -21,14 +21,13 @@
         app:layout_constraintBottom_toTopOf="@id/photo_profile_image_view"
         />
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <ImageView
         android:id="@+id/photo_profile_image_view"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:background="@drawable/ic_must_be_connected"
+        app:srcCompat="@drawable/ic_must_be_connected"
         android:contentDescription="@string/photo_profile"
-        android:layout_marginLeft="5dp"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+        android:layout_marginStart="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />

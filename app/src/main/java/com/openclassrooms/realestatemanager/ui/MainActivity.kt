@@ -31,7 +31,6 @@ import com.openclassrooms.realestatemanager.ui.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragment
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragmentListener
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
-import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 
 
 /**
@@ -89,13 +88,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             getString(R.string.text_view_property_agent_name)
         activityMainNavHeaderBinding.userEmail.text =
             getString(R.string.text_view_property_agent_email)
-        activityMainNavHeaderBinding.photoProfileImageView.setImageResource(
-            this.resources.getIdentifier(
-                "ic_must_be_connected",
-                "drawable",
-                this.packageName
-            )
-        )
+        setImageProfileDefault()
     }
 
     private fun showTheLogIn() {
@@ -115,11 +108,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun showAgentNavHeaderConnected(agent: AgentEntity) {
         activityMainNavHeaderBinding.username.text = "${agent.firstName} ${agent.lastName}"
         activityMainNavHeaderBinding.userEmail.text = agent.email
-        activityMainNavHeaderBinding.photoProfileImageView.setImageResource(
+        setImageProfileAgent(agent)
+    }
+
+    private fun setImageProfileAgent(agent: AgentEntity) {
+        val photoProfileImageView = activityMainNavHeaderBinding.photoProfileImageView
+        photoProfileImageView.setImageResource(
             this.resources.getIdentifier(agent.photo, "drawable", this.packageName)
         )
     }
 
+    private fun setImageProfileDefault() {
+        val photoProfileImageView = activityMainNavHeaderBinding.photoProfileImageView
+        photoProfileImageView.setImageResource(
+            this.resources.getIdentifier("ic_must_be_connected", "drawable", this.packageName)
+        )
+    }
     private fun showTheLogOut() {
         navigationView.menu.findItem(R.id.nav_login).isVisible = false
         navigationView.menu.findItem(R.id.nav_logout).isVisible = true

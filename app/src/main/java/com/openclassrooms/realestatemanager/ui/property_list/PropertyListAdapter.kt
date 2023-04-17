@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
-
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
