@@ -25,7 +25,12 @@ class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
     private var registerFragmentListener: RegisterFragmentListener? = null
     private val viewModel: SharedAgentViewModel by activityViewModels {
-        ViewModelFactory((requireActivity().application as MainApplication).agentRepository, (requireActivity().application as MainApplication).propertyRepository)
+        ViewModelFactory(
+            (requireActivity().application as MainApplication).agentRepository,
+            (requireActivity().application as MainApplication).propertyRepository,
+            (requireActivity().application as MainApplication).addressRepository,
+            (requireActivity().application as MainApplication).proximityRepository
+        )
     }
 
     companion object {
@@ -68,12 +73,18 @@ class RegisterFragment : Fragment() {
             if (lastName.isNotEmpty() && firstName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && passwordConfirm.isNotEmpty()) {
                 if (password == passwordConfirm) {
                     // Insert the new agent in the database
-                    val agent = AgentEntity(id = null, firstName = firstName, lastName = lastName, email = email, password = password)
+                    val agent = AgentEntity(
+                        id = null,
+                        firstName = firstName,
+                        lastName = lastName,
+                        email = email,
+                        password = password
+                    )
                     // Insert the new agent in the database
                     CoroutineScope(Dispatchers.IO).launch {
                         viewModel.insertAgent(agent).also {
                             viewModel.setLogedAgent(agent)
-                            withContext(Dispatchers.Main){
+                            withContext(Dispatchers.Main) {
                                 Toast.makeText(context, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show()
                                 registerFragmentListener?.onRegisterSuccess()
                             }

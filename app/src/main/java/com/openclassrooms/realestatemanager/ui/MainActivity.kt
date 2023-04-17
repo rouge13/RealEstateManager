@@ -43,13 +43,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var activityMainNavHeaderBinding: ActivityMainNavHeaderBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-    val REQUEST_IMAGE_CAPTURE = 1
+    private val REQUEST_IMAGE_CAPTURE = 1
     private val sharedAgentViewModel: SharedAgentViewModel by viewModels {
-        ViewModelFactory((application as MainApplication).agentRepository, (application as MainApplication).propertyRepository)
+        ViewModelFactory((application as MainApplication).agentRepository,
+            (application as MainApplication).propertyRepository,
+            (application as MainApplication).addressRepository,
+            (application as MainApplication).proximityRepository)
     }
-    private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
-        ViewModelFactory((application as MainApplication).agentRepository, (application as MainApplication).propertyRepository)
-    }
+//    private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
+//        ViewModelFactory((application as MainApplication).agentRepository, (application as MainApplication).propertyRepository)
+//    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)

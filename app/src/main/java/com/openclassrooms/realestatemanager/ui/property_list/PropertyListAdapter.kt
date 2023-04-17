@@ -5,23 +5,24 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyEntity>)
-    : ListAdapter<PropertyEntity, PropertyListAdapter.PropertyViewHolder>(diffCallback) {
+class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetails>)
+    : ListAdapter<PropertyWithDetails, PropertyListAdapter.PropertyViewHolder>(diffCallback) {
 
     class PropertyViewHolder(private val binding: ItemPropertyBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(get: PropertyEntity) {
+        fun bind(get: PropertyWithDetails) {
             // Set the data to the view
-            binding.propertyType.text = get.typeOfHouse
-            binding.propertySector.text = get.boroughs
-            "$${get.price}".also { binding.propertyValue.text = it }
+            binding.propertyType.text = get.property.typeOfHouse
+            binding.propertySector.text = get.address.boroughs?.takeIf { it.isNotBlank() } ?: "N/A"
+            "$${get.property.price}".also { binding.propertyValue.text = it }
             // Set the image to the view
-            setImageInRecyclerView(get)
+            setImageInRecyclerView(get.property)
         }
 
         private fun setImageInRecyclerView(get: PropertyEntity) {
@@ -39,8 +40,8 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyEntity>)
     }
 
     override fun onBindViewHolder(holder: PropertyViewHolder, position: Int) {
-        val property = getItem(position)
-        holder.bind(property)
+        val propertyWithDetails = getItem(position)
+        holder.bind(propertyWithDetails)
     }
 }
 

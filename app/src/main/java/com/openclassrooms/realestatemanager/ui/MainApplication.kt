@@ -2,8 +2,10 @@ package com.openclassrooms.realestatemanager.ui
 
 import android.app.Application
 import com.openclassrooms.realestatemanager.data.database.PropertyDatabase
+import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
+import com.openclassrooms.realestatemanager.data.repository.ProximityRepository
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -22,5 +24,15 @@ class MainApplication : Application() {
     // Initialize the agentRepository
     val agentRepository by lazy {
         AgentRepository(database.agentDao())
+    }
+
+    // Initialize the addressRepository
+    val addressRepository by lazy {
+        AddressRepository(database.addressDao())
+    }
+
+    // Initialize the proximityRepository
+    val proximityRepository by lazy {
+        ProximityRepository(database.proximityDao())
     }
 }

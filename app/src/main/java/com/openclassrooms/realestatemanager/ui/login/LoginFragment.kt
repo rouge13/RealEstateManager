@@ -19,13 +19,20 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewMo
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private val viewModel: SharedAgentViewModel by activityViewModels {
-        ViewModelFactory((requireActivity().application as MainApplication).agentRepository, (requireActivity().application as MainApplication).propertyRepository)
+        ViewModelFactory(
+            (requireActivity().application as MainApplication).agentRepository,
+            (requireActivity().application as MainApplication).propertyRepository,
+            (requireActivity().application as MainApplication).addressRepository,
+            (requireActivity().application as MainApplication).proximityRepository
+        )
     }
+
     companion object {
         const val LOGIN_SUCCESS = "login success."
         const val LOGIN_MISSING_FIELDS = "Please fill all fields."
         const val LOGIN_FAILED = "Login failed. Wrong email or password !"
     }
+
     private var loginFragmentListener: LoginFragmentListener? = null
 
     override fun onAttach(context: Context) {

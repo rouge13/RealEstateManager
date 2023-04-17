@@ -17,7 +17,11 @@ class FixturesDatas {
 
         val PROPERTY_PROXIMITY_LIST = listOf(
             ProximityEntity(1, true, true, true, true, true),
-            ProximityEntity(2, false, false, false, false, false)
+            ProximityEntity(2, false, false, false, false, false),
+            ProximityEntity(3, false, true, false, false, true),
+            ProximityEntity(4, false, false, true, false, false),
+            ProximityEntity(5, false, true, false, true, false),
+            ProximityEntity(6, true, false, false, true, true)
         )
 
         val PROPERTY_ADDRESS_LIST = listOf(
@@ -28,7 +32,6 @@ class FixturesDatas {
             AddressEntity(5, "126-02", "82nd Ave", "Kew Gardens", "Queens", "11415", "USA", 40.713266, -73.825877),
             AddressEntity(6, "174th", "St & Grand Concourse", "Bronx", "Bronx", "10457", "USA", 40.837445, -73.887809)
         )
-
 
         val PROPERTY_LIST = listOf(
             PropertyEntity(

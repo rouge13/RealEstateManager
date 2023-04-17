@@ -9,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
-import com.openclassrooms.realestatemanager.data.model.PropertyEntity
+import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentPropertyListBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
@@ -21,7 +21,10 @@ class PropertyListFragment : Fragment() {
     private lateinit var binding: FragmentPropertyListBinding
     private lateinit var adapter: PropertyListAdapter
     private val propertyListViewModel: SharedPropertyViewModel by activityViewModels {
-        ViewModelFactory((requireActivity().application as MainApplication).agentRepository, (requireActivity().application as MainApplication).propertyRepository)
+        ViewModelFactory((requireActivity().application as MainApplication).agentRepository,
+            (requireActivity().application as MainApplication).propertyRepository,
+            (requireActivity().application as MainApplication).addressRepository,
+            (requireActivity().application as MainApplication).proximityRepository)
     }
 
     override fun onCreateView(
@@ -31,12 +34,14 @@ class PropertyListFragment : Fragment() {
     ): View? {
         binding = FragmentPropertyListBinding.inflate(inflater, container, false)
         // Configure the adapter
-        adapter = PropertyListAdapter(object : DiffUtil.ItemCallback<PropertyEntity>() {
-            override fun areItemsTheSame(oldItem: PropertyEntity, newItem: PropertyEntity): Boolean {
-                return oldItem.id == newItem.id
+        adapter = PropertyListAdapter(object : DiffUtil.ItemCallback<PropertyWithDetails>() {
+            override fun areItemsTheSame(oldItem: PropertyWithDetails, newItem: PropertyWithDetails): Boolean {
+                return oldItem.property.id == newItem.property.id
             }
-            override fun areContentsTheSame(oldItem: PropertyEntity, newItem: PropertyEntity): Boolean {
-                return oldItem == newItem
+            override fun areContentsTheSame(oldItem: PropertyWithDetails, newItem: PropertyWithDetails): Boolean {
+                return oldItem.property == newItem.property &&
+                        oldItem.address == newItem.address &&
+                        oldItem.proximity == newItem.proximity
             }
         })
         // Set the layout manager for the recyclerView
@@ -49,11 +54,9 @@ class PropertyListFragment : Fragment() {
     }
 
     private fun configureRecyclerView() {
-        propertyListViewModel.allProperties.observe(viewLifecycleOwner) { properties ->
-            adapter.submitList(properties)
-        }
-        propertyListViewModel.allAddresses.observe(viewLifecycleOwner) { addresses ->
-            adapter.submitList(addresses)
+        // Observe the combined data from the ViewModel
+        propertyListViewModel.propertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
+            adapter.submitList(propertiesWithDetails)
         }
     }
 }

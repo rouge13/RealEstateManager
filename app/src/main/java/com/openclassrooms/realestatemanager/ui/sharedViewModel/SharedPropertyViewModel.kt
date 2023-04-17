@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.sharedViewModel
 
 import androidx.lifecycle.*
+import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.data.model.ProximityEntity
@@ -25,4 +26,61 @@ class SharedPropertyViewModel(
     // Get all the proximity from the database
     val allProximity: LiveData<List<ProximityEntity>> =
         proximityRepository.allProximity.asLiveData()
+
+    // Create a LiveData for the combined data
+    val propertiesWithDetails: LiveData<List<PropertyWithDetails>> = MediatorLiveData<List<PropertyWithDetails>>().apply {
+        addSource(allProperties) { properties ->
+            combinePropertiesWithDetails(properties, allAddresses.value, allProximity.value)?.let {
+                value = it
+            }
+        }
+        addSource(allAddresses) { addresses ->
+            combinePropertiesWithDetails(allProperties.value, addresses, allProximity.value)?.let {
+                value = it
+            }
+        }
+        addSource(allProximity) { proximity ->
+            combinePropertiesWithDetails(allProperties.value, allAddresses.value, proximity)?.let {
+                value = it
+            }
+        }
+    }
+
+//    private fun combinePropertiesWithDetails(
+//        properties: List<PropertyEntity>?,
+//        addresses: List<AddressEntity>?,
+//        proximity: List<ProximityEntity>?
+//    ): List<PropertyWithDetails>? {
+//        if (properties == null || addresses == null || proximity == null) {
+//            return null
+//        }
+//
+//        return properties.map { property ->
+//            val address = addresses.find { it.propertyId == property.id }
+//            val proximityItem = proximity.find { it.propertyId == property.id }
+//            PropertyWithDetails(property, address ?: AddressEntity(), proximityItem ?: ProximityEntity())
+//        }
+//    }
+
+    private fun combinePropertiesWithDetails(
+        properties: List<PropertyEntity>?,
+        addresses: List<AddressEntity>?,
+        proximity: List<ProximityEntity>?
+    ): List<PropertyWithDetails>? {
+        if (properties == null || addresses == null || proximity == null) {
+            return null
+        }
+
+        val combinedData = properties.map { property ->
+            val address = addresses.find { it.propertyId == property.id }
+            val proximityItem = proximity.find { it.propertyId == property.id }
+            PropertyWithDetails(property, address ?: AddressEntity(), proximityItem ?: ProximityEntity())
+        }
+
+        combinedData.forEach { propertyWithDetails ->
+            println("Property ID: ${propertyWithDetails.property.id}, Borough: ${propertyWithDetails.address.boroughs}")
+        }
+
+        return combinedData
+    }
 }
