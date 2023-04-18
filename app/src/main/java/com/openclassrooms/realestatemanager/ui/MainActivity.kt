@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ViewModelFactory((application as MainApplication).agentRepository,
             (application as MainApplication).propertyRepository,
             (application as MainApplication).addressRepository,
-            (application as MainApplication).proximityRepository)
+            (application as MainApplication).proximityRepository,
+            (application as MainApplication).photoRepository)
     }
 //    private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
 //        ViewModelFactory((application as MainApplication).agentRepository, (application as MainApplication).propertyRepository)

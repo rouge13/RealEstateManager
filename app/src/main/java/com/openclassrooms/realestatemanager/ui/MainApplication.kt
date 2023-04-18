@@ -6,6 +6,7 @@ import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.data.repository.ProximityRepository
+import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -34,5 +35,10 @@ class MainApplication : Application() {
     // Initialize the proximityRepository
     val proximityRepository by lazy {
         ProximityRepository(database.proximityDao())
+    }
+
+    // Initialize the photoRepository
+    val photoRepository by lazy {
+        PhotoRepository(database.photoDao())
     }
 }

@@ -33,4 +33,23 @@
     <!-- BOTTOM NAVIGATION VIEW -->
     <string name="bottom_navigation_menu_map_view">Map View</string>
     <string name="bottom_navigation_menu_list_view">List View</string>
+    <string name="image_title">Bathroom / Bedroom / Living Room</string>
+    <string name="media_title">Media :</string>
+    <string name="date">Selling date : 04/18/2023</string>
+    <string name="description_title">Description :</string>
+    <string name="description_text">A flat, also known as an apartment, is a self-contained housing unit that occupies only part of a building. In the United States, flats are typically rented rather than owned, although it is possible to buy a flat in some areas. Flats can vary in size and layout, but they generally include a living area, one or more bedrooms, a bathroom, and a kitchen. Some flats may also have additional amenities, such as a balcony, a laundry room, or a swimming pool. The cost of renting a flat in the US can vary widely depending on the location, size, and quality of the unit.\n</string>
+    <string name="number_of_rooms_title">Number of Rooms :</string>
+    <string name="square_feet_title">Square Feet :</string>
+    <string name="square_feet_text">750 sq m²</string>
+    <string name="number_of_rooms_text">8</string>
+    <string name="number_of_bathrooms_title">Number of bathrooms :</string>
+    <string name="number_of_bathrooms_text">2</string>
+    <string name="number_of_bedrooms_title">Number of Bedrooms :</string>
+    <string name="number_of_bedrooms_text">4</string>
+    <string name="location_title">Location :</string>
+    <string name="location_line1">740 Park Avenue</string>
+    <string name="location_line2">Apt 6/7A</string>
+    <string name="location_line3">New York</string>
+    <string name="location_line4">NY 10021</string>
+    <string name="location_line5">United States</string>
 </resources>

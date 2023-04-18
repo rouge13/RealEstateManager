@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.data.database
 
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
+import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.data.model.ProximityEntity
 
@@ -10,6 +11,20 @@ import com.openclassrooms.realestatemanager.data.model.ProximityEntity
  */
 class FixturesDatas {
     companion object {
+
+        val PROPERTY_PHOTO_LIST = listOf(
+            PhotoEntity(1, "ic_panel_pict_1", 1),
+            PhotoEntity(2, "ic_bathroom_2", 2),
+            PhotoEntity(3, "ic_bathroom_3", 3),
+            PhotoEntity(4, "ic_bathroom_1", 4),
+            PhotoEntity(5, "ic_bedroom_1", 5),
+            PhotoEntity(5, "ic_bedroom_2", 5),
+            PhotoEntity(5, "ic_living_room_1", 5),
+            PhotoEntity(5, "ic_living_room_2", 6),
+            PhotoEntity(5, "ic_living_room_3", 2),
+            PhotoEntity(6, "ic_living_room_1", 6)
+        )
+
         val AGENT_LIST = listOf(
             AgentEntity(1, "Julien", "Hammer", "jhammer@gmail.com", "ic_agent_1", "1234"),
             AgentEntity(2, "Carl", "Smith", "csmith@gmail.com", "ic_agent_2jha", "1234")
