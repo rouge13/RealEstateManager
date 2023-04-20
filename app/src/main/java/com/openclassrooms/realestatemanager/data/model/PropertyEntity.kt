@@ -40,6 +40,11 @@ data class PropertyEntity(
     var dateSold: String,
     var agentId: Int,
     var primaryPhoto: String,
+    val schoolProximity: Boolean? = false,
+    val parkProximity: Boolean? = false,
+    val shoppingProximity: Boolean? = false,
+    val restaurantProximity: Boolean? = false,
+    val publicTransportProximity: Boolean? = false,
     var lastUpdate: Long = System.currentTimeMillis()
 ) {
 

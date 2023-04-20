@@ -31,6 +31,7 @@ import com.openclassrooms.realestatemanager.ui.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragment
 import com.openclassrooms.realestatemanager.ui.register.RegisterFragmentListener
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 
 
 /**
@@ -44,15 +45,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var navigationView: NavigationView
     private val REQUEST_IMAGE_CAPTURE = 1
     private val sharedAgentViewModel: SharedAgentViewModel by viewModels {
-        ViewModelFactory((application as MainApplication).agentRepository,
+        ViewModelFactory(
+            (application as MainApplication).agentRepository,
             (application as MainApplication).propertyRepository,
             (application as MainApplication).addressRepository,
-            (application as MainApplication).proximityRepository,
-            (application as MainApplication).photoRepository)
+            (application as MainApplication).photoRepository
+        )
     }
-//    private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
-//        ViewModelFactory((application as MainApplication).agentRepository, (application as MainApplication).propertyRepository)
-//    }
+    private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
+        ViewModelFactory(
+            (application as MainApplication).agentRepository,
+            (application as MainApplication).propertyRepository,
+            (application as MainApplication).addressRepository,
+            (application as MainApplication).photoRepository
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -66,7 +74,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Loat the initial fragment into the fragment container
         loadInitialFragment()
         // Get the header view and bind it to the activityMainNavHeaderBinding
-        activityMainNavHeaderBinding = ActivityMainNavHeaderBinding.bind(navigationView.getHeaderView(0))
+        activityMainNavHeaderBinding =
+            ActivityMainNavHeaderBinding.bind(navigationView.getHeaderView(0))
         // Observe the loged agent to update the UI
         observeLogedAgent()
     }
@@ -125,6 +134,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             this.resources.getIdentifier("ic_must_be_connected", "drawable", this.packageName)
         )
     }
+
     private fun showTheLogOut() {
         navigationView.menu.findItem(R.id.nav_login).isVisible = false
         navigationView.menu.findItem(R.id.nav_logout).isVisible = true
@@ -149,10 +159,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     activityMainBinding.viewPager.currentItem = 0
                     true
                 }
+
                 R.id.map_fragment -> {
                     activityMainBinding.viewPager.currentItem = 1
                     true
                 }
+
                 else -> false
             }
         }
@@ -298,7 +310,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun showTheGoodFrameLayout(
         loginContainerShow: Boolean = false,
         registerContainerShow: Boolean = false,
-        fragmentPropertyListShow: Boolean = false) {
+        fragmentPropertyListShow: Boolean = false
+    ) {
         when (loginContainerShow) {
             true -> activityMainBinding.loginContainer.visibility = View.VISIBLE
             false -> activityMainBinding.loginContainer.visibility = View.GONE

@@ -24,7 +24,7 @@ class PropertyListFragment : Fragment() {
         ViewModelFactory((requireActivity().application as MainApplication).agentRepository,
             (requireActivity().application as MainApplication).propertyRepository,
             (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).proximityRepository)
+            (requireActivity().application as MainApplication).photoRepository)
     }
 
     override fun onCreateView(
@@ -41,7 +41,7 @@ class PropertyListFragment : Fragment() {
             override fun areContentsTheSame(oldItem: PropertyWithDetails, newItem: PropertyWithDetails): Boolean {
                 return oldItem.property == newItem.property &&
                         oldItem.address == newItem.address &&
-                        oldItem.proximity == newItem.proximity
+                        oldItem.photo == newItem.photo
             }
         })
         // Set the layout manager for the recyclerView

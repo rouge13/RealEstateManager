@@ -2,12 +2,17 @@ package com.openclassrooms.realestatemanager.ui.property_list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
+import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
@@ -15,6 +20,7 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
     : ListAdapter<PropertyWithDetails, PropertyListAdapter.PropertyViewHolder>(diffCallback) {
 
     class PropertyViewHolder(private val binding: ItemPropertyBinding) : RecyclerView.ViewHolder(binding.root) {
+
         fun bind(get: PropertyWithDetails) {
             // Set the data to the view
             binding.propertyType.text = get.property.typeOfHouse

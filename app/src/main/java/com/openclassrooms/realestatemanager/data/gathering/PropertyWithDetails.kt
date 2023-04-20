@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.data.gathering
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
-import com.openclassrooms.realestatemanager.data.model.ProximityEntity
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -11,6 +10,5 @@ import com.openclassrooms.realestatemanager.data.model.ProximityEntity
 data class PropertyWithDetails(
     val property: PropertyEntity,
     val address: AddressEntity,
-    val proximity: ProximityEntity,
     val photo: PhotoEntity
 )

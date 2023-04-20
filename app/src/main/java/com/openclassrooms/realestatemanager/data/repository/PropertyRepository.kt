@@ -14,13 +14,9 @@ import kotlinx.coroutines.launch
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class PropertyRepository(private val propertyDao: PropertyDao) {
-    private val ioScope = CoroutineScope(Dispatchers.IO)
     // Get all the properties from the database
     val allProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
-
-    fun insert(property: PropertyEntity) {
-        ioScope.launch {
-            propertyDao.insert(property)
-        }
+    suspend fun insert(property: PropertyEntity) {
+        propertyDao.insert(property)
     }
 }

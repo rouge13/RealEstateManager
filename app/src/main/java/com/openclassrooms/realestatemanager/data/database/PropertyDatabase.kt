@@ -8,14 +8,9 @@ import com.openclassrooms.realestatemanager.data.dao.AddressDao
 import com.openclassrooms.realestatemanager.data.dao.AgentDao
 import com.openclassrooms.realestatemanager.data.dao.PhotoDao
 import com.openclassrooms.realestatemanager.data.dao.PropertyDao
-import com.openclassrooms.realestatemanager.data.dao.ProximityDao
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
-import com.openclassrooms.realestatemanager.data.model.ProximityEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 /**

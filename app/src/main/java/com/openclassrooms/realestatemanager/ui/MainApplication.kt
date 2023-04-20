@@ -5,7 +5,6 @@ import com.openclassrooms.realestatemanager.data.database.PropertyDatabase
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
-import com.openclassrooms.realestatemanager.data.repository.ProximityRepository
 import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 
 /**
@@ -30,11 +29,6 @@ class MainApplication : Application() {
     // Initialize the addressRepository
     val addressRepository by lazy {
         AddressRepository(database.addressDao())
-    }
-
-    // Initialize the proximityRepository
-    val proximityRepository by lazy {
-        ProximityRepository(database.proximityDao())
     }
 
     // Initialize the photoRepository

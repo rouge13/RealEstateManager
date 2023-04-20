@@ -17,7 +17,7 @@ interface AddressDao {
     fun getAllAddress(): Flow<List<AddressEntity>>
     // Insert Address
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(address: AddressEntity)
+    suspend fun insert(address: AddressEntity)
     // Get Address related to a property
     @Query("SELECT * FROM address WHERE id = :propertyId")
     fun getAddressRelatedToASpecificProperty(propertyId: Int): AddressEntity?

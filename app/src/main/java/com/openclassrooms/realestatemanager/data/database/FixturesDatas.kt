@@ -4,7 +4,6 @@ import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
-import com.openclassrooms.realestatemanager.data.model.ProximityEntity
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -28,15 +27,6 @@ class FixturesDatas {
         val AGENT_LIST = listOf(
             AgentEntity(1, "Julien", "Hammer", "jhammer@gmail.com", "ic_agent_1", "1234"),
             AgentEntity(2, "Carl", "Smith", "csmith@gmail.com", "ic_agent_2jha", "1234")
-        )
-
-        val PROPERTY_PROXIMITY_LIST = listOf(
-            ProximityEntity(1, true, true, true, true, true, 1),
-            ProximityEntity(2, false, false, false, false, false, 2),
-            ProximityEntity(3, false, true, false, false, true, 3),
-            ProximityEntity(4, false, false, true, false, false, 4),
-            ProximityEntity(5, false, true, false, true, false, 5),
-            ProximityEntity(6, true, false, false, true, true, 6)
         )
 
         val PROPERTY_ADDRESS_LIST = listOf(
@@ -63,6 +53,11 @@ class FixturesDatas {
                 "",
                 1,
                 "ic_flat_house1",
+                false,
+                true,
+                false,
+                true,
+                false,
                 1681057947516
             ),
             PropertyEntity(
@@ -79,6 +74,11 @@ class FixturesDatas {
                 "",
                 2,
                 "ic_house_classic1",
+                true,
+                true,
+                true,
+                true,
+                true,
                 1681058041885
             ),
             PropertyEntity(
@@ -95,6 +95,11 @@ class FixturesDatas {
                 "",
                 1,
                 "ic_duplex_house1",
+                false,
+                false,
+                false,
+                false,
+                false,
                 1681058941044
             ),
             PropertyEntity(
@@ -111,6 +116,11 @@ class FixturesDatas {
                 "",
                 2,
                 "ic_penthouse_house1",
+                false,
+                true,
+                false,
+                false,
+                true,
                 1681058511034
             ),
             PropertyEntity(
@@ -127,6 +137,11 @@ class FixturesDatas {
                 "",
                 1,
                 "ic_house_classic2",
+                false,
+                false,
+                true,
+                false,
+                false,
                 1681058041885
             ),
             PropertyEntity(
@@ -143,6 +158,11 @@ class FixturesDatas {
                 "",
                 1,
                 "ic_house_classic3",
+                true,
+                false,
+                false,
+                true,
+                true,
                 1681058918711
             )
         )

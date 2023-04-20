@@ -11,14 +11,10 @@ import kotlinx.coroutines.launch
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class AddressRepository(private val addressDao: AddressDao) {
-    private val ioScope = CoroutineScope(Dispatchers.IO)
     // Get all the propertiesAddress from the database
     val allAddress: Flow<List<AddressEntity>> = addressDao.getAllAddress()
-
     // Insert Address
-    fun insert(address: AddressEntity) {
-        ioScope.launch {
+    suspend fun insert(address: AddressEntity) {
             addressDao.insert(address)
-        }
     }
 }

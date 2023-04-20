@@ -10,15 +10,11 @@ import kotlinx.coroutines.launch
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class PhotoRepositoy(private val photoDao: PhotoDao) {
-    private val ioScope = CoroutineScope(Dispatchers.IO)
+class PhotoRepository(private val photoDao: PhotoDao) {
     // Get all the propertiesPhoto from the database
     val allPhoto: Flow<List<PhotoEntity>> = photoDao.getAllPhotos()
-
     // Insert Photo
-    fun insert(photo: PhotoEntity) {
-        ioScope.launch {
+    suspend fun insert(photo: PhotoEntity) {
             photoDao.insert(photo)
-        }
     }
 }

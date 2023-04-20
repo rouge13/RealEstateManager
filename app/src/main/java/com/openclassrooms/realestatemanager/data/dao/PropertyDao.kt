@@ -16,7 +16,7 @@ interface PropertyDao {
     @Query("SELECT * FROM property ORDER BY id ASC")
     fun getAllProperties(): Flow<List<PropertyEntity>>
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(property: PropertyEntity)
+    suspend fun insert(property: PropertyEntity)
 
 
 }

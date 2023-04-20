@@ -22,5 +22,5 @@ interface PhotoDao {
 
     // Insert photo
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(photo: PhotoEntity)
+    suspend fun insert(photo: PhotoEntity)
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.databinding.FragmentRegisterBinding
@@ -29,7 +30,7 @@ class RegisterFragment : Fragment() {
             (requireActivity().application as MainApplication).agentRepository,
             (requireActivity().application as MainApplication).propertyRepository,
             (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).proximityRepository
+            (requireActivity().application as MainApplication).photoRepository
         )
     }
 
@@ -37,6 +38,7 @@ class RegisterFragment : Fragment() {
         const val REGISTER_SUCCESS = "Register success."
         const val REGISTER_MISSING_FIELDS = "Please fill all fields."
         const val REGISTER_FAILED = "Register failed. Wrong password !"
+        const val EMAIL_ALREADY_EXISTS = "Email already exists."
     }
 
     override fun onAttach(context: Context) {
@@ -72,24 +74,7 @@ class RegisterFragment : Fragment() {
             val passwordConfirm = binding.registerPasswordConfirm.text.toString()
             if (lastName.isNotEmpty() && firstName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && passwordConfirm.isNotEmpty()) {
                 if (password == passwordConfirm) {
-                    // Insert the new agent in the database
-                    val agent = AgentEntity(
-                        id = null,
-                        firstName = firstName,
-                        lastName = lastName,
-                        email = email,
-                        password = password
-                    )
-                    // Insert the new agent in the database
-                    CoroutineScope(Dispatchers.IO).launch {
-                        viewModel.insertAgent(agent).also {
-                            viewModel.setLogedAgent(agent)
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show()
-                                registerFragmentListener?.onRegisterSuccess()
-                            }
-                        }
-                    }
+                    createAgentAccountIfTheEmailDoenstAlreadyExists(email, firstName, lastName, password)
                 } else {
                     Toast.makeText(context, REGISTER_FAILED, Toast.LENGTH_SHORT).show()
                 }
@@ -101,5 +86,32 @@ class RegisterFragment : Fragment() {
             registerFragmentListener?.onRegisterCancel()
         }
     }
+
+    private fun createAgentAccountIfTheEmailDoenstAlreadyExists(
+        email: String,
+        firstName: String,
+        lastName: String,
+        password: String
+    ) {
+        viewModel.viewModelScope.launch {
+            val existingAgent = viewModel.getAgentByEmail(email)
+            if (existingAgent == null) {
+                // Email is not in the database, proceed with registration
+                val agent = AgentEntity(id = null, firstName = firstName, lastName = lastName, email = email, password = password)
+                viewModel.insertAgent(agent)
+                viewModel.setLogedAgent(agent)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show()
+                    registerFragmentListener?.onRegisterSuccess()
+                }
+            } else {
+                // Email is already in the database, show an error message
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, EMAIL_ALREADY_EXISTS, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
 
 }

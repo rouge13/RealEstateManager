@@ -12,19 +12,19 @@ import kotlinx.coroutines.launch
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class AgentRepository(private val agentDao: AgentDao) {
-    private val ioScope = CoroutineScope(Dispatchers.IO)
-
     // get all the agents from the database
     val allAgents: Flow<List<AgentEntity>> = agentDao.getAllAgents()
     // insert an agent in the database
-    fun insert(agent: AgentEntity) {
-        ioScope.launch {
+    suspend fun insert(agent: AgentEntity) {
             agentDao.insert(agent)
-        }
     }
     // get agent by email and password
     fun agentData(email: String, password: String): Flow<AgentEntity> {
         return agentDao.getAgentDataToConnect(email, password)
+    }
+    // Check if the email is already used
+    suspend fun getAgentByEmail(email: String): AgentEntity? {
+        return agentDao.getAgentByEmail(email)
     }
 
 }

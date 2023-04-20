@@ -5,11 +5,9 @@ import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
-import com.openclassrooms.realestatemanager.data.model.ProximityEntity
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
-import com.openclassrooms.realestatemanager.data.repository.PhotoRepositoy
+import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
-import com.openclassrooms.realestatemanager.data.repository.ProximityRepository
 import kotlinx.coroutines.launch
 
 /**
@@ -18,8 +16,7 @@ import kotlinx.coroutines.launch
 class SharedPropertyViewModel(
     private val propertyRepository: PropertyRepository,
     private val addressRepository: AddressRepository,
-    private val proximityRepository: ProximityRepository,
-    private val photoRepositoy: PhotoRepositoy
+    private val photoRepositoy: PhotoRepository
 ) : ViewModel() {
     // Get all the properties from the database
     val allProperties: LiveData<List<PropertyEntity>> =
@@ -27,9 +24,6 @@ class SharedPropertyViewModel(
     // Get all the addresses from the database
     val allAddresses: LiveData<List<AddressEntity>> =
         addressRepository.allAddress.asLiveData()
-    // Get all the proximity from the database
-    val allProximity: LiveData<List<ProximityEntity>> =
-        proximityRepository.allProximity.asLiveData()
     // Get all the photos from the database
     val allPhotos: LiveData<List<PhotoEntity>> =
         photoRepositoy.allPhoto.asLiveData()
@@ -38,7 +32,7 @@ class SharedPropertyViewModel(
     val propertiesWithDetails: MediatorLiveData<List<PropertyWithDetails>> = MediatorLiveData<List<PropertyWithDetails>>().apply {
         fun updateCombinedData() {
             viewModelScope.launch {
-                val combinedData = combinePropertiesWithDetails(allProperties.value, allAddresses.value, allProximity.value, allPhotos.value)
+                val combinedData = combinePropertiesWithDetails(allProperties.value, allAddresses.value, allPhotos.value)
                 postValue(combinedData)
             }
         }
@@ -46,9 +40,6 @@ class SharedPropertyViewModel(
             updateCombinedData()
         }
         addSource(allAddresses) { _ ->
-            updateCombinedData()
-        }
-        addSource(allProximity) { _ ->
             updateCombinedData()
         }
         addSource(allPhotos) { _ ->
@@ -59,18 +50,16 @@ class SharedPropertyViewModel(
     private suspend fun combinePropertiesWithDetails(
         properties: List<PropertyEntity>?,
         addresses: List<AddressEntity>?,
-        proximity: List<ProximityEntity>?,
         photo: List<PhotoEntity>?
     ): List<PropertyWithDetails>? {
-        if (properties == null || addresses == null || proximity == null || photo == null) {
+        if (properties == null || addresses == null || photo == null) {
             return null
         }
 
         val combinedData = properties.map { property ->
             val address = addresses.find { it.propertyId == property.id }
-            val proximityItem = proximity.find { it.propertyId == property.id }
             val photoItem = photo.find { it.propertyId == property.id }
-            PropertyWithDetails(property, address ?: AddressEntity(), proximityItem ?: ProximityEntity(), photoItem ?: PhotoEntity())
+            PropertyWithDetails(property, address ?: AddressEntity(),  photoItem ?: PhotoEntity())
         }
         return combinedData
     }

@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository
-import com.openclassrooms.realestatemanager.data.repository.PhotoRepositoy
+import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
-import com.openclassrooms.realestatemanager.data.repository.ProximityRepository
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 
@@ -17,8 +16,7 @@ class ViewModelFactory(
     private val agentRepository: AgentRepository,
     private val propertyRepository: PropertyRepository,
     private val addressRepository: AddressRepository,
-    private val proximityRepository: ProximityRepository,
-    private val photoRepositoy: PhotoRepositoy
+    private val photoRepositoy: PhotoRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SharedAgentViewModel::class.java)) {
@@ -29,7 +27,6 @@ class ViewModelFactory(
             return SharedPropertyViewModel(
                 propertyRepository,
                 addressRepository,
-                proximityRepository,
                 photoRepositoy
             ) as T
         }

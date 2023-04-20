@@ -14,16 +14,13 @@ import kotlinx.coroutines.launch
  */
 class SharedAgentViewModel(private val repository: AgentRepository) : ViewModel() {
     val allAgents: LiveData<List<AgentEntity>> = repository.allAgents.asLiveData()
-
     // Mutable LiveData to get the agent by email and password
     private var logedAgentMutableLiveData = MutableLiveData<AgentEntity?>()
     val logedAgent: LiveData<AgentEntity?> get() = logedAgentMutableLiveData
-
     // Function to get agent by email and password
     fun agentData(email: String, password: String): LiveData<AgentEntity> {
         return repository.agentData(email, password).asLiveData()
     }
-
     fun setLogedAgent(agent: AgentEntity?) {
         viewModelScope.launch {
             if (agent != null) {
@@ -33,10 +30,12 @@ class SharedAgentViewModel(private val repository: AgentRepository) : ViewModel(
             }
         }
     }
-
-    fun insertAgent(agent: AgentEntity) {
-        viewModelScope.launch {
+    // Insert agent
+    suspend fun insertAgent(agent: AgentEntity) {
             repository.insert(agent)
-        }
+    }
+    // Check if the agent exist by email
+    suspend fun getAgentByEmail(email: String): AgentEntity? {
+        return repository.getAgentByEmail(email)
     }
 }
