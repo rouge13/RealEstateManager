@@ -1,13 +1,16 @@
 package com.openclassrooms.realestatemanager.data.model
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
+@Parcelize
 @Entity(
     tableName = "address", foreignKeys = [
         ForeignKey(
@@ -30,5 +33,5 @@ data class AddressEntity(
     val longitude: Double? = 0.0,
     @ColumnInfo(name = "propertyId", index = true)
     val propertyId: Int? = null
-) {
+) : Parcelable {
 }

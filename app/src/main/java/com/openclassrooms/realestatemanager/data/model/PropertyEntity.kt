@@ -1,8 +1,10 @@
 package com.openclassrooms.realestatemanager.data.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -10,6 +12,7 @@ import java.util.*
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 // Make the PropertyEntity a Room entity
+@Parcelize
 @Entity(
     tableName = "property",
     foreignKeys = [
@@ -37,7 +40,7 @@ data class PropertyEntity(
         "yyyy/MM/dd",
         Locale.US
     ).format(Calendar.getInstance().time),
-    var dateSold: String,
+    var dateSold: String? = null,
     var agentId: Int,
     var primaryPhoto: String,
     val schoolProximity: Boolean? = false,
@@ -46,6 +49,6 @@ data class PropertyEntity(
     val restaurantProximity: Boolean? = false,
     val publicTransportProximity: Boolean? = false,
     var lastUpdate: Long = System.currentTimeMillis()
-) {
+) : Parcelable {
 
 }

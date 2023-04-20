@@ -8,29 +8,32 @@ import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class ViewModelFactory(
-    private val agentRepository: AgentRepository,
-    private val propertyRepository: PropertyRepository,
-    private val addressRepository: AddressRepository,
-    private val photoRepositoy: PhotoRepository
+    private val agentRepository: AgentRepository?,
+    private val propertyRepository: PropertyRepository?,
+    private val addressRepository: AddressRepository?,
+    private val photoRepository: PhotoRepository?
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SharedAgentViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SharedAgentViewModel(agentRepository) as T
+            return SharedAgentViewModel(agentRepository!!) as T
         } else if (modelClass.isAssignableFrom(SharedPropertyViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return SharedPropertyViewModel(
-                propertyRepository,
-                addressRepository,
-                photoRepositoy
+                propertyRepository!!,
+                addressRepository!!,
+                photoRepository!!
             ) as T
+        } else if (modelClass.isAssignableFrom(InitializationViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return InitializationViewModel() as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
-
 }

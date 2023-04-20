@@ -16,18 +16,22 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyVie
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetails>)
+class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetails>, private val onPropertyClick: (PropertyWithDetails) -> Unit)
     : ListAdapter<PropertyWithDetails, PropertyListAdapter.PropertyViewHolder>(diffCallback) {
 
     class PropertyViewHolder(private val binding: ItemPropertyBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(get: PropertyWithDetails) {
+        fun bind(get: PropertyWithDetails, onPropertyClick: (PropertyWithDetails) -> Unit) {
             // Set the data to the view
             binding.propertyType.text = get.property.typeOfHouse
             binding.propertySector.text = get.address.boroughs?.takeIf { it.isNotBlank() } ?: "N/A"
             "$${get.property.price}".also { binding.propertyValue.text = it }
             // Set the image to the view
             setImageInRecyclerView(get.property)
+            // Set the onClickListener
+            itemView.setOnClickListener {
+                onPropertyClick(get)
+            }
         }
 
         private fun setImageInRecyclerView(get: PropertyEntity) {
@@ -46,7 +50,7 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
 
     override fun onBindViewHolder(holder: PropertyViewHolder, position: Int) {
         val propertyWithDetails = getItem(position)
-        holder.bind(propertyWithDetails)
+        holder.bind(propertyWithDetails, onPropertyClick)
     }
 }
 

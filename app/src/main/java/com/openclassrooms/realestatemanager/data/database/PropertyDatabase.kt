@@ -10,25 +10,31 @@ import com.openclassrooms.realestatemanager.data.dao.PhotoDao
 import com.openclassrooms.realestatemanager.data.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
+import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-@Database(entities = [PropertyEntity::class, AgentEntity::class, AddressEntity::class, ProximityEntity::class], version = 9, exportSchema = false)
+@Database(
+    entities = [PropertyEntity::class, AgentEntity::class, AddressEntity::class, PhotoEntity::class],
+    version = 10,
+    exportSchema = false
+)
 abstract class PropertyDatabase : RoomDatabase() {
     abstract fun propertyDao(): PropertyDao
     abstract fun agentDao(): AgentDao
     abstract fun addressDao(): AddressDao
-    abstract fun proximityDao(): ProximityDao
     abstract fun photoDao(): PhotoDao
 
     companion object {
         @Volatile
         private var INSTANCE: PropertyDatabase? = null
 
-        fun getDatabase(context: Context): PropertyDatabase {
+        suspend fun getDatabase(context: Context): PropertyDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
@@ -38,16 +44,25 @@ abstract class PropertyDatabase : RoomDatabase() {
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
-
-                // Prepopulate the database directly after building the instance
-                Executors.newSingleThreadExecutor().execute {
-                    prepopulateDatabase(instance.propertyDao(), instance.agentDao(), instance.addressDao(), instance.proximityDao(), instance.photoDao())
-                }
                 instance
+            }.also { instance ->
+                withContext(Dispatchers.IO) {
+                    prepopulateDatabase(
+                        instance.propertyDao(),
+                        instance.agentDao(),
+                        instance.addressDao(),
+                        instance.photoDao()
+                    )
+                }
             }
         }
 
-        private fun prepopulateDatabase(propertyDao: PropertyDao, agentDao: AgentDao, addressDao: AddressDao, proximityDao: ProximityDao, photoDao: PhotoDao) {
+        private suspend fun prepopulateDatabase(
+            propertyDao: PropertyDao,
+            agentDao: AgentDao,
+            addressDao: AddressDao,
+            photoDao: PhotoDao
+        ) {
             // Add agents
             FixturesDatas.AGENT_LIST.forEach { agent ->
                 agentDao.insert(agent)
@@ -59,10 +74,6 @@ abstract class PropertyDatabase : RoomDatabase() {
             // Add addresses
             FixturesDatas.PROPERTY_ADDRESS_LIST.forEach { address ->
                 addressDao.insert(address)
-            }
-            // Add proximities
-            FixturesDatas.PROPERTY_PROXIMITY_LIST.forEach { proximity ->
-                proximityDao.insert(proximity)
             }
             // Add photos
             FixturesDatas.PROPERTY_PHOTO_LIST.forEach { photo ->

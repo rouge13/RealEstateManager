@@ -18,16 +18,18 @@ class SharedPropertyViewModel(
     private val addressRepository: AddressRepository,
     private val photoRepositoy: PhotoRepository
 ) : ViewModel() {
+    // Get selected property
+    private val _selectedProperty = MutableLiveData<PropertyWithDetails>()
+    val selectedProperty: LiveData<PropertyWithDetails> get() = _selectedProperty
+    fun selectProperty(property: PropertyWithDetails) {
+        _selectedProperty.value = property
+    }
     // Get all the properties from the database
-    val allProperties: LiveData<List<PropertyEntity>> =
-        propertyRepository.allProperties.asLiveData()
+    val allProperties: LiveData<List<PropertyEntity>> = propertyRepository.allProperties.asLiveData()
     // Get all the addresses from the database
-    val allAddresses: LiveData<List<AddressEntity>> =
-        addressRepository.allAddress.asLiveData()
+    val allAddresses: LiveData<List<AddressEntity>> = addressRepository.allAddress.asLiveData()
     // Get all the photos from the database
-    val allPhotos: LiveData<List<PhotoEntity>> =
-        photoRepositoy.allPhoto.asLiveData()
-
+    val allPhotos: LiveData<List<PhotoEntity>> = photoRepositoy.allPhoto.asLiveData()
     // Create a LiveData for the combined data
     val propertiesWithDetails: MediatorLiveData<List<PropertyWithDetails>> = MediatorLiveData<List<PropertyWithDetails>>().apply {
         fun updateCombinedData() {
@@ -63,4 +65,6 @@ class SharedPropertyViewModel(
         }
         return combinedData
     }
+
+
 }

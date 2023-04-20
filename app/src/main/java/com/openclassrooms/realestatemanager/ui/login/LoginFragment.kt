@@ -32,24 +32,7 @@ class LoginFragment : Fragment() {
         const val LOGIN_MISSING_FIELDS = "Please fill all fields."
         const val LOGIN_FAILED = "Login failed. Wrong email or password !"
     }
-
-    private var loginFragmentListener: LoginFragmentListener? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is LoginFragmentListener) {
-            loginFragmentListener = context
-        } else {
-            throw RuntimeException("$context must implement LoginFragmentListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        loginFragmentListener = null
-    }
-
-
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

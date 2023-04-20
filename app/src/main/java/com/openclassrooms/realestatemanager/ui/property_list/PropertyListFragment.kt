@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentPropertyListBinding
@@ -43,6 +45,8 @@ class PropertyListFragment : Fragment() {
                         oldItem.address == newItem.address &&
                         oldItem.photo == newItem.photo
             }
+        }, onPropertyClick = { propertyWithDetails ->
+            navigateToInfoPropertyFragment(propertyWithDetails)
         })
         // Set the layout manager for the recyclerView
         binding.fragmentPropertyListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -53,10 +57,19 @@ class PropertyListFragment : Fragment() {
         return binding.root
     }
 
+
+
     private fun configureRecyclerView() {
         // Observe the combined data from the ViewModel
         propertyListViewModel.propertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
             adapter.submitList(propertiesWithDetails)
         }
     }
+
+    private fun navigateToInfoPropertyFragment(propertyWithDetails: PropertyWithDetails) {
+        propertyListViewModel.selectProperty(propertyWithDetails)
+        val action = PropertyListFragmentDirections.actionPropertyListFragmentToInfoPropertyFragment(propertyWithDetails)
+        binding.root.findNavController().navigate(action)
+    }
+
 }
