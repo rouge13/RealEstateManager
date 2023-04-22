@@ -74,43 +74,6 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-<!--        &lt;!&ndash; Fragment with RecyclerView &ndash;&gt;-->
-<!--        <FrameLayout-->
-<!--            android:id="@+id/fragment_property_list"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:visibility="gone"-->
-<!--            tools:layout="@layout/fragment_property_list"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/activity_main_toolbar"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"/>-->
-
-        <!-- Fragment with the login container -->
-<!--        <FrameLayout-->
-<!--            android:id="@+id/login_container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:visibility="gone"-->
-<!--            tools:layout="@layout/fragment_login"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/activity_main_toolbar"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"/>-->
-
-        <!-- Fragment with the register container -->
-<!--        <FrameLayout-->
-<!--            android:id="@+id/register_container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:visibility="gone"-->
-<!--            tools:layout="@layout/fragment_register"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/activity_main_toolbar"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            />-->
-
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"

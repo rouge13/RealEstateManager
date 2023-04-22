@@ -17,7 +17,11 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.onNavDestinationSelected
+import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
 
 import com.google.android.material.navigation.NavigationView
@@ -26,10 +30,8 @@ import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.databinding.ActivityMainNavHeaderBinding
 import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragment
-import com.openclassrooms.realestatemanager.ui.login.LoginFragment
 import com.openclassrooms.realestatemanager.ui.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragmentDirections
-import com.openclassrooms.realestatemanager.ui.register.RegisterFragment
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
@@ -38,7 +40,7 @@ import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
+class MainActivity : AppCompatActivity(){
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var activityMainNavHeaderBinding: ActivityMainNavHeaderBinding
     private lateinit var drawerLayout: DrawerLayout
@@ -78,10 +80,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView = activityMainBinding.activityMainNavView
         // Set up the drawer toggle
         setupDrawerButton()
-        // Set up the navigation view from the drawerLayout
-        setupDrawerContent(navigationView)
-        // Loat the initial fragment into the fragment container
-//        loadInitialFragment()
         // Get the header view and bind it to the activityMainNavHeaderBinding
         activityMainNavHeaderBinding =
             ActivityMainNavHeaderBinding.bind(navigationView.getHeaderView(0))
@@ -90,6 +88,49 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Initialize the app using the InitializationViewModel
         initializationViewModel.startInitialization(application as MainApplication)
 
+        // Set up the NavController and connect it to the NavigationView
+        setupNavigationController()
+    }
+
+    private fun setupNavigationController() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        navigationView.setupWithNavController(navController)
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            handleNavigationItemSelected(menuItem, navController)
+        }
+    }
+
+    private fun handleNavigationItemSelected(item: MenuItem, navController: NavController): Boolean {
+        when (item.itemId) {
+            R.id.nav_take_photo -> {
+                dispatchTakePictureIntent()
+                drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
+                return true
+            }
+            R.id.nav_settings -> {
+                startActivity(Intent(Settings.ACTION_SETTINGS))
+                drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
+                return true
+            }
+            R.id.nav_logout -> {
+                logOutActions()
+                return true
+            }
+            R.id.nav_login -> {
+                logInActions()
+                return true
+            }
+            else -> {
+                // Let the NavController handle the other menu items
+                val handled = item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
+                if (handled) {
+                    drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer if an item is handled
+                }
+                return handled
+            }
+        }
     }
 
     private fun observeLogedAgent() {
@@ -200,34 +241,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            // Run camera to take a picture
-            R.id.nav_take_photo -> {
-                dispatchTakePictureIntent()
-            }
-            // Show settings from phone
-            R.id.nav_settings -> {
-                startActivity(Intent(Settings.ACTION_SETTINGS))
-            }
-            // Logout agent from his account
-            R.id.nav_logout -> {
-                logOutActions()
-            }
-            // Login agent to his account
-            R.id.nav_login -> {
-                logInActions()
-            }
-        }
-        drawerLayout = activityMainBinding.activityMainDrawerLayout
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
-
     private fun logInActions() {
         val navController = findNavController(R.id.nav_host_fragment)
         navController.navigate(PropertyListFragmentDirections.actionPropertyListFragmentToLoginFragment())
+        drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
     }
 
     private fun logOutActions() {
@@ -237,10 +254,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
-    }
-
-    private fun setupDrawerContent(navigationView: NavigationView) {
-        navigationView.setNavigationItemSelectedListener(this)
+        drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
     }
 
     private fun setupDrawerButton() {
@@ -261,21 +275,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             super.onBackPressed()
         }
-    }
-
-    private fun showLoginScreen() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.login_container, LoginFragment())
-            .addToBackStack(null)
-            .commit()
-    }
-
-
-    private fun showRegisterScreen() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.register_container, RegisterFragment())
-            .addToBackStack(null)
-            .commit()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

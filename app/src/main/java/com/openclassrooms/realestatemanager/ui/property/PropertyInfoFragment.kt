@@ -12,7 +12,7 @@ import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBind
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class InfoPropertyFragment : Fragment() {
+class PropertyInfoFragment : Fragment() {
     private lateinit var binding: FragmentInfoPropertyBinding
     private val args: InfoPropertyFragmentArgs by navArgs()
     private val propertyWithDetails: PropertyWithDetails? by lazy { args.propertyWithDetails }

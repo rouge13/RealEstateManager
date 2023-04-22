@@ -6,21 +6,25 @@
         android:id="@+id/nav_take_photo"
         android:icon="@drawable/ic_photo_camera_white_24dp"
         android:title="@string/take_photo"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        app:actionLayout="@null"/>
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings_white_24dp"
         android:title="@string/settings"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        app:actionLayout="@null"/>
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout_white_24dp"
         android:title="@string/logout"
         android:visible="false"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        app:actionLayout="@null"/>
     <item
         android:id="@+id/nav_login"
         android:icon="@drawable/ic_login_white_24dp"
         android:title="@string/login"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        app:actionLayout="@null"/>
 </menu>

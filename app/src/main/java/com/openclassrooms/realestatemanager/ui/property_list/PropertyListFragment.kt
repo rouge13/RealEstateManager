@@ -57,8 +57,6 @@ class PropertyListFragment : Fragment() {
         return binding.root
     }
 
-
-
     private fun configureRecyclerView() {
         // Observe the combined data from the ViewModel
         propertyListViewModel.propertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->

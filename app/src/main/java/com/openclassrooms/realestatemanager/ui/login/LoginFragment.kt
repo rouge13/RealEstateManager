@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.ui.login
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +7,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
+
+
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.databinding.FragmentLoginBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragmentDirections
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 
 /**
@@ -32,7 +35,7 @@ class LoginFragment : Fragment() {
         const val LOGIN_MISSING_FIELDS = "Please fill all fields."
         const val LOGIN_FAILED = "Login failed. Wrong email or password !"
     }
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,10 +57,12 @@ class LoginFragment : Fragment() {
             }
         }
         binding.btnCancel.setOnClickListener {
-            loginFragmentListener?.onLoginCancel()
+            val action = LoginFragmentDirections.actionLoginFragmentToPropertyListFragment()
+            binding.root.findNavController().navigate(action)
         }
         binding.signUpBtn.setOnClickListener {
-            loginFragmentListener?.onLoginSignUp()
+            val action = LoginFragmentDirections.actionLoginFragmentToRegisterFragment()
+            binding.root.findNavController().navigate(action)
         }
     }
 
@@ -75,7 +80,8 @@ class LoginFragment : Fragment() {
                 // Set the logged-in agent in the ViewModel
                 viewModel.setLogedAgent(agent)
                 // Notify the listener that the login was successful
-                loginFragmentListener?.onLoginSuccess()
+                val action = LoginFragmentDirections.actionLoginFragmentToPropertyListFragment()
+                binding.root.findNavController().navigate(action)
             } else {
                 Toast.makeText(requireContext(), LOGIN_FAILED, Toast.LENGTH_SHORT)
                     .show()

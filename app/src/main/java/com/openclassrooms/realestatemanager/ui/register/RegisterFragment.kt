@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.findNavController
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.databinding.FragmentRegisterBinding
@@ -24,7 +25,6 @@ import kotlinx.coroutines.withContext
  */
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
-    private var registerFragmentListener: RegisterFragmentListener? = null
     private val viewModel: SharedAgentViewModel by activityViewModels {
         ViewModelFactory(
             (requireActivity().application as MainApplication).agentRepository,
@@ -39,20 +39,6 @@ class RegisterFragment : Fragment() {
         const val REGISTER_MISSING_FIELDS = "Please fill all fields."
         const val REGISTER_FAILED = "Register failed. Wrong password !"
         const val EMAIL_ALREADY_EXISTS = "Email already exists."
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is RegisterFragmentListener) {
-            registerFragmentListener = context
-        } else {
-            throw RuntimeException("$context must implement LoginFragmentListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        registerFragmentListener = null
     }
 
     override fun onCreateView(
@@ -83,7 +69,8 @@ class RegisterFragment : Fragment() {
             }
         }
         binding.btnCancel.setOnClickListener {
-            registerFragmentListener?.onRegisterCancel()
+            val action = RegisterFragmentDirections.actionRegisterFragmentToLoginFragment()
+            binding.root.findNavController().navigate(action)
         }
     }
 
@@ -102,7 +89,8 @@ class RegisterFragment : Fragment() {
                 viewModel.setLogedAgent(agent)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, REGISTER_SUCCESS, Toast.LENGTH_SHORT).show()
-                    registerFragmentListener?.onRegisterSuccess()
+                    val action = RegisterFragmentDirections.actionRegisterFragmentToPropertyListFragment()
+                    binding.root.findNavController().navigate(action)
                 }
             } else {
                 // Email is already in the database, show an error message
