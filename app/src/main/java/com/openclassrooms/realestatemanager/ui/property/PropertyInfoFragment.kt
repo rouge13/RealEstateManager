@@ -14,9 +14,8 @@ import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBind
  */
 class PropertyInfoFragment : Fragment() {
     private lateinit var binding: FragmentInfoPropertyBinding
-    private val args: InfoPropertyFragmentArgs by navArgs()
+    private val args: PropertyInfoFragmentArgs by navArgs()
     private val propertyWithDetails: PropertyWithDetails? by lazy { args.propertyWithDetails }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,13 +28,14 @@ class PropertyInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         propertyWithDetails?.let { displayPropertyDetails(it) }
     }
 
     private fun displayPropertyDetails(propertyWithDetails: PropertyWithDetails) {
-        binding.roomType.text = propertyWithDetails.property.typeOfHouse
-        // binding. .text = propertyWithDetails.property.price.toString()
+        val photoViewPager = binding.photoPropertyViewPager
+        val photoList = propertyWithDetails.photos
+        val adapter = PropertyInfoAdapter(this, photoList)
+        photoViewPager.adapter = adapter
         binding.squareFeetValue.text = propertyWithDetails.property.squareFeet.toString()
         binding.roomsValue.text = propertyWithDetails.property.roomsCount.toString()
         binding.bedroomsValue.text = propertyWithDetails.property.bedroomsCount.toString()
@@ -45,6 +45,16 @@ class PropertyInfoFragment : Fragment() {
             binding.date.text = "Sold on ${propertyWithDetails.property.dateSold}"
         else
             binding.date.text = "Selling date: ${propertyWithDetails.property.dateStartSelling}"
+
+        binding.imageMoveAfterButton.setOnClickListener {
+            photoViewPager.currentItem = photoViewPager.currentItem + 1
+        }
+        binding.imageMoveBeforeButton.setOnClickListener {
+            photoViewPager.currentItem = photoViewPager.currentItem - 1
+        }
+        binding.backwardProperty.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
     }
 }
 

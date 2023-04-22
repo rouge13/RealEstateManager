@@ -43,7 +43,7 @@ class PropertyListFragment : Fragment() {
             override fun areContentsTheSame(oldItem: PropertyWithDetails, newItem: PropertyWithDetails): Boolean {
                 return oldItem.property == newItem.property &&
                         oldItem.address == newItem.address &&
-                        oldItem.photo == newItem.photo
+                        oldItem.photos == newItem.photos
             }
         }, onPropertyClick = { propertyWithDetails ->
             navigateToInfoPropertyFragment(propertyWithDetails)

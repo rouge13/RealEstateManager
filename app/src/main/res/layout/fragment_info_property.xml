@@ -6,21 +6,22 @@
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-
         android:name="com.openclassrooms.realestatemanager.ui.info.InfoPropertyFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginHorizontal="8dp"
         tools:layout="@layout/fragment_info_property">
 
-        <TextView
-            android:id="@+id/media_title"
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/media_title"
-            android:textSize="20sp"
-            android:textStyle="bold"
+            android:id="@+id/backward_property"
+            android:background="@drawable/ic_arrow_back_black_24dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
 
         <TextView
             android:id="@+id/date"
@@ -30,28 +31,26 @@
             android:textColor="@android:color/holo_green_dark"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/image_info_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_panel_pict_1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/media_title" />
-
         <TextView
-            android:id="@+id/room_type"
+            android:id="@+id/media_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/image_title"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/media_title"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/image_info_view" />
+            app:layout_constraintTop_toBottomOf="@id/date"/>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/photo_property_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@+id/media_title"
+            app:layout_constraintBottom_toTopOf="@id/navigation_buttons_card"/>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/navigation_buttons_card"
@@ -59,9 +58,10 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/room_type">
+            app:layout_constraintTop_toBottomOf="@+id/photo_property_view_pager">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
@@ -71,7 +71,6 @@
                     android:id="@+id/image_move_before_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:src="@drawable/ic_navigate_before_black_24"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -81,20 +80,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
                     android:src="@drawable/ic_navigate_next_black_24dp"
                     app:layout_constraintStart_toEndOf="@+id/image_move_before_button"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/description_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:text="@string/description_title"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/navigation_buttons_card" />
 
@@ -102,7 +102,7 @@
             android:id="@+id/description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
+
             android:layout_marginTop="8dp"
             android:text="@string/description_text"
             app:layout_constraintEnd_toEndOf="parent"
@@ -140,6 +140,7 @@
                     android:id="@+id/square_feet_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
                     android:text="@string/square_feet_title"
                     app:layout_constraintStart_toEndOf="@+id/square_feet_icon"
                     app:layout_constraintTop_toTopOf="@+id/square_feet_icon" />
@@ -184,6 +185,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/number_of_rooms_title"
+                    android:layout_marginLeft="10dp"
                     app:layout_constraintStart_toEndOf="@+id/home_icon"
                     app:layout_constraintTop_toTopOf="@+id/home_icon" />
 
@@ -227,6 +229,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/number_of_bathrooms_title"
+                    android:layout_marginLeft="10dp"
                     app:layout_constraintStart_toEndOf="@+id/bathroom_icon"
                     app:layout_constraintTop_toTopOf="@+id/bathroom_icon" />
 
@@ -270,6 +273,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/number_of_bedrooms_title"
+                    android:layout_marginLeft="10dp"
                     app:layout_constraintStart_toEndOf="@+id/bedroom_icon"
                     app:layout_constraintTop_toTopOf="@+id/bedroom_icon" />
 
@@ -292,8 +296,10 @@
             android:layout_marginStart="15dp"
             app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/number_of_bedrooms_card">
+            android:layout_marginEnd="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/description"
+            >
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
@@ -303,17 +309,17 @@
                     android:id="@+id/location_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:src="@drawable/ic_location_on_black_24dp"
-                    app:layout_constraintStart_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/location_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:text="@string/location_title"
+                    android:layout_marginLeft="10dp"
                     app:layout_constraintStart_toEndOf="@+id/location_icon"
                     app:layout_constraintTop_toTopOf="@+id/location_icon" />
 
@@ -322,8 +328,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/location_line1"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/location_title"
                     app:layout_constraintTop_toBottomOf="@+id/location_title" />
 
                 <TextView
@@ -331,8 +336,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/location_line2"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/location_title"
                     app:layout_constraintTop_toBottomOf="@+id/location_line1" />
 
                 <TextView
@@ -340,8 +344,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/location_line3"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/location_title"
                     app:layout_constraintTop_toBottomOf="@+id/location_line2" />
 
                 <TextView
@@ -349,8 +352,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/location_line4"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/location_title"
                     app:layout_constraintTop_toBottomOf="@+id/location_line3" />
 
                 <TextView
@@ -358,8 +360,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/location_line5"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/location_title"
                     app:layout_constraintTop_toBottomOf="@+id/location_line4" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -367,13 +368,13 @@
 
         <ImageView
             android:id="@+id/map_thumbnail"
-            android:layout_width="400dp"
+            android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
             android:src="@drawable/ic_map_to_add"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/location_card" />
+            app:layout_constraintTop_toBottomOf="@+id/number_of_bedrooms_card" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

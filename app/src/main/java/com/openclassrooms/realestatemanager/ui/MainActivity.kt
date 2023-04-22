@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity(){
             (application as MainApplication).photoRepository
         )
     }
-
     private val initializationViewModel: InitializationViewModel by viewModels {
         ViewModelFactory(
             (application as MainApplication).agentRepository,
@@ -81,13 +80,11 @@ class MainActivity : AppCompatActivity(){
         // Set up the drawer toggle
         setupDrawerButton()
         // Get the header view and bind it to the activityMainNavHeaderBinding
-        activityMainNavHeaderBinding =
-            ActivityMainNavHeaderBinding.bind(navigationView.getHeaderView(0))
+        activityMainNavHeaderBinding = ActivityMainNavHeaderBinding.bind(navigationView.getHeaderView(0))
         // Observe the loged agent to update the UI
         observeLogedAgent()
         // Initialize the app using the InitializationViewModel
         initializationViewModel.startInitialization(application as MainApplication)
-
         // Set up the NavController and connect it to the NavigationView
         setupNavigationController()
     }

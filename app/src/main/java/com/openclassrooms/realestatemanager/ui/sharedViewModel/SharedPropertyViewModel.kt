@@ -52,19 +52,17 @@ class SharedPropertyViewModel(
     private suspend fun combinePropertiesWithDetails(
         properties: List<PropertyEntity>?,
         addresses: List<AddressEntity>?,
-        photo: List<PhotoEntity>?
+        photos: List<PhotoEntity>?
     ): List<PropertyWithDetails>? {
-        if (properties == null || addresses == null || photo == null) {
+        if (properties == null || addresses == null || photos == null) {
             return null
         }
 
         val combinedData = properties.map { property ->
             val address = addresses.find { it.propertyId == property.id }
-            val photoItem = photo.find { it.propertyId == property.id }
-            PropertyWithDetails(property, address ?: AddressEntity(),  photoItem ?: PhotoEntity())
+            val propertyPhotos = photos.filter { it.propertyId == property.id }
+            PropertyWithDetails(property, address ?: AddressEntity(), propertyPhotos)
         }
         return combinedData
     }
-
-
 }

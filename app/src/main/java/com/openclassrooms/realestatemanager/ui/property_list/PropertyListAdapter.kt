@@ -23,6 +23,7 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
 
         fun bind(get: PropertyWithDetails, onPropertyClick: (PropertyWithDetails) -> Unit) {
             // Set the data to the view
+
             binding.propertyType.text = get.property.typeOfHouse
             binding.propertySector.text = get.address.boroughs?.takeIf { it.isNotBlank() } ?: "N/A"
             "$${get.property.price}".also { binding.propertyValue.text = it }
