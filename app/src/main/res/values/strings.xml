@@ -68,6 +68,7 @@
     <string name="location_line3">New York</string>
     <string name="location_line4">NY 10021</string>
     <string name="location_line5">United States</string>
+    <string name="sold_text">Sold !</string>
 
 
 </resources>

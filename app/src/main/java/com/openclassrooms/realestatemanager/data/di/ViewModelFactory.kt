@@ -1,11 +1,13 @@
 package com.openclassrooms.realestatemanager.data.di
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository
 import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
+import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
@@ -22,7 +24,7 @@ class ViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SharedAgentViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SharedAgentViewModel(agentRepository!!) as T
+            return SharedAgentViewModel(agentRepository!!, Application()) as T
         } else if (modelClass.isAssignableFrom(SharedPropertyViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return SharedPropertyViewModel(

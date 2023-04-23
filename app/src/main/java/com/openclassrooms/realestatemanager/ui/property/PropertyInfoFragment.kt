@@ -34,16 +34,18 @@ class PropertyInfoFragment : Fragment() {
     private fun displayPropertyDetails(propertyWithDetails: PropertyWithDetails) {
         val photoViewPager = binding.photoPropertyViewPager
         val photoList = propertyWithDetails.photos
-        val adapter = PropertyInfoAdapter(this, photoList)
+        val adapter =
+            propertyWithDetails.property.isSold?.let { PropertyInfoAdapter(this, photoList, it) }
         photoViewPager.adapter = adapter
         binding.squareFeetValue.text = propertyWithDetails.property.squareFeet.toString()
         binding.roomsValue.text = propertyWithDetails.property.roomsCount.toString()
         binding.bedroomsValue.text = propertyWithDetails.property.bedroomsCount.toString()
         binding.bathroomsValue.text = propertyWithDetails.property.bathroomsCount.toString()
         binding.description.text = propertyWithDetails.property.description
-        if (propertyWithDetails.property.isSold == true)
-            binding.date.text = "Sold on ${propertyWithDetails.property.dateSold}"
-        else
+        if (propertyWithDetails.property.isSold == true) {
+            binding.date.setTextColor(resources.getColor(android.R.color.holo_red_dark))
+            binding.date.text = "Solded on : ${propertyWithDetails.property.dateSold}"
+        } else
             binding.date.text = "Selling date: ${propertyWithDetails.property.dateStartSelling}"
 
         binding.imageMoveAfterButton.setOnClickListener {

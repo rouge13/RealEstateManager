@@ -15,7 +15,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        />
+
+    <TextView
+        android:id="@+id/sold_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_gravity="center|center"
+        android:background="@color/yellow"
+        android:text="@string/sold_text"
+        android:textColor="@color/red"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/image_info_view"
+        app:layout_constraintStart_toStartOf="@+id/image_info_view"
+        app:layout_constraintBottom_toBottomOf="@+id/image_info_view"
+        app:layout_constraintTop_toTopOf="@+id/image_info_view"
+        />
 
     <TextView
         android:id="@+id/room_type"

@@ -11,7 +11,7 @@ import com.openclassrooms.realestatemanager.databinding.FragmentPhotoBinding
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class PhotoFragment(private val get: PhotoEntity) : Fragment() {
+class PhotoFragment(private val get: PhotoEntity, private val soldOut: Boolean) : Fragment() {
 
     private var _binding: FragmentPhotoBinding? = null
     private val binding get() = _binding!!
@@ -32,6 +32,15 @@ class PhotoFragment(private val get: PhotoEntity) : Fragment() {
         )
         binding.imageInfoView.setImageResource(idPhotoResources)
         binding.roomType.text = get.description
+        // Hide the sold out banner if the property is not sold
+
+        if (!soldOut) {
+            binding.soldText.visibility = View.GONE
+            binding.imageInfoView.alpha = 1f
+        } else {
+            binding.soldText.visibility = View.VISIBLE
+            binding.imageInfoView.alpha = 0.3f
+        }
     }
 
     override fun onDestroyView() {

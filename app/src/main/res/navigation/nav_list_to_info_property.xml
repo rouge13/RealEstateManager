@@ -19,6 +19,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.map.MapFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_map" />
+
+    <fragment
         android:id="@+id/infoPropertyFragment"
         android:name="com.openclassrooms.realestatemanager.ui.property.PropertyInfoFragment"
         android:label="Property Info"

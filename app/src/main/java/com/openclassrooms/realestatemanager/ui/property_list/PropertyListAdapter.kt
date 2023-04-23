@@ -33,6 +33,14 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
             itemView.setOnClickListener {
                 onPropertyClick(get)
             }
+            val propertyLayout = binding.propertyLayout
+            if (get.property.isSold == true) {
+                propertyLayout.alpha = 0.3f
+                binding.soldText.visibility = android.view.View.VISIBLE
+            } else {
+                propertyLayout.alpha = 1f
+                binding.soldText.visibility = android.view.View.GONE
+            }
         }
 
         private fun setImageInRecyclerView(get: PropertyEntity) {

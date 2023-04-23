@@ -1,8 +1,13 @@
 package com.openclassrooms.realestatemanager.ui
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
@@ -14,7 +19,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -41,6 +48,7 @@ import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class MainActivity : AppCompatActivity(){
+    private lateinit var navController: NavController
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var activityMainNavHeaderBinding: ActivityMainNavHeaderBinding
     private lateinit var drawerLayout: DrawerLayout
@@ -70,7 +78,6 @@ class MainActivity : AppCompatActivity(){
             (application as MainApplication).photoRepository
         )
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -88,17 +95,16 @@ class MainActivity : AppCompatActivity(){
         // Set up the NavController and connect it to the NavigationView
         setupNavigationController()
     }
-
     private fun setupNavigationController() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
         navigationView.setupWithNavController(navController)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             handleNavigationItemSelected(menuItem, navController)
+
         }
     }
-
     private fun handleNavigationItemSelected(item: MenuItem, navController: NavController): Boolean {
         when (item.itemId) {
             R.id.nav_take_photo -> {
@@ -129,19 +135,16 @@ class MainActivity : AppCompatActivity(){
             }
         }
     }
-
     private fun observeLogedAgent() {
-        sharedAgentViewModel.logedAgent.observeForever {
+        sharedAgentViewModel.loggedAgent.observeForever {
             if (it != null) forAgentConnected(it) else forAgentNotConnected()
         }
     }
-
     private fun forAgentNotConnected() {
         showTheLogIn()
         showDefaultNavHeaderNotConnected()
         activityMainBinding.bottomNavigationView.visibility = View.GONE
     }
-
     private fun showDefaultNavHeaderNotConnected() {
         activityMainNavHeaderBinding.username.text =
             getString(R.string.text_view_property_agent_name)
@@ -149,18 +152,29 @@ class MainActivity : AppCompatActivity(){
             getString(R.string.text_view_property_agent_email)
         setImageProfileDefault()
     }
-
     private fun showTheLogIn() {
         navigationView.menu.findItem(R.id.nav_login).isVisible = true
         navigationView.menu.findItem(R.id.nav_logout).isVisible = false
     }
-
     private fun forAgentConnected(agent: AgentEntity) {
+        checkAgentLocation()
         showTheLogOut()
         showAgentNavHeaderConnected(agent)
         setupBottomNavigation()
-        // Set the current item of the viewPager to the desired position
-        activityMainBinding.viewPager.currentItem = 0 // or whichever position you want to switch to
+        activityMainBinding.viewPager.currentItem = 0 // Switch to the PropertyListFragment
+    }
+
+    private fun checkAgentLocation() {
+        val lm = getSystemService(LOCATION_SERVICE) as LocationManager
+        if (sharedAgentViewModel.checkGpsAndNetworkEnabled(lm)) {
+            sharedAgentViewModel.requestAgentLocationUpdates(this, null)
+        } else {
+            val defaultLocation = Location("").apply {
+                latitude = 40.7171
+                longitude = -74.0064
+            }
+            sharedAgentViewModel.requestAgentLocationUpdates(this, defaultLocation)
+        }
     }
 
     private fun showAgentNavHeaderConnected(agent: AgentEntity) {
@@ -168,38 +182,38 @@ class MainActivity : AppCompatActivity(){
         activityMainNavHeaderBinding.userEmail.text = agent.email
         setImageProfileAgent(agent)
     }
-
     private fun setImageProfileAgent(agent: AgentEntity) {
         val photoProfileImageView = activityMainNavHeaderBinding.photoProfileImageView
         photoProfileImageView.setImageResource(
             this.resources.getIdentifier(agent.photo, "drawable", this.packageName)
         )
     }
-
     private fun setImageProfileDefault() {
         val photoProfileImageView = activityMainNavHeaderBinding.photoProfileImageView
         photoProfileImageView.setImageResource(
             this.resources.getIdentifier("ic_must_be_connected", "drawable", this.packageName)
         )
     }
-
     private fun showTheLogOut() {
         navigationView.menu.findItem(R.id.nav_login).isVisible = false
         navigationView.menu.findItem(R.id.nav_logout).isVisible = true
     }
-
     private fun setupBottomNavigation() {
         activityMainBinding.bottomNavigationView.visibility = View.VISIBLE
-        val viewPager = activityMainBinding.viewPager
-        val adapter = ViewPagerAdapter(supportFragmentManager)
-        // Add the PropertyListFragment and MapFragment to the adapter
-        adapter.addFragment(PropertyListFragment(), "Property List")
-        adapter.addFragment(MapFragment(), "Map")
-        viewPager.adapter = adapter
-        // Set the OnItemSelectedListener for the BottomNavigationView
-        setOnItemSelectedListener()
+        activityMainBinding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.list_fragment -> {
+                    navController.navigate(R.id.propertyListFragment)
+                    true
+                }
+                R.id.map_fragment -> {
+                    navController.navigate(R.id.mapFragment)
+                    true
+                }
+                else -> false
+            }
+        }
     }
-
     private fun setOnItemSelectedListener() {
         activityMainBinding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -217,12 +231,10 @@ class MainActivity : AppCompatActivity(){
             }
         }
     }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_main_agent_info_menu, menu)
         return true
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
@@ -237,13 +249,11 @@ class MainActivity : AppCompatActivity(){
         }
         return super.onOptionsItemSelected(item)
     }
-
     private fun logInActions() {
         val navController = findNavController(R.id.nav_host_fragment)
         navController.navigate(PropertyListFragmentDirections.actionPropertyListFragmentToLoginFragment())
         drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
     }
-
     private fun logOutActions() {
         navigationView.menu.findItem(R.id.nav_login).isVisible = true
         sharedAgentViewModel.setLogedAgent(null)
@@ -253,7 +263,6 @@ class MainActivity : AppCompatActivity(){
         finish()
         drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
     }
-
     private fun setupDrawerButton() {
         val actionBarDrawerToggle = ActionBarDrawerToggle(
             this,
@@ -265,7 +274,6 @@ class MainActivity : AppCompatActivity(){
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
     }
-
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(navigationView)) {
             drawerLayout.closeDrawer(navigationView)
@@ -273,7 +281,6 @@ class MainActivity : AppCompatActivity(){
             super.onBackPressed()
         }
     }
-
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (currentFocus != null) {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -281,7 +288,6 @@ class MainActivity : AppCompatActivity(){
         }
         return super.dispatchTouchEvent(ev)
     }
-
     private fun dispatchTakePictureIntent() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         try {

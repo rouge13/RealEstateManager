@@ -6,4 +6,6 @@
     <color name="paleGray">#AEABAB</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="red">#D8190B</color>
+    <color name="yellow">#E7D531</color>
 </resources>
