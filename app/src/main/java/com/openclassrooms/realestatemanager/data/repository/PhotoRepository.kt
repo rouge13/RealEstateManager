@@ -17,4 +17,10 @@ class PhotoRepository(private val photoDao: PhotoDao) {
     suspend fun insert(photo: PhotoEntity) {
             photoDao.insert(photo)
     }
+
+    // Get all photos related to a property
+    fun getAllPhotosRelatedToASpecificProperty(propertyId: Int): Flow<List<PhotoEntity>>? {
+        return photoDao.getAllPhotosRelatedToASpecificProperty(propertyId)
+    }
+
 }

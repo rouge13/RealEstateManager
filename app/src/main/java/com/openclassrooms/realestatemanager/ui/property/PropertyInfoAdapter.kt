@@ -7,7 +7,7 @@ import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class PropertyInfoAdapter(fragment: Fragment, private val photoList: List<PhotoEntity?>, private val soldOut : Boolean) :
+class PropertyInfoAdapter(fragment: Fragment, private val photoList: List<PhotoEntity>?, private val soldOut : Boolean) :
     FragmentStateAdapter(fragment) {
 
     private val defaultPhoto = PhotoEntity(
@@ -16,10 +16,10 @@ class PropertyInfoAdapter(fragment: Fragment, private val photoList: List<PhotoE
         description = "No photo!" // Replace with the default description
     )
 
-    override fun getItemCount(): Int = photoList.size
+    override fun getItemCount(): Int = photoList?.size!!
 
     override fun createFragment(position: Int): Fragment {
-        val photo = photoList[position] ?: defaultPhoto
+        val photo = photoList?.get(position) ?: defaultPhoto
         return PhotoFragment(photo, soldOut)
     }
 }

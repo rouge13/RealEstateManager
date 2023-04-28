@@ -17,4 +17,9 @@ class AddressRepository(private val addressDao: AddressDao) {
     suspend fun insert(address: AddressEntity) {
             addressDao.insert(address)
     }
+
+    // Get Address related to a property
+    fun getAddressRelatedToASpecificProperty(propertyId: Int): Flow<AddressEntity?> {
+        return addressDao.getAddressRelatedToASpecificProperty(propertyId)
+    }
 }

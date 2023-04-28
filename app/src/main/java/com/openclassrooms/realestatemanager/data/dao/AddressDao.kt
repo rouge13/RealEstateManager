@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.data.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -20,5 +21,7 @@ interface AddressDao {
     suspend fun insert(address: AddressEntity)
     // Get Address related to a property
     @Query("SELECT * FROM address WHERE id = :propertyId")
-    fun getAddressRelatedToASpecificProperty(propertyId: Int): AddressEntity?
+    fun getAddressRelatedToASpecificProperty(propertyId: Int): Flow<AddressEntity?>
+
+
 }

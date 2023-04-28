@@ -12,6 +12,6 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class PropertyWithDetails(
     val property: PropertyEntity,
-    val address: AddressEntity,
-    val photos: List<PhotoEntity?>
+    val address: AddressEntity?,
+    val photos: List<PhotoEntity>?
 ) : Parcelable
