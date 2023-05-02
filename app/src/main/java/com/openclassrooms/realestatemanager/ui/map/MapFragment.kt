@@ -17,6 +17,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
+import com.openclassrooms.realestatemanager.data.model.LocationDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
@@ -27,7 +28,9 @@ class MapFragment : Fragment() {
         ViewModelFactory((requireActivity().application as MainApplication).agentRepository,
             (requireActivity().application as MainApplication).propertyRepository,
             (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).photoRepository)
+            (requireActivity().application as MainApplication).photoRepository,
+            requireContext()
+        )
     }
     private lateinit var fragmentMapBinding: FragmentMapBinding
     private lateinit var googleMap: GoogleMap
@@ -42,21 +45,19 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync { map ->
             googleMap = map
-            updateMapWithAgentLocation(agentViewModel.getAgentLocation().value)
-            observeAgentLocation()
+            agentViewModel.getLocationLiveData()?.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    updateMapWithAgentLocation(it)
+                }
+            }
+
         }
     }
 
-    private fun observeAgentLocation() {
-        agentViewModel.getAgentLocation().observe(viewLifecycleOwner) { location ->
-            updateMapWithAgentLocation(location)
-        }
-    }
-    private fun updateMapWithAgentLocation(location: Location?) {
+    private fun updateMapWithAgentLocation(location: LocationDetails?) {
         location?.let {
             val newLocation = LatLng(it.latitude, it.longitude)
             googleMap.clear()

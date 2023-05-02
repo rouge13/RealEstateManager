@@ -69,6 +69,7 @@
     <string name="location_line4">NY 10021</string>
     <string name="location_line5">United States</string>
     <string name="sold_text">Sold !</string>
+    <string name="gps_enavailable">GPS Unavailable</string>
 
 
 </resources>

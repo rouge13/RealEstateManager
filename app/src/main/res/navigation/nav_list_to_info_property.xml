@@ -29,9 +29,6 @@
         android:name="com.openclassrooms.realestatemanager.ui.property.PropertyInfoFragment"
         android:label="Property Info"
         tools:layout="@layout/fragment_info_property">
-        <argument
-            android:name="propertyWithDetails"
-            app:argType="com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails"/>
         <action android:id="@+id/action_infoPropertyFragment_to_propertyListFragment"
             app:destination="@id/propertyListFragment" />
     </fragment>

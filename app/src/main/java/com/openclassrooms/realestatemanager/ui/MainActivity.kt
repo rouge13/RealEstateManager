@@ -1,27 +1,27 @@
 package com.openclassrooms.realestatemanager.ui
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -29,9 +29,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
-import com.openclassrooms.realestatemanager.R
-
 import com.google.android.material.navigation.NavigationView
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
@@ -42,7 +41,6 @@ import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragmen
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
-
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -59,7 +57,8 @@ class MainActivity : AppCompatActivity(){
             (application as MainApplication).agentRepository,
             (application as MainApplication).propertyRepository,
             (application as MainApplication).addressRepository,
-            (application as MainApplication).photoRepository
+            (application as MainApplication).photoRepository,
+            this
         )
     }
     private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
@@ -67,7 +66,8 @@ class MainActivity : AppCompatActivity(){
             (application as MainApplication).agentRepository,
             (application as MainApplication).propertyRepository,
             (application as MainApplication).addressRepository,
-            (application as MainApplication).photoRepository
+            (application as MainApplication).photoRepository,
+            this
         )
     }
     private val initializationViewModel: InitializationViewModel by viewModels {
@@ -75,7 +75,8 @@ class MainActivity : AppCompatActivity(){
             (application as MainApplication).agentRepository,
             (application as MainApplication).propertyRepository,
             (application as MainApplication).addressRepository,
-            (application as MainApplication).photoRepository
+            (application as MainApplication).photoRepository,
+            this
         )
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,6 +95,7 @@ class MainActivity : AppCompatActivity(){
         initializationViewModel.startInitialization(application as MainApplication)
         // Set up the NavController and connect it to the NavigationView
         setupNavigationController()
+        checkHasInternet()
     }
     private fun setupNavigationController() {
         val navHostFragment =
@@ -143,7 +145,6 @@ class MainActivity : AppCompatActivity(){
     private fun forAgentNotConnected() {
         showTheLogIn()
         showDefaultNavHeaderNotConnected()
-        activityMainBinding.bottomNavigationView.visibility = View.GONE
     }
     private fun showDefaultNavHeaderNotConnected() {
         activityMainNavHeaderBinding.username.text =
@@ -157,24 +158,60 @@ class MainActivity : AppCompatActivity(){
         navigationView.menu.findItem(R.id.nav_logout).isVisible = false
     }
     private fun forAgentConnected(agent: AgentEntity) {
-        checkAgentLocation()
         showTheLogOut()
         showAgentNavHeaderConnected(agent)
-        setupBottomNavigation()
-        activityMainBinding.viewPager.currentItem = 0 // Switch to the PropertyListFragment
     }
 
-    private fun checkAgentLocation() {
-        val lm = getSystemService(LOCATION_SERVICE) as LocationManager
-        if (sharedAgentViewModel.checkGpsAndNetworkEnabled(lm)) {
-            sharedAgentViewModel.requestAgentLocationUpdates(this, null)
-        } else {
-            val defaultLocation = Location("").apply {
-                latitude = 40.7171
-                longitude = -74.0064
+    private fun isOnline(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivityManager != null) {
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                    return true
+                }
             }
-            sharedAgentViewModel.requestAgentLocationUpdates(this, defaultLocation)
         }
+        return false
+    }
+
+    private fun checkHasInternet() {
+        if (isOnline(this)){
+            agentLocationUpdates()
+            setupBottomNavigation()
+            activityMainBinding.viewPager.currentItem = 0 // Switch to the PropertyListFragment
+        } else {
+            activityMainBinding.bottomNavigationView.visibility = View.GONE
+        }
+    }
+
+    private fun agentLocationUpdates() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            requestLocationUpdates()
+        } else {
+            requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    private val requestSinglePermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            requestLocationUpdates()
+        } else {
+            Toast.makeText(this, getString(R.string.gps_enavailable), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun requestLocationUpdates() {
+        sharedAgentViewModel.startLocationUpdates()
     }
 
     private fun showAgentNavHeaderConnected(agent: AgentEntity) {
@@ -210,23 +247,6 @@ class MainActivity : AppCompatActivity(){
                     navController.navigate(R.id.mapFragment)
                     true
                 }
-                else -> false
-            }
-        }
-    }
-    private fun setOnItemSelectedListener() {
-        activityMainBinding.bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.list_fragment -> {
-                    activityMainBinding.viewPager.currentItem = 0
-                    true
-                }
-
-                R.id.map_fragment -> {
-                    activityMainBinding.viewPager.currentItem = 1
-                    true
-                }
-
                 else -> false
             }
         }

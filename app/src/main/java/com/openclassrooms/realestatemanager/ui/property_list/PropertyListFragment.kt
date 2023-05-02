@@ -9,7 +9,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentPropertyListBinding
@@ -26,7 +25,9 @@ class PropertyListFragment : Fragment() {
         ViewModelFactory((requireActivity().application as MainApplication).agentRepository,
             (requireActivity().application as MainApplication).propertyRepository,
             (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).photoRepository)
+            (requireActivity().application as MainApplication).photoRepository,
+            requireContext()
+        )
     }
 
     override fun onCreateView(
@@ -66,7 +67,7 @@ class PropertyListFragment : Fragment() {
 
     private fun navigateToInfoPropertyFragment(propertyWithDetails: PropertyWithDetails) {
         propertyListViewModel.selectProperty(propertyWithDetails)
-        val action = PropertyListFragmentDirections.actionPropertyListFragmentToInfoPropertyFragment(propertyWithDetails)
+        val action = PropertyListFragmentDirections.actionPropertyListFragmentToInfoPropertyFragment()
         binding.root.findNavController().navigate(action)
     }
 

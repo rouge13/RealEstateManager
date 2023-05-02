@@ -24,7 +24,7 @@ class SharedPropertyViewModel(
 
     // Get selected property
     private val _selectedProperty = MutableLiveData<PropertyWithDetails>()
-    private val selectedProperty: LiveData<PropertyWithDetails> get() = _selectedProperty
+    val getSelectedProperty: LiveData<PropertyWithDetails> get() = _selectedProperty
 
     fun selectProperty(property: PropertyWithDetails) {
         _selectedProperty.value = property

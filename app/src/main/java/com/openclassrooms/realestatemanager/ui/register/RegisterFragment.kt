@@ -30,7 +30,8 @@ class RegisterFragment : Fragment() {
             (requireActivity().application as MainApplication).agentRepository,
             (requireActivity().application as MainApplication).propertyRepository,
             (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).photoRepository
+            (requireActivity().application as MainApplication).photoRepository,
+            requireContext()
         )
     }
 
