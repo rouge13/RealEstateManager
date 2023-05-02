@@ -16,7 +16,7 @@ import com.openclassrooms.realestatemanager.data.model.LocationDetails
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class LocationLiveData(var context: Context) : LiveData<LocationDetails>() {
+class LocationLiveData(private var context: Context) : LiveData<LocationDetails>() {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     companion object {

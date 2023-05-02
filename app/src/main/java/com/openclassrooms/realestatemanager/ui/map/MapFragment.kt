@@ -29,7 +29,7 @@ class MapFragment : Fragment() {
             (requireActivity().application as MainApplication).propertyRepository,
             (requireActivity().application as MainApplication).addressRepository,
             (requireActivity().application as MainApplication).photoRepository,
-            requireContext()
+            requireActivity().application as MainApplication
         )
     }
     private lateinit var fragmentMapBinding: FragmentMapBinding
@@ -48,7 +48,7 @@ class MapFragment : Fragment() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync { map ->
             googleMap = map
-            agentViewModel.getLocationLiveData()?.observe(viewLifecycleOwner) {
+            agentViewModel.getLocationLiveData().observe(viewLifecycleOwner) {
                 if (it != null) {
                     updateMapWithAgentLocation(it)
                 }
@@ -61,12 +61,8 @@ class MapFragment : Fragment() {
         location?.let {
             val newLocation = LatLng(it.latitude, it.longitude)
             googleMap.clear()
-            googleMap.addMarker(
-                MarkerOptions()
-                    .position(newLocation)
-                    .title("Marker in your location")
-            )
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(newLocation))
+            googleMap.addMarker(MarkerOptions().position(newLocation).title("Marker in your location"))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 15f))
         }
     }
 }

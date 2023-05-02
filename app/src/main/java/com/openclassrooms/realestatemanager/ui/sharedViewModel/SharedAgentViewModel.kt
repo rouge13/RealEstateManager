@@ -26,11 +26,10 @@ import kotlinx.coroutines.launch
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class SharedAgentViewModel(private val repository: AgentRepository, context: Context) : AndroidViewModel(
-    context as Application
-) {
+class SharedAgentViewModel(private val repository: AgentRepository, application: MainApplication) : AndroidViewModel(
+    application) {
     // Init location
-    private val locationLiveData = context.let { LocationLiveData(it) }
+    private val locationLiveData = application.applicationContext.let { LocationLiveData(it) }
     // Get agent location
     fun getLocationLiveData() = locationLiveData
     // Start location update

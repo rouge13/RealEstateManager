@@ -21,12 +21,12 @@ class ViewModelFactory(
     private val propertyRepository: PropertyRepository?,
     private val addressRepository: AddressRepository?,
     private val photoRepository: PhotoRepository?,
-    private val context: Context
+    private val mainApplication: MainApplication
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SharedAgentViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SharedAgentViewModel(agentRepository!!, context) as T
+            return SharedAgentViewModel(agentRepository!!, mainApplication) as T
         } else if (modelClass.isAssignableFrom(SharedPropertyViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return SharedPropertyViewModel(

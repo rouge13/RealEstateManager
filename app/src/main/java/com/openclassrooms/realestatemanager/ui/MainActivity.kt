@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(){
             (application as MainApplication).propertyRepository,
             (application as MainApplication).addressRepository,
             (application as MainApplication).photoRepository,
-            this
+            application as MainApplication
         )
     }
     private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(){
             (application as MainApplication).propertyRepository,
             (application as MainApplication).addressRepository,
             (application as MainApplication).photoRepository,
-            this
+            application as MainApplication
         )
     }
     private val initializationViewModel: InitializationViewModel by viewModels {
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(){
             (application as MainApplication).propertyRepository,
             (application as MainApplication).addressRepository,
             (application as MainApplication).photoRepository,
-            this
+            application as MainApplication
         )
     }
     override fun onCreate(savedInstanceState: Bundle?) {
