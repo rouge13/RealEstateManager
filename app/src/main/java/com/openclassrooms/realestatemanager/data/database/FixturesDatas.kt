@@ -36,12 +36,12 @@ class FixturesDatas {
         )
 
         val PROPERTY_ADDRESS_LIST = listOf(
-            AddressEntity(1,  "345", "Park Ave", "New York", "Manhattan", "10154", "USA", 40.759011, -73.969111, 1),
-            AddressEntity(2, "160", "Schermerhorn St", "Brooklyn", "Brooklyn", "11201", "USA", 40.689256, -73.9874257, 2),
-            AddressEntity(3, "29-10", "Thomson Ave", "Long Island City", "Queens", "11101", "USA", 40.745234, -73.937686, 3),
-            AddressEntity(4, "1", "Edgewater Plaza", "Staten Island", "Staten Island", "10305", "USA", 40.619287, -74.068194, 4),
-            AddressEntity(5, "126-02", "82nd Ave", "Kew Gardens", "Queens", "11415", "USA", 40.713266, -73.825877, 5),
-            AddressEntity(6, "174th", "St & Grand Concourse", "Bronx", "Bronx", "10457", "USA", 40.837445, -73.887809, 6)
+            AddressEntity(1,  "345", "Park Ave", "New York", "Manhattan", "10154", "USA",  1),
+            AddressEntity(2, "160", "Schermerhorn St", "Brooklyn", "Brooklyn", "11201", "USA",  2),
+            AddressEntity(3, "29-10", "Thomson Ave", "Long Island City", "Queens", "11101", "USA",  3),
+            AddressEntity(4, "1", "Edgewater Plaza", "Staten Island", "Staten Island", "10305", "USA",  4),
+            AddressEntity(5, "126-02", "82nd Ave", "Kew Gardens", "Queens", "11415", "USA",  5),
+            AddressEntity(6, "174th", "St & Grand Concourse", "Bronx", "Bronx", "10457", "USA",  6)
         )
 
         val PROPERTY_LIST = listOf(

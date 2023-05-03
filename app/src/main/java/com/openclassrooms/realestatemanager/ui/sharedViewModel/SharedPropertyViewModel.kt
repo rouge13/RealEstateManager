@@ -12,6 +12,8 @@ import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import kotlinx.coroutines.flow.firstOrNull
+import android.util.Log
+
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -50,6 +52,7 @@ class SharedPropertyViewModel(
             if (propertyId != null) {
                 val propertyAddress = addressRepository.getAddressRelatedToASpecificProperty(propertyId).firstOrNull()
                 val propertyPhotos = photoRepository.getAllPhotosRelatedToASpecificProperty(propertyId)?.firstOrNull()
+                Log.d("ViewModel", "Property ID: $propertyId, Address: $propertyAddress")
                 PropertyWithDetails(property, propertyAddress, propertyPhotos)
             } else {
                 null
@@ -57,6 +60,7 @@ class SharedPropertyViewModel(
         }
         return combinedData
     }
+
 }
 
 

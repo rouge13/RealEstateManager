@@ -70,6 +70,7 @@
     <string name="location_line5">United States</string>
     <string name="sold_text">Sold !</string>
     <string name="gps_enavailable">GPS Unavailable</string>
+    <string name="agent_location">Location</string>
 
 
 </resources>
