@@ -21,7 +21,7 @@ import java.util.concurrent.Executors
  */
 @Database(
     entities = [PropertyEntity::class, AgentEntity::class, AddressEntity::class, PhotoEntity::class],
-    version = 14,
+    version = 16,
     exportSchema = false
 )
 abstract class PropertyDatabase : RoomDatabase() {

@@ -29,7 +29,7 @@ data class AddressEntity(
     val boroughs: String? = "",
     val zipCode: String = "",
     val country: String = "",
-    @ColumnInfo(name = "propertyId", index = true)
-    val propertyId: Int? = null
+    val propertyId: Int? = null,
+    val apartmentDetails: String? = ""
 ) : Parcelable {
 }
