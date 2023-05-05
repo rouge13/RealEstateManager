@@ -9,12 +9,6 @@
         app:showAsAction="ifRoom"
         app:actionLayout="@null"/>
     <item
-        android:id="@+id/nav_settings"
-        android:icon="@drawable/ic_settings_white_24dp"
-        android:title="@string/settings"
-        app:showAsAction="ifRoom"
-        app:actionLayout="@null"/>
-    <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout_white_24dp"
         android:title="@string/logout"

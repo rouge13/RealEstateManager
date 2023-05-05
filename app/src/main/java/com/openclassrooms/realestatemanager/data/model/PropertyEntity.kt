@@ -32,14 +32,9 @@ data class PropertyEntity(
     var bedroomsCount: Int? = 0,
     var bathroomsCount: Int? = 0,
     var description: String? = "Must add description for this property in later time",
-    // Photo and video will be in another entity
-    // Proximity in another entity
     var typeOfHouse: String,
     var isSold: Boolean? = false,
-    var dateStartSelling: String? = SimpleDateFormat(
-        "yyyy/MM/dd",
-        Locale.US
-    ).format(Calendar.getInstance().time),
+    var dateStartSelling: String? = SimpleDateFormat("yyyy/MM/dd", Locale.US).format(Calendar.getInstance().time),
     var dateSold: String? = null,
     var agentId: Int,
     var primaryPhoto: String,

@@ -114,17 +114,16 @@ class MainActivity : AppCompatActivity(){
                 drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
                 return true
             }
-            R.id.nav_settings -> {
-                startActivity(Intent(Settings.ACTION_SETTINGS))
-                drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
-                return true
-            }
             R.id.nav_logout -> {
                 logOutActions()
                 return true
             }
             R.id.nav_login -> {
                 logInActions()
+                return true
+            }
+            R.id.btn_search -> {
+                navController.navigate(R.id.action_propertyListFragment_to_searchFragment)
                 return true
             }
             else -> {
