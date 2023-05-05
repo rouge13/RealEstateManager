@@ -114,6 +114,7 @@
     <string name="shopping">Shopping</string>
     <string name="public_transport">Public transport</string>
     <string name="restaurant">Restaurant(s)</string>
+    <string name="search_property">Search property(ies)</string>
 
 
 </resources>

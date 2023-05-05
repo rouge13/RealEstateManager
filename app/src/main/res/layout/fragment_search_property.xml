@@ -11,33 +11,39 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cancel_button"
+            android:background="@drawable/ic_cancel_red_24dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switch_sold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20sp"
             android:layout_marginEnd="20sp"
             android:text="@string/sold_property"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/cancel_button" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/choice_of_property_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20sp"
-            android:layout_marginTop="20sp"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/property_date" />
+            app:layout_constraintTop_toBottomOf="@id/cancel_button"
+            android:text="@string/property_date" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/property_pick_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="20sp"
+            android:layout_marginVertical="10sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/choice_of_property_date">
@@ -63,9 +69,10 @@
                 android:layout_marginStart="10sp"
                 android:text="@string/pick_end_date"
                 android:textSize="10sp"
-                tools:ignore="SmallSp"
+                android:enabled="false"
                 app:layout_constraintStart_toEndOf="@id/btn_property_date_start"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="SmallSp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -85,7 +92,7 @@
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/date_start" />
+                android:text="@string/date_start" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/property_date_to_text"
@@ -96,7 +103,7 @@
                 android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/property_date_start_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/date_between" />
+                android:text="@string/date_between" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/property_date_end_text"
@@ -107,7 +114,7 @@
                 android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/property_date_to_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/date_end" />
+                android:text="@string/date_end" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
@@ -134,13 +141,13 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/price_start" />
+                android:text="@string/price_start" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_price_start_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/price_start_value"
+                android:hint="@string/price_start_value"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_price_start_text"
@@ -156,7 +163,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_price_start_value"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/date_between" />
+                android:text="@string/date_between" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/property_price_end_text"
@@ -168,13 +175,13 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_price_to_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/price_end" />
+                android:text="@string/price_end" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_price_end_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/price_end_value"
+                android:hint="@string/price_end_value"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_price_end_text"
@@ -200,13 +207,13 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/square_feet_start" />
+                android:text="@string/square_feet_start" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_square_feet_start_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/square_feet_start_value"
+                android:hint="@string/square_feet_start_value"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_square_feet_start_text"
@@ -221,7 +228,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_square_feet_start_value"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/square_between" />
+                android:text="@string/square_between" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_square_feet_end_text"
@@ -231,7 +238,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_square_feet_to_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/square_feet_end_value" />
+                android:hint="@string/square_feet_end_value" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -252,13 +259,13 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/rooms_number" />
+                android:text="@string/rooms_number" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_rooms_number_start_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/rooms_number_value"
+                android:hint="@string/rooms_number_value"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_rooms_number_text"
@@ -273,7 +280,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_rooms_number_start_value"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/rooms_between" />
+                android:text="@string/rooms_between" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_rooms_number_end_value"
@@ -283,7 +290,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_rooms_number_to_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/rooms_number_value" />
+                android:hint="@string/rooms_number_value" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -304,13 +311,13 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/bedrooms_number" />
+                android:text="@string/bedrooms_number" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_bedrooms_number_start_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bedrooms_number_value"
+                android:hint="@string/bedrooms_number_value"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_bedrooms_number_text"
@@ -325,7 +332,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_bedrooms_number_start_value"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/bedrooms_between" />
+                android:text="@string/bedrooms_between" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_bedrooms_number_end_value"
@@ -335,7 +342,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_bedrooms_number_to_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/bedrooms_number_value" />
+                android:hint="@string/bedrooms_number_value" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -356,13 +363,13 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/bathrooms_number" />
+                android:text="@string/bathrooms_number" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_bathrooms_number_start_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bathrooms_number_value"
+                android:hint="@string/bathrooms_number_value"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_bathrooms_number_text"
@@ -377,7 +384,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_bathrooms_number_start_value"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/bathrooms_between" />
+                android:text="@string/bathrooms_between" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_bathrooms_number_end_value"
@@ -387,7 +394,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_bathrooms_number_to_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/bathrooms_number_value" />
+                android:hint="@string/bathrooms_number_value" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -408,13 +415,13 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/photos_number" />
+                android:text="@string/photos_number" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_photos_number_start_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/photos_number_value"
+                android:hint="@string/photos_number_value"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_photos_number_text"
@@ -429,7 +436,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_photos_number_start_value"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/photos_between" />
+                android:text="@string/photos_between" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_photos_number_end_value"
@@ -439,7 +446,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_photos_number_to_text"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/photos_number_value" />
+                android:hint="@string/photos_number_value" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -465,7 +472,7 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/type_of_house" />
+                android:text="@string/type_of_house" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
                 android:layout_width="match_parent"
@@ -500,7 +507,7 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/agent_names" />
+                android:text="@string/agent_names" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
                 android:layout_width="match_parent"
@@ -535,7 +542,7 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/boroughs" />
+                android:text="@string/boroughs" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
                 android:layout_width="match_parent"
@@ -570,7 +577,7 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/city" />
+                android:text="@string/city" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
                 android:layout_width="match_parent"
@@ -606,7 +613,7 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/proximity" />
+                android:text="@string/proximity" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_school"
@@ -659,5 +666,23 @@
                 app:layout_constraintTop_toBottomOf="@id/switch_transport" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/paleGray"
+            app:layout_constraintTop_toBottomOf="@id/property_proximity" />
+
+        <Button
+            android:id="@+id/search_property"
+            android:layout_marginVertical="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/property_proximity"
+            android:text="@string/search_property"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

@@ -35,6 +35,7 @@ import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.databinding.ActivityMainNavHeaderBinding
+import com.openclassrooms.realestatemanager.ui.login.LoginFragmentDirections
 import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragment
 import com.openclassrooms.realestatemanager.ui.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragmentDirections
@@ -96,7 +97,16 @@ class MainActivity : AppCompatActivity(){
         // Set up the NavController and connect it to the NavigationView
         setupNavigationController()
         checkHasInternet()
+        initSearchOnClickListeners()
     }
+
+    private fun initSearchOnClickListeners() {
+        activityMainBinding.btnSearch.setOnClickListener {
+            val action = PropertyListFragmentDirections.actionPropertyListFragmentToSearchFragment()
+            navController.navigate(action)
+        }
+    }
+
     private fun setupNavigationController() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -120,10 +130,6 @@ class MainActivity : AppCompatActivity(){
             }
             R.id.nav_login -> {
                 logInActions()
-                return true
-            }
-            R.id.btn_search -> {
-                navController.navigate(R.id.action_propertyListFragment_to_searchFragment)
                 return true
             }
             else -> {
