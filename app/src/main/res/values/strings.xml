@@ -103,7 +103,7 @@
     <string name="type_of_house">Type of house :</string>
     <string name="type_of_house_hint">Enter the type of house your looking</string>
     <string name="agent_names_hint">Enter the agent names</string>
-    <string name="agent_names">Agent(s) name(s)</string>
+    <string name="agent_emails">Agent(s) email(s)</string>
     <string name="boroughs">Boroughs</string>
     <string name="boroughs_hint">Enter boroughs name(s)</string>
     <string name="city">City</string>

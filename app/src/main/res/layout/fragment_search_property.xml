@@ -475,12 +475,14 @@
                 android:text="@string/type_of_house" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
+                android:id="@+id/property_type_of_house_multi_auto_complete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10sp"
                 android:ems="10"
                 android:hint="@string/type_of_house_hint"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.526"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/property_type_of_house_text" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -507,14 +509,15 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/agent_names" />
+                android:text="@string/agent_emails" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
+                android:id="@+id/property_agent_seller_multi_auto_complete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10sp"
                 android:ems="10"
-                android:hint="@string/agent_names_hint"
+                android:hint="@string/agent_email_hint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/property_agent_seller_text" />
@@ -545,6 +548,7 @@
                 android:text="@string/boroughs" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
+                android:id="@+id/property_boroughs_multi_auto_complete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10sp"
@@ -580,6 +584,7 @@
                 android:text="@string/city" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
+                android:id="@+id/property_city_multi_auto_complete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10sp"

@@ -13,6 +13,8 @@ import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import kotlinx.coroutines.flow.firstOrNull
 import android.util.Log
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 
 /**
@@ -28,6 +30,11 @@ class SharedPropertyViewModel(
     private val _selectedProperty = MutableLiveData<PropertyWithDetails>()
     val getSelectedProperty: LiveData<PropertyWithDetails> get() = _selectedProperty
 
+    // Get filtered properties
+    private val _filteredProperties = MutableLiveData<List<PropertyWithDetails>>()
+    val filteredProperties: LiveData<List<PropertyWithDetails>> get() = _filteredProperties
+
+
     fun selectProperty(property: PropertyWithDetails) {
         _selectedProperty.value = property
     }
@@ -37,6 +44,14 @@ class SharedPropertyViewModel(
         liveData {
             val combinedData = combinePropertiesWithDetails(properties)
             emit(combinedData)
+        }
+    }
+
+    fun filteredPropertiesByType(typesOfHouses: List<String>) {
+        viewModelScope.launch {
+            _filteredProperties.value = propertiesWithDetails.value?.filter { propertyWithDetails ->
+                propertyWithDetails.property.typeOfHouse in typesOfHouses
+            }
         }
     }
 

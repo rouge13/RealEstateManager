@@ -1,20 +1,8 @@
 package com.openclassrooms.realestatemanager.ui.sharedViewModel
 
-import android.app.Activity
-import android.app.Application
-import android.content.Context
-import android.content.Intent
-import android.location.Location
-import android.location.LocationManager
-import android.os.Bundle
-import android.provider.Settings
-import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
@@ -35,6 +23,21 @@ class SharedAgentViewModel(private val repository: AgentRepository, application:
     // Start location update
     fun startLocationUpdates() {
         locationLiveData.startLocationUpdates()
+    }
+    // Get filtered agent by email in MutalbeLiveData
+    val _agentByEmailFiltered = MutableLiveData<AgentEntity?>()
+
+    // Get filtered agent by email live data
+    fun getAgentByEmailFiltered(email: String): LiveData<AgentEntity?> {
+        return _agentByEmailFiltered
+    }
+
+
+    // Function to get agent by email
+    suspend fun agentByEmailFiltered(email: String) {
+        viewModelScope.launch {
+            _agentByEmailFiltered.postValue(repository.agentByEmailFiltered(email).asLiveData().value)
+        }
     }
 
     val allAgents: LiveData<List<AgentEntity>> = repository.allAgents.asLiveData()

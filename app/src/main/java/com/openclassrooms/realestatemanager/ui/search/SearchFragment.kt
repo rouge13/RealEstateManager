@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.MultiAutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
@@ -13,6 +15,7 @@ import androidx.navigation.findNavController
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.databinding.FragmentSearchPropertyBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import java.util.Calendar
 
@@ -21,9 +24,20 @@ import java.util.Calendar
  */
 class SearchFragment : Fragment(){
     private lateinit var binding: FragmentSearchPropertyBinding
+    private val _agentsId = MutableLiveData<List<Int>>()
+    private val agentsId: LiveData<List<Int>> get() = _agentsId
     private val _startDateInMillis = MutableLiveData<Long?>()
     private val startDateInMillis: LiveData<Long?> get() = _startDateInMillis
-    private val viewModel: SharedPropertyViewModel by activityViewModels {
+    private val sharedPropertyViewModel: SharedPropertyViewModel by activityViewModels {
+        ViewModelFactory(
+            (requireActivity().application as MainApplication).agentRepository,
+            (requireActivity().application as MainApplication).propertyRepository,
+            (requireActivity().application as MainApplication).addressRepository,
+            (requireActivity().application as MainApplication).photoRepository,
+            requireActivity().application as MainApplication
+        )
+    }
+    private val sharedAgentViewModel: SharedAgentViewModel by activityViewModels {
         ViewModelFactory(
             (requireActivity().application as MainApplication).agentRepository,
             (requireActivity().application as MainApplication).propertyRepository,
@@ -46,6 +60,81 @@ class SearchFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
         initAllButtons()
         observeStartDate()
+        initTypeOfHouseBoroughsAndCities()
+        initAgentsNames()
+
+    }
+
+    private fun initAgentsNames() {
+        sharedAgentViewModel.allAgents.observe(viewLifecycleOwner) { agents ->
+            val agentsEmails = agents.map { it.email }.distinct()
+            initAgentsEmails(agentsEmails)
+        }
+    }
+
+    private fun initAgentsEmails(agentsEmails: List<String>) {
+        val multiAutoCompleteTextView = binding.propertyAgentSellerMultiAutoComplete
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            agentsEmails
+        )
+        multiAutoCompleteTextView.setAdapter(adapter)
+        multiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+        multiAutoCompleteTextView.threshold = 2 // Start suggesting after typing one character
+    }
+
+    private fun initTypeOfHouseBoroughsAndCities() {
+        sharedPropertyViewModel.propertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
+            val typesOfHouse = propertiesWithDetails.map { it.property.typeOfHouse }.distinct()
+            val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
+            val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
+            initTypesOfHouse(typesOfHouse)
+            initBoroughs(boroughs)
+            initCities(cities)
+        }
+    }
+
+    private fun initCities(cities: List<String>) {
+        val multiAutoCompleteTextView = binding.propertyCityMultiAutoComplete
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            cities
+        )
+        multiAutoCompleteTextView.setAdapter(adapter)
+        multiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+        multiAutoCompleteTextView.threshold = 2 // Start suggesting after typing one character
+    }
+
+    private fun initBoroughs(boroughs: List<String>) {
+        val multiAutoCompleteTextView = binding.propertyBoroughsMultiAutoComplete
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            boroughs
+        )
+        multiAutoCompleteTextView.setAdapter(adapter)
+        multiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+        multiAutoCompleteTextView.threshold = 2 // Start suggesting after typing one character
+    }
+
+    private fun initTypesOfHouse(typesOfHouse: List<String>) {
+        val multiAutoCompleteTextView = binding.propertyTypeOfHouseMultiAutoComplete
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            typesOfHouse
+        )
+        multiAutoCompleteTextView.setAdapter(adapter)
+        multiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+        multiAutoCompleteTextView.threshold = 2 // Start suggesting after typing one character
+    }
+
+    private fun initCommaTokenizer() {
+
+        binding.propertyBoroughsMultiAutoComplete.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+        binding.propertyCityMultiAutoComplete.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
     }
 
     private fun initAllButtons() {
@@ -113,7 +202,6 @@ class SearchFragment : Fragment(){
             datePickerDialog.show()
         }
     }
-
 
     private fun observeStartDate() {
         startDateInMillis.observe(viewLifecycleOwner) { startDate ->
