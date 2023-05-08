@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.map
 
 import android.location.Geocoder
-import android.location.Location
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -14,7 +13,6 @@ import com.openclassrooms.realestatemanager.R
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -25,7 +23,6 @@ import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.LocationDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
-import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragmentDirections
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 
@@ -69,7 +66,7 @@ class MapFragment : Fragment() {
                     updateMapWithAgentLocation(it)
                 }
             }
-            propertyViewModel.propertiesWithDetails.observe(viewLifecycleOwner) {
+            propertyViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) {
                 if (it != null) {
                     setMarkers(it, view)
                 }
@@ -87,7 +84,7 @@ class MapFragment : Fragment() {
         }
         googleMap.setOnMarkerClickListener { marker ->
             propertyMarkers[marker]?.let { propertyWithDetails ->
-                propertyViewModel.selectProperty(propertyWithDetails)
+                propertyViewModel.setSelectProperty(propertyWithDetails)
                 val action = MapFragmentDirections.actionMapFragmentToInfoPropertyFragment()
                 fragmentMapBinding.root.findNavController().navigate(action)
                 true

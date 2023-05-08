@@ -60,13 +60,13 @@ class PropertyListFragment : Fragment() {
 
     private fun configureRecyclerView() {
         // Observe the combined data from the ViewModel
-        propertyListViewModel.propertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
+        propertyListViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
             adapter.submitList(propertiesWithDetails)
         }
     }
 
     private fun navigateToInfoPropertyFragment(propertyWithDetails: PropertyWithDetails) {
-        propertyListViewModel.selectProperty(propertyWithDetails)
+        propertyListViewModel.setSelectProperty(propertyWithDetails)
         val action = PropertyListFragmentDirections.actionPropertyListFragmentToInfoPropertyFragment()
         binding.root.findNavController().navigate(action)
     }

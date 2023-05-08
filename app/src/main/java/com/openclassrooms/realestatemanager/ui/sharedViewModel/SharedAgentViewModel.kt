@@ -33,12 +33,12 @@ class SharedAgentViewModel(private val repository: AgentRepository, application:
     }
 
 
-    // Function to get agent by email
-    suspend fun agentByEmailFiltered(email: String) {
-        viewModelScope.launch {
-            _agentByEmailFiltered.postValue(repository.agentByEmailFiltered(email).asLiveData().value)
-        }
-    }
+//    // Function to get agent by email
+//    suspend fun agentByEmailFiltered(email: String) {
+//        viewModelScope.launch {
+//            _agentByEmailFiltered.postValue(repository.agentByEmailFiltered(email).asLiveData().value)
+//        }
+//    }
 
     val allAgents: LiveData<List<AgentEntity>> = repository.allAgents.asLiveData()
     // Mutable LiveData to get the agent by email and password

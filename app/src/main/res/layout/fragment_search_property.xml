@@ -163,19 +163,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_price_start_value"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/date_between" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/property_price_end_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="5sp"
-                android:layout_marginStart="10sp"
-                android:textSize="15sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/property_price_to_text"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/price_end" />
+                android:text="@string/price_between" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_price_end_value"
@@ -184,7 +172,7 @@
                 android:hint="@string/price_end_value"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/property_price_end_text"
+                app:layout_constraintStart_toEndOf="@+id/property_price_to_text"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -231,7 +219,7 @@
                 android:text="@string/square_between" />
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/property_square_feet_end_text"
+                android:id="@+id/property_square_feet_end_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"

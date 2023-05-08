@@ -34,15 +34,15 @@ data class PropertyEntity(
     var description: String? = "Must add description for this property in later time",
     var typeOfHouse: String,
     var isSold: Boolean? = false,
-    var dateStartSelling: String? = SimpleDateFormat("yyyy/MM/dd", Locale.US).format(Calendar.getInstance().time),
+    var dateStartSelling: String? = SimpleDateFormat("MM/dd/yyyy", Locale.US).format(Calendar.getInstance().time),
     var dateSold: String? = null,
     var agentId: Int,
     var primaryPhoto: String,
-    val schoolProximity: Boolean? = false,
-    val parkProximity: Boolean? = false,
-    val shoppingProximity: Boolean? = false,
-    val restaurantProximity: Boolean? = false,
-    val publicTransportProximity: Boolean? = false,
+    val schoolProximity: Boolean? = null,
+    val parkProximity: Boolean? = null,
+    val shoppingProximity: Boolean? = null,
+    val restaurantProximity: Boolean? = null,
+    val publicTransportProximity: Boolean? = null,
     var lastUpdate: Long = System.currentTimeMillis()
 ) : Parcelable {
 

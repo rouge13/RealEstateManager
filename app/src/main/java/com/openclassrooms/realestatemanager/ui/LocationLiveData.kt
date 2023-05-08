@@ -46,7 +46,6 @@ class LocationLiveData(private var context: Context) : LiveData<LocationDetails>
             }
         }
         startLocationUpdates()
-
     }
 
     internal fun startLocationUpdates() {

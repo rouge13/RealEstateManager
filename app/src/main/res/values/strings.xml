@@ -80,7 +80,7 @@
     <string name="date_start">Date start</string>
     <string name="date_end">Date end</string>
     <string name="date_between">between</string>
-    <string name="price_start">Price start :</string>
+    <string name="price_start">Price between:</string>
     <string name="price_end">Price end :</string>
     <string name="price_start_value">value</string>
     <string name="price_end_value">value</string>
@@ -115,6 +115,7 @@
     <string name="public_transport">Public transport</string>
     <string name="restaurant">Restaurant(s)</string>
     <string name="search_property">Search property(ies)</string>
+    <string name="price_between">and</string>
 
 
 </resources>

@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
-import androidx.lifecycle.switchMap
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
@@ -13,7 +11,9 @@ import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import kotlinx.coroutines.flow.firstOrNull
 import android.util.Log
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
+import com.openclassrooms.realestatemanager.data.model.SearchCriteria
 import kotlinx.coroutines.launch
 
 
@@ -26,34 +26,51 @@ class SharedPropertyViewModel(
     private val photoRepository: PhotoRepository
 ) : ViewModel() {
 
-    // Get selected property
+    // Get and Set selected property
     private val _selectedProperty = MutableLiveData<PropertyWithDetails>()
     val getSelectedProperty: LiveData<PropertyWithDetails> get() = _selectedProperty
-
-    // Get filtered properties
-    private val _filteredProperties = MutableLiveData<List<PropertyWithDetails>>()
-    val filteredProperties: LiveData<List<PropertyWithDetails>> get() = _filteredProperties
-
-
-    fun selectProperty(property: PropertyWithDetails) {
+    fun setSelectProperty(property: PropertyWithDetails) {
         _selectedProperty.value = property
     }
 
-    // Combine the data in a single LiveData object
-    val propertiesWithDetails: LiveData<List<PropertyWithDetails>> = propertyRepository.allProperties.asLiveData().switchMap { properties ->
-        liveData {
-            val combinedData = combinePropertiesWithDetails(properties)
-            emit(combinedData)
+    private val _filteredProperties = MutableLiveData<List<PropertyEntity>>()
+    private val getFilteredProperties: LiveData<List<PropertyEntity>> get() = _filteredProperties
+
+    fun setFilteredProperties(searchCriteria: SearchCriteria) {
+        viewModelScope.launch {
+            propertyRepository.setFilteredProperties(searchCriteria)
+                .collect { filteredProperties ->
+                    _filteredProperties.value = filteredProperties
+                }
         }
     }
 
-    fun filteredPropertiesByType(typesOfHouses: List<String>) {
-        viewModelScope.launch {
-            _filteredProperties.value = propertiesWithDetails.value?.filter { propertyWithDetails ->
-                propertyWithDetails.property.typeOfHouse in typesOfHouses
+    private val propertiesWithDetailsMediator = MediatorLiveData<List<PropertyWithDetails>>()
+
+    init {
+        propertiesWithDetailsMediator.addSource(propertyRepository.allProperties.asLiveData()) { properties ->
+            viewModelScope.launch {
+                propertiesWithDetailsMediator.value = combinePropertiesWithDetails(properties)
+            }
+        }
+
+        propertiesWithDetailsMediator.addSource(getFilteredProperties) { filteredProperties ->
+            viewModelScope.launch {
+                propertiesWithDetailsMediator.value = combinePropertiesWithDetails(filteredProperties)
             }
         }
     }
+
+    val getPropertiesWithDetails: LiveData<List<PropertyWithDetails>> = propertiesWithDetailsMediator
+
+
+//    // Combine the data in a single LiveData object
+//    val propertiesWithDetails: LiveData<List<PropertyWithDetails>> = propertyRepository.allProperties.asLiveData().switchMap { properties ->
+//        liveData {
+//            val combinedData = combinePropertiesWithDetails(properties)
+//            emit(combinedData)
+//        }
+//    }
 
     private suspend fun combinePropertiesWithDetails(
         properties: List<PropertyEntity>?
@@ -61,7 +78,6 @@ class SharedPropertyViewModel(
         if (properties == null) {
             return emptyList()
         }
-
         val combinedData = properties.mapNotNull { property ->
             val propertyId = property.id
             if (propertyId != null) {
@@ -75,7 +91,6 @@ class SharedPropertyViewModel(
         }
         return combinedData
     }
-
 }
 
 
