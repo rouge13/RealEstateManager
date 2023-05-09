@@ -73,7 +73,7 @@
     <string name="agent_location">Location</string>
 
     <!-- PROPERTY SEARCH FRAGMENT -->
-    <string name="sold_property">Sold property</string>
+    <string name="sold_property">Sold</string>
     <string name="property_date">Property date choosed</string>
     <string name="pick_start_date">Pick start date</string>
     <string name="pick_end_date">Pick end date</string>
@@ -82,23 +82,23 @@
     <string name="date_between">between</string>
     <string name="price_start">Price between:</string>
     <string name="price_end">Price end :</string>
-    <string name="price_start_value">value</string>
-    <string name="price_end_value">value</string>
+    <string name="price_start_value">Enter value</string>
+    <string name="price_end_value">Enter value</string>
     <string name="square_feet_start">Square feet between :</string>
-    <string name="square_feet_start_value">value</string>
+    <string name="square_feet_start_value">Enter value</string>
     <string name="square_between">and</string>
-    <string name="square_feet_end_value">value</string>
-    <string name="rooms_number">Rooms number between :</string>
-    <string name="rooms_number_value">value</string>
+    <string name="square_feet_end_value">Enter value</string>
+    <string name="rooms_number">Rooms between :</string>
+    <string name="rooms_number_value">Enter value</string>
     <string name="rooms_between">and</string>
-    <string name="bedrooms_number">Bedrooms number between :</string>
-    <string name="bedrooms_number_value">value</string>
+    <string name="bedrooms_number">Bedrooms between :</string>
+    <string name="bedrooms_number_value">Enter value</string>
     <string name="bedrooms_between">and</string>
-    <string name="bathrooms_number">Bathrooms number between :</string>
-    <string name="bathrooms_number_value">value</string>
+    <string name="bathrooms_number">Bathrooms between :</string>
+    <string name="bathrooms_number_value">Enter value</string>
     <string name="bathrooms_between">and</string>
-    <string name="photos_number">Photos number between :</string>
-    <string name="photos_number_value">value</string>
+    <string name="photos_number">Photos between :</string>
+    <string name="photos_number_value">Enter value</string>
     <string name="photos_between">and</string>
     <string name="type_of_house">Type of house :</string>
     <string name="type_of_house_hint">Enter the type of house your looking</string>
@@ -116,6 +116,8 @@
     <string name="restaurant">Restaurant(s)</string>
     <string name="search_property">Search property(ies)</string>
     <string name="price_between">and</string>
+    <string name="remove_filter">Remove filter</string>
+    <string name="property_for_sale">For sale</string>
 
 
 </resources>

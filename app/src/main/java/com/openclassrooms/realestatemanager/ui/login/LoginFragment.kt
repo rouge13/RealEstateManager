@@ -23,10 +23,6 @@ class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private val viewModel: SharedAgentViewModel by activityViewModels {
         ViewModelFactory(
-            (requireActivity().application as MainApplication).agentRepository,
-            (requireActivity().application as MainApplication).propertyRepository,
-            (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).photoRepository,
             requireActivity().application as MainApplication
         )
     }

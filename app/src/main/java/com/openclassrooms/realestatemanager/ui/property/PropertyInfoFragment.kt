@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.model.LatLng
@@ -15,6 +17,8 @@ import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.map.MapFragmentDirections
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 
 /**
@@ -22,16 +26,8 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyVie
  */
 class PropertyInfoFragment : Fragment() {
     private lateinit var binding: FragmentInfoPropertyBinding
-    private val viewModel: SharedPropertyViewModel by activityViewModels {
-        ViewModelFactory(
-            (requireActivity().application as MainApplication).agentRepository,
-            (requireActivity().application as MainApplication).propertyRepository,
-            (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).photoRepository,
-            requireActivity().application as MainApplication
-        )
-    }
-
+    private val viewModel: SharedPropertyViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
+    private val sharedNavigationViewModel: SharedNavigationViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,6 +40,18 @@ class PropertyInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         displayPropertyDetails(view)
+        initSharedNavigationViewModelSearchAction()
+    }
+
+    private fun initSharedNavigationViewModelSearchAction() {
+        sharedNavigationViewModel.searchClicked.observe(viewLifecycleOwner) { navigate ->
+            if (navigate) {
+                val action =
+                    PropertyInfoFragmentDirections.actionInfoPropertyFragmentToSearchFragment()
+                findNavController().navigate(action)
+                sharedNavigationViewModel.doneNavigatingToSearch()
+            }
+        }
     }
 
     private fun displayPropertyDetails(view: View) {

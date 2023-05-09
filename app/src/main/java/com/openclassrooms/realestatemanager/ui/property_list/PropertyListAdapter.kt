@@ -2,16 +2,12 @@ package com.openclassrooms.realestatemanager.ui.property_list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
-import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
-import com.openclassrooms.realestatemanager.ui.MainApplication
-import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

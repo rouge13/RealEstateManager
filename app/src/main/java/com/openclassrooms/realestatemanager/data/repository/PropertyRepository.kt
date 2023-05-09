@@ -48,5 +48,4 @@ class PropertyRepository(private val propertyDao: PropertyDao) {
             boroughsCount = searchCriteria.selectedBoroughsForQuery.size
         )
     }
-
 }

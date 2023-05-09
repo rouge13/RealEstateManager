@@ -10,6 +10,7 @@ import android.widget.MultiAutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.load.model.ByteArrayLoader.Converter
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
@@ -20,7 +21,10 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyVie
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
+import kotlin.properties.Delegates
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -29,19 +33,11 @@ class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchPropertyBinding
     private val sharedPropertyViewModel: SharedPropertyViewModel by activityViewModels {
         ViewModelFactory(
-            (requireActivity().application as MainApplication).agentRepository,
-            (requireActivity().application as MainApplication).propertyRepository,
-            (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).photoRepository,
             requireActivity().application as MainApplication
         )
     }
     private val sharedAgentViewModel: SharedAgentViewModel by activityViewModels {
         ViewModelFactory(
-            (requireActivity().application as MainApplication).agentRepository,
-            (requireActivity().application as MainApplication).propertyRepository,
-            (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).photoRepository,
             requireActivity().application as MainApplication
         )
     }
@@ -59,18 +55,16 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAllButtons()
-        binding.btnPropertyDateEnd.isEnabled = false
         getAllValuesEdited()
         initTypeOfHouseBoroughsAndCities()
         initAgentsNames()
         initAllSwitches()
         initSearchButton()
-
     }
 
     private fun initSearchButton() {
         binding.searchProperty.setOnClickListener {
-            sharedPropertyViewModel.setFilteredProperties(searchCriteria)
+            sharedPropertyViewModel.setSearchCriteria(searchCriteria)
             view?.findNavController()
                 ?.navigate(SearchFragmentDirections.actionSearchFragmentToPropertyListFragment())
         }
@@ -210,8 +204,6 @@ class SearchFragment : Fragment() {
                 }
             }
     }
-
-
     private fun initAllSwitches() {
         initSchoolProximitySwitch()
         initShopProximitySwitch()
@@ -354,12 +346,20 @@ class SearchFragment : Fragment() {
 
     private fun initAllButtons() {
         binding.cancelButton.setOnClickListener {
+            sharedPropertyViewModel.setSearchCriteria(sharedPropertyViewModel.previousSearchCriteria.value)
+            findNavController().popBackStack()
+        }
+        binding.searchProperty.setOnClickListener {
+            sharedPropertyViewModel.setSearchCriteria(searchCriteria)
             val action = SearchFragmentDirections.actionSearchFragmentToPropertyListFragment()
             binding.root.findNavController().navigate(action)
         }
-        binding.searchProperty.setOnClickListener {
-            val action = SearchFragmentDirections.actionSearchFragmentToPropertyListFragment()
-            binding.root.findNavController().navigate(action)
+        binding.removingFilter.setOnClickListener {
+            // Reset your search criteria
+            searchCriteria.clear()
+            // Request all properties from the ViewModel
+            sharedPropertyViewModel.setSearchCriteria(null)
+            findNavController().popBackStack()
         }
         initStartDate()
         initEndDate()
@@ -369,6 +369,7 @@ class SearchFragment : Fragment() {
         binding.btnPropertyDateEnd.setOnClickListener {
             // Get the current date as a Calendar instance
             val calendar = Calendar.getInstance()
+            calendar.timeZone = TimeZone.getTimeZone("UTC")
             // Create a DatePickerDialog with the current date as the default date
             val datePickerDialog = DatePickerDialog(
                 requireContext(),
@@ -382,26 +383,13 @@ class SearchFragment : Fragment() {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
-            val dateInMillis: Long? = try {
-                searchCriteria.selectedStartDateForQuery?.let { it1 ->
-                    SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(
-                        it1
-                    )?.time
-                }
-            } catch (e: ParseException) {
-                e.printStackTrace()
-                null
-            }
-            binding.btnPropertyDateEnd.isEnabled = (dateInMillis!! > 0L)
-            datePickerDialog.datePicker.minDate = dateInMillis
             datePickerDialog.setOnDismissListener {
                 calendar.apply {
                     set(Calendar.YEAR, datePickerDialog.datePicker.year)
                     set(Calendar.MONTH, datePickerDialog.datePicker.month)
                     set(Calendar.DAY_OF_MONTH, datePickerDialog.datePicker.dayOfMonth)
                 }
-                searchCriteria.selectedEndDateForQuery =
-                    SimpleDateFormat("MM/dd/yyyy", Locale.US).format(calendar.timeInMillis)
+                searchCriteria.selectedEndDateForQuery = calendar.timeInMillis
             }
             // Show the date picker dialog
             datePickerDialog.show()
@@ -412,6 +400,7 @@ class SearchFragment : Fragment() {
         binding.btnPropertyDateStart.setOnClickListener {
             // Get the current date as a Calendar instance
             val calendar = Calendar.getInstance()
+            calendar.timeZone = TimeZone.getTimeZone("UTC")
             // Create a DatePickerDialog with the current date as the default date
             val datePickerDialog = DatePickerDialog(
                 requireContext(),
@@ -431,8 +420,8 @@ class SearchFragment : Fragment() {
                     set(Calendar.MONTH, datePickerDialog.datePicker.month)
                     set(Calendar.DAY_OF_MONTH, datePickerDialog.datePicker.dayOfMonth)
                 }
-                searchCriteria.selectedStartDateForQuery =
-                    SimpleDateFormat("MM/dd/yyyy", Locale.US).format(calendar.timeInMillis)
+                searchCriteria.selectedStartDateForQuery = calendar.timeInMillis
+
             }
             // Show the date picker dialog
             datePickerDialog.show()

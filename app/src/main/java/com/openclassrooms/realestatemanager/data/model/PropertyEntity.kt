@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 
 /**
@@ -34,8 +35,8 @@ data class PropertyEntity(
     var description: String? = "Must add description for this property in later time",
     var typeOfHouse: String,
     var isSold: Boolean? = false,
-    var dateStartSelling: String? = SimpleDateFormat("MM/dd/yyyy", Locale.US).format(Calendar.getInstance().time),
-    var dateSold: String? = null,
+    var dateStartSelling: Long? = null,
+    var dateSold: Long? = null,
     var agentId: Int,
     var primaryPhoto: String,
     val schoolProximity: Boolean? = null,

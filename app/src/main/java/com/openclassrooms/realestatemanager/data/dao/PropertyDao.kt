@@ -7,6 +7,7 @@ import androidx.room.Query
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -81,11 +82,20 @@ interface PropertyDao {
     AND (:minCountBathrooms IS NULL OR bathroomsCount >= :minCountBathrooms)
     AND (:maxCountBathrooms IS NULL OR bathroomsCount <= :maxCountBathrooms)
     AND (
-        (:isSold AND (:startDate IS NULL OR dateSold >= :startDate) AND (:endDate IS NULL OR dateSold <= :endDate))
-        OR
-        (NOT :isSold AND (:startDate IS NULL OR dateStartSelling >= :startDate) AND (:endDate IS NULL OR dateStartSelling <= :endDate))
+    CASE
+        WHEN (:isSold IS NOT NULL AND :isSold) THEN 
+            ((:startDate IS NULL OR dateSold >= :startDate) AND (:endDate IS NULL OR dateSold <= :endDate))
+        WHEN (:isSold IS NOT NULL AND NOT :isSold) THEN 
+            ((:startDate IS NULL OR dateStartSelling >= :startDate) AND (:endDate IS NULL OR dateStartSelling <= :endDate))
+        ELSE 1
+    END
+)
+    AND (
+        CASE
+            WHEN :isSold IS NULL THEN 1
+            ELSE isSold = :isSold
+        END
     )
-    AND isSold = :isSold
     AND (
         CASE
             WHEN (:schoolProximity IS NOT NULL) THEN (schoolProximity = :schoolProximity)
@@ -137,9 +147,9 @@ interface PropertyDao {
         maxCountBathrooms: Int?,
         minCountPhotos: Int?,
         maxCountPhotos: Int?,
-        startDate: String?,
-        endDate: String?,
-        isSold: Boolean,
+        startDate: Long?,
+        endDate: Long?,
+        isSold: Boolean?,
         schoolProximity: Boolean?,
         shopProximity: Boolean?,
         parkProximity: Boolean?,
@@ -150,6 +160,5 @@ interface PropertyDao {
         cityCount: Int,
         boroughsCount: Int
     ): Flow<List<PropertyEntity>>
-
 
 }

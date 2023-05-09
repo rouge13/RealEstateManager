@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentPropertyListBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 
 /**
@@ -21,14 +24,8 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyVie
 class PropertyListFragment : Fragment() {
     private lateinit var binding: FragmentPropertyListBinding
     private lateinit var adapter: PropertyListAdapter
-    private val propertyListViewModel: SharedPropertyViewModel by activityViewModels {
-        ViewModelFactory((requireActivity().application as MainApplication).agentRepository,
-            (requireActivity().application as MainApplication).propertyRepository,
-            (requireActivity().application as MainApplication).addressRepository,
-            (requireActivity().application as MainApplication).photoRepository,
-            requireActivity().application as MainApplication
-        )
-    }
+    private val propertyListViewModel: SharedPropertyViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
+    private val sharedNavigationViewModel: SharedNavigationViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +52,21 @@ class PropertyListFragment : Fragment() {
         binding.fragmentPropertyListRecyclerView.adapter = adapter
         // Configure the recyclerView
         configureRecyclerView()
+        initSharedNavigationViewModelSearchAction()
         return binding.root
+    }
+
+    private fun initSharedNavigationViewModelSearchAction() {
+        sharedNavigationViewModel.searchClicked.observe(viewLifecycleOwner) { navigate ->
+            if (navigate) {
+                val action = PropertyListFragmentDirections.actionPropertyListFragmentToSearchFragment()
+                findNavController().navigate(action)
+                sharedNavigationViewModel.doneNavigatingToSearch()
+                // If we are navigating to the search fragment, we should set the SearchCriteria to null
+                // so that all properties are fetched
+                propertyListViewModel.setSearchCriteria(null)
+            }
+        }
     }
 
     private fun configureRecyclerView() {

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.openclassrooms.realestatemanager.data.converter.Converters
 import com.openclassrooms.realestatemanager.data.dao.AddressDao
 import com.openclassrooms.realestatemanager.data.dao.AgentDao
 import com.openclassrooms.realestatemanager.data.dao.PhotoDao
@@ -21,9 +23,10 @@ import java.util.concurrent.Executors
  */
 @Database(
     entities = [PropertyEntity::class, AgentEntity::class, AddressEntity::class, PhotoEntity::class],
-    version = 17,
+    version = 21,
     exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract class PropertyDatabase : RoomDatabase() {
     abstract fun propertyDao(): PropertyDao
     abstract fun agentDao(): AgentDao

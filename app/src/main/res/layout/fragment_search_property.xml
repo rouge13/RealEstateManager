@@ -15,9 +15,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/cancel_button"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/ic_cancel_red_24dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/removing_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/red"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cancel_button"
+            android:text="@string/remove_filter"
+            tools:ignore="SmallSp" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switch_sold"
@@ -33,17 +47,17 @@
             android:id="@+id/choice_of_property_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20sp"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cancel_button"
+            android:layout_marginTop="10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/property_pick_date"
+            app:layout_constraintEnd_toEndOf="@id/property_pick_date"
+            app:layout_constraintTop_toBottomOf="@id/removing_filter"
             android:text="@string/property_date" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/property_pick_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="10sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/choice_of_property_date">
@@ -69,7 +83,6 @@
                 android:layout_marginStart="10sp"
                 android:text="@string/pick_end_date"
                 android:textSize="10sp"
-                android:enabled="false"
                 app:layout_constraintStart_toEndOf="@id/btn_property_date_start"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="SmallSp" />
@@ -145,10 +158,13 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_price_start_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/price_start_value"
+                android:digits="0123456789"
                 android:textSize="15sp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_price_start_text"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -167,9 +183,12 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_price_end_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:digits="0123456789"
                 android:hint="@string/price_end_value"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_price_to_text"
@@ -199,10 +218,13 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_square_feet_start_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/square_feet_start_value"
+                android:digits="0123456789"
                 android:textSize="15sp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_square_feet_start_text"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -220,9 +242,12 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_square_feet_end_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
+                android:digits="0123456789"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_square_feet_to_text"
                 app:layout_constraintTop_toTopOf="parent"
@@ -251,10 +276,13 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_rooms_number_start_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/rooms_number_value"
+                android:digits="0123456789"
                 android:textSize="15sp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_rooms_number_text"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -272,9 +300,12 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_rooms_number_end_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
+                android:digits="0123456789"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_rooms_number_to_text"
                 app:layout_constraintTop_toTopOf="parent"
@@ -303,10 +334,13 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_bedrooms_number_start_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/bedrooms_number_value"
+                android:digits="0123456789"
                 android:textSize="15sp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_bedrooms_number_text"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -324,9 +358,12 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_bedrooms_number_end_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
+                android:imeOptions="actionDone"
+                android:digits="0123456789"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_bedrooms_number_to_text"
                 app:layout_constraintTop_toTopOf="parent"
@@ -355,10 +392,13 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_bathrooms_number_start_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/bathrooms_number_value"
                 android:textSize="15sp"
+                android:imeOptions="actionDone"
+                android:digits="0123456789"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_bathrooms_number_text"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -376,13 +416,16 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_bathrooms_number_end_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/bathrooms_number_value"
+                android:imeOptions="actionDone"
+                android:digits="0123456789"
+                android:singleLine="true"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_bathrooms_number_to_text"
-                app:layout_constraintTop_toTopOf="parent"
-                android:hint="@string/bathrooms_number_value" />
+                app:layout_constraintTop_toTopOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -407,10 +450,13 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_photos_number_start_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/photos_number_value"
                 android:textSize="15sp"
+                android:imeOptions="actionDone"
+                android:digits="0123456789"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/property_photos_number_text"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -428,9 +474,10 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/property_photos_number_end_value"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
+                android:digits="0123456789"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/property_photos_number_to_text"
                 app:layout_constraintTop_toTopOf="parent"
@@ -467,6 +514,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10sp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 android:ems="10"
                 android:hint="@string/type_of_house_hint"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -505,6 +554,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10sp"
                 android:ems="10"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 android:hint="@string/agent_email_hint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -541,6 +592,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10sp"
                 android:ems="10"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 android:hint="@string/boroughs_hint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -578,6 +631,8 @@
                 android:layout_marginHorizontal="10sp"
                 android:ems="10"
                 android:hint="@string/city_hint"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/property_city_text" />

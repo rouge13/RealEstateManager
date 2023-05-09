@@ -1,5 +1,7 @@
 package com.openclassrooms.realestatemanager.data.model
 
+import java.util.Date
+
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
@@ -20,14 +22,39 @@ data class SearchCriteria(
     var selectedMaxCountBathroomsForQuery: Int? = null,
     var selectedMinCountPhotosForQuery: Int? = null,
     var selectedMaxCountPhotosForQuery: Int? = null,
-    var selectedStartDateForQuery: String? = null,
-    var selectedEndDateForQuery: String? = null,
-    var selectedIsSoldForQuery: Boolean = false,
+    var selectedStartDateForQuery: Long? = null,
+    var selectedEndDateForQuery: Long? = null,
+    var selectedIsSoldForQuery: Boolean? = null,
     var selectedSchoolProximityQuery: Boolean? = null,
     var selectedShopProximityQuery: Boolean? = null,
     var selectedParkProximityQuery: Boolean? = null,
     var selectedRestaurantProximityQuery: Boolean? = null,
     var selectedPublicTransportProximityQuery: Boolean? = null
 ) {
-
+    fun clear() {
+        selectedAgentsIdsForQuery = emptyList()
+        selectedTypeOfHouseForQuery = emptyList()
+        selectedBoroughsForQuery = emptyList()
+        selectedCitiesForQuery = emptyList()
+        selectedMinPriceForQuery = null
+        selectedMaxPriceForQuery = null
+        selectedMinSquareFeetForQuery = null
+        selectedMaxSquareFeetForQuery = null
+        selectedMinCountRoomsForQuery = null
+        selectedMaxCountRoomsForQuery = null
+        selectedMinCountBedroomsForQuery = null
+        selectedMaxCountBedroomsForQuery = null
+        selectedMinCountBathroomsForQuery = null
+        selectedMaxCountBathroomsForQuery = null
+        selectedMinCountPhotosForQuery = null
+        selectedMaxCountPhotosForQuery = null
+        selectedStartDateForQuery = null
+        selectedEndDateForQuery = null
+        selectedIsSoldForQuery = null
+        selectedSchoolProximityQuery = null
+        selectedShopProximityQuery = null
+        selectedParkProximityQuery = null
+        selectedRestaurantProximityQuery = null
+        selectedPublicTransportProximityQuery = null
+    }
 }

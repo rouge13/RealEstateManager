@@ -14,6 +14,7 @@ import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -32,45 +33,37 @@ class SharedPropertyViewModel(
     fun setSelectProperty(property: PropertyWithDetails) {
         _selectedProperty.value = property
     }
-
-    private val _filteredProperties = MutableLiveData<List<PropertyEntity>>()
-    private val getFilteredProperties: LiveData<List<PropertyEntity>> get() = _filteredProperties
-
-    fun setFilteredProperties(searchCriteria: SearchCriteria) {
-        viewModelScope.launch {
-            propertyRepository.setFilteredProperties(searchCriteria)
-                .collect { filteredProperties ->
-                    _filteredProperties.value = filteredProperties
-                }
-        }
+    // Search criteria and null by default
+    private val _searchCriteria = MutableLiveData<SearchCriteria?>(null)
+    val searchCriteria: LiveData<SearchCriteria?> get() = _searchCriteria
+    fun setSearchCriteria(criteria: SearchCriteria?) {
+        _previousSearchCriteria.value = _searchCriteria.value
+        _searchCriteria.value = criteria
     }
+
+    private val _previousSearchCriteria = MutableLiveData<SearchCriteria?>(null)
+    val previousSearchCriteria: LiveData<SearchCriteria?> get() = _previousSearchCriteria
+
 
     private val propertiesWithDetailsMediator = MediatorLiveData<List<PropertyWithDetails>>()
 
     init {
-        propertiesWithDetailsMediator.addSource(propertyRepository.allProperties.asLiveData()) { properties ->
+        propertiesWithDetailsMediator.addSource(_searchCriteria) { criteria ->
             viewModelScope.launch {
-                propertiesWithDetailsMediator.value = combinePropertiesWithDetails(properties)
-            }
-        }
-
-        propertiesWithDetailsMediator.addSource(getFilteredProperties) { filteredProperties ->
-            viewModelScope.launch {
-                propertiesWithDetailsMediator.value = combinePropertiesWithDetails(filteredProperties)
+                val properties = if (criteria != null) {
+                    propertyRepository.setFilteredProperties(criteria).firstOrNull()
+                } else {
+                    propertyRepository.allProperties.firstOrNull()
+                }
+                properties?.let {
+                    val propertyDetails = combinePropertiesWithDetails(it)
+                    propertiesWithDetailsMediator.postValue(propertyDetails)
+                }
             }
         }
     }
 
     val getPropertiesWithDetails: LiveData<List<PropertyWithDetails>> = propertiesWithDetailsMediator
-
-
-//    // Combine the data in a single LiveData object
-//    val propertiesWithDetails: LiveData<List<PropertyWithDetails>> = propertyRepository.allProperties.asLiveData().switchMap { properties ->
-//        liveData {
-//            val combinedData = combinePropertiesWithDetails(properties)
-//            emit(combinedData)
-//        }
-//    }
 
     private suspend fun combinePropertiesWithDetails(
         properties: List<PropertyEntity>?
@@ -92,6 +85,7 @@ class SharedPropertyViewModel(
         return combinedData
     }
 }
+
 
 
 

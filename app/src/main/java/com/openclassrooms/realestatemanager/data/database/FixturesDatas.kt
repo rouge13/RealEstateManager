@@ -1,16 +1,23 @@
 package com.openclassrooms.realestatemanager.data.database
 
+import com.openclassrooms.realestatemanager.data.converter.Converters
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class FixturesDatas {
-    companion object {
 
+
+    companion object {
+        private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        private val converters = Converters()
         val PROPERTY_PHOTO_LIST = listOf(
             PhotoEntity(1, "ic_panel_pict_1", "Panel",1),
             PhotoEntity(2, "ic_bathroom_2","Bathroom", 2),
@@ -55,8 +62,8 @@ class FixturesDatas {
                 "A flat, also known as an apartment, is a self-contained housing unit that occupies only part of a building. In the United States, flats are typically rented rather than owned, although it is possible to buy a flat in some areas. Flats can vary in size and layout, but they generally include a living area, one or more bedrooms, a bathroom, and a kitchen. Some flats may also have additional amenities, such as a balcony, a laundry room, or a swimming pool. The cost of renting a flat in the US can vary widely depending on the location, size, and quality of the unit.",
                 "Flat",
                 false,
-                "2023/04/09",
-                "",
+                converters.dateToTimestamp(dateFormat.parse("2023-04-09")),
+                null,
                 1,
                 "ic_flat_house1",
                 false,
@@ -76,8 +83,8 @@ class FixturesDatas {
                 "A house typically refers to a physical structure that is used as a dwelling. It is often associated with the idea of property ownership and can be used to describe a variety of different types of residential buildings, such as single-family homes, townhouses, and apartments.",
                 "House",
                 false,
-                "2023/04/10",
-                "",
+                converters.dateToTimestamp(dateFormat.parse("2023-04-10")),
+                null,
                 2,
                 "ic_house_classic1",
                 true,
@@ -97,8 +104,8 @@ class FixturesDatas {
                 "In terms of design, duplex homes can vary widely depending on the preferences of the builder and the needs of the occupants. Some duplexes may be designed to look like a single-family home from the outside, while others may have a more modern or contemporary appearance. The interior layout of each unit may also differ, with some featuring open floor plans and others having more traditional room divisions.",
                 "Duplex",
                 false,
-                "2023/04/12",
-                "",
+                converters.dateToTimestamp(dateFormat.parse("2023-04-12")),
+                null,
                 1,
                 "ic_duplex_house1",
                 false,
@@ -118,8 +125,8 @@ class FixturesDatas {
                 "A penthouse is a luxurious apartment or condominium unit that is typically located on the top floor of a high-rise building. These types of homes are often associated with luxury living and can offer spectacular views of the surrounding area.",
                 "Penthouse",
                 false,
-                "2023/04/15",
-                "",
+                converters.dateToTimestamp(dateFormat.parse("2023-04-15")),
+                null,
                 2,
                 "ic_penthouse_house1",
                 false,
@@ -139,8 +146,8 @@ class FixturesDatas {
                 "A house typically refers to a physical structure that is used as a dwelling. It is often associated with the idea of property ownership and can be used to describe a variety of different types of residential buildings, such as single-family homes, townhouses, and apartments.",
                 "House",
                 false,
-                "2023/04/20",
-                "",
+                converters.dateToTimestamp(dateFormat.parse("2023-04-20")),
+                null,
                 1,
                 "ic_house_classic2",
                 false,
@@ -160,8 +167,8 @@ class FixturesDatas {
                 "A house typically refers to a physical structure that is used as a dwelling. It is often associated with the idea of property ownership and can be used to describe a variety of different types of residential buildings, such as single-family homes, townhouses, and apartments.",
                 "House",
                 true,
-                "2023/04/10",
-                "2023/04/22",
+                converters.dateToTimestamp(dateFormat.parse("2023-04-22")),
+                converters.dateToTimestamp(dateFormat.parse("2023-04-22")),
                 1,
                 "ic_house_classic3",
                 true,
