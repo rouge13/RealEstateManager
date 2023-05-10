@@ -4,10 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -20,26 +18,6 @@ interface PropertyDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(property: PropertyEntity)
-
-    // Get all properties filtered
-//    @Query("SELECT * FROM property WHERE typeOfHouse IN (:typesOfHouses) IN (:agentsId) IN (:city) IN (:boroughs) ORDER BY id ASC")
-//    fun getFilteredProperties(typesOfHouses: List<String>, agentsId: List<Int>, city: List<String>, boroughs: List<String>): Flow<List<PropertyEntity>>
-//
-//    //In SQL, you can use the `WHERE` clause to filter the rows returned by a query based on a certain condition.
-//    //
-//    //If you want to retrieve rows where a particular column `x` is equal to a certain value or where the value is `NULL`, you can use the `IS NULL` operator.
-//    //
-//    //The syntax for such a query would be:
-//    //
-//    //```
-//    //SELECT *
-//    //FROM your_table
-//    //WHERE x = 'value' OR x IS NULL;
-//    //```
-//    //
-//    //This will return all rows where the value in column `x` is equal to `'value'` or where it is `NULL`.
-//    //
-//    //Note that you cannot use the `=` operator to compare a value to `NULL`, as `NULL` is not a value but rather a lack of a value. You must use the `IS NULL` operator instead.
     // Get all properties filtered
     @Query(
         """
@@ -82,14 +60,13 @@ interface PropertyDao {
     AND (:minCountBathrooms IS NULL OR bathroomsCount >= :minCountBathrooms)
     AND (:maxCountBathrooms IS NULL OR bathroomsCount <= :maxCountBathrooms)
     AND (
-    CASE
-        WHEN (:isSold IS NOT NULL AND :isSold) THEN 
-            ((:startDate IS NULL OR dateSold >= :startDate) AND (:endDate IS NULL OR dateSold <= :endDate))
-        WHEN (:isSold IS NOT NULL AND NOT :isSold) THEN 
-            ((:startDate IS NULL OR dateStartSelling >= :startDate) AND (:endDate IS NULL OR dateStartSelling <= :endDate))
-        ELSE 1
-    END
-)
+        CASE
+            WHEN (:isSold IS NOT NULL AND :isSold) THEN 
+                ((:startDate IS NULL OR dateSold >= :startDate) AND (:endDate IS NULL OR dateSold <= :endDate))
+            ELSE 
+                ((:startDate IS NULL OR dateStartSelling >= :startDate) AND (:endDate IS NULL OR dateStartSelling <= :endDate))
+        END
+    )
     AND (
         CASE
             WHEN :isSold IS NULL THEN 1
@@ -128,7 +105,7 @@ interface PropertyDao {
     )
     AND property.id IN (SELECT propertyId FROM photo GROUP BY propertyId HAVING (:minCountPhotos IS NULL OR COUNT(id) >= :minCountPhotos) AND (:maxCountPhotos IS NULL OR COUNT(id) <= :maxCountPhotos))
     ORDER BY property.id ASC
-"""
+    """
     )
     fun getAllFilteredProperties(
         typesOfHouses: List<String>,

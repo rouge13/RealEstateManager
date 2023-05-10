@@ -204,6 +204,7 @@ class SearchFragment : Fragment() {
                 }
             }
     }
+
     private fun initAllSwitches() {
         initSchoolProximitySwitch()
         initShopProximitySwitch()
@@ -211,11 +212,20 @@ class SearchFragment : Fragment() {
         initRestaurantProximitySwitch()
         initPublicTransportProximitySwitch()
         initSoldSwitch()
+        initForSaleSwitch()
+    }
+
+    private fun initForSaleSwitch() {
+        binding.switchForSale.setOnCheckedChangeListener { _, _ ->
+            searchCriteria.selectedIsSoldForQuery = false
+            binding.switchSold.isChecked = false
+        }
     }
 
     private fun initSoldSwitch() {
         binding.switchSold.setOnCheckedChangeListener { _, isChecked ->
             searchCriteria.selectedIsSoldForQuery = isChecked
+            binding.switchForSale.isChecked = false
         }
     }
 

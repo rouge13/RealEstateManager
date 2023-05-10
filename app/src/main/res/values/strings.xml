@@ -118,6 +118,7 @@
     <string name="price_between">and</string>
     <string name="remove_filter">Remove filter</string>
     <string name="property_for_sale">For sale</string>
+    <string name="for_sale_property">For sale</string>
 
 
 </resources>

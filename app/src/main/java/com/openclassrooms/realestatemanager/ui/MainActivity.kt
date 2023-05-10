@@ -52,6 +52,7 @@ import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
  */
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
+    private lateinit var navControllerDetail: NavController
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var activityMainNavHeaderBinding: ActivityMainNavHeaderBinding
     private lateinit var drawerLayout: DrawerLayout
@@ -98,8 +99,9 @@ class MainActivity : AppCompatActivity() {
         checkHasInternet()
         initSearchOnClickListeners()
     }
+
     private fun initSearchOnClickListeners() {
-        activityMainBinding.btnSearch.setOnClickListener {
+        activityMainBinding.btnSearch!!.setOnClickListener {
             if (navController.currentDestination?.id == R.id.searchFragment) {
                 navController.popBackStack() // Go back to the previous fragment
             } else {
@@ -109,13 +111,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupNavigationController() {
+        // Init the NavController
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
+
+        // Init the NavController for the detail fragment if the device is a tablet sw600dp
+        val navHostFragmentDetail =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_detail) as NavHostFragment
+        navControllerDetail = navHostFragmentDetail.navController
+
+        // Set up the NavController with the NavigationView
         navigationView.setupWithNavController(navController)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             handleNavigationItemSelected(menuItem, navController)
-
         }
     }
 
@@ -129,17 +138,14 @@ class MainActivity : AppCompatActivity() {
                 drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
                 return true
             }
-
             R.id.nav_logout -> {
                 logOutActions()
                 return true
             }
-
             R.id.nav_login -> {
                 logInActions()
                 return true
             }
-
             else -> {
                 // Let the NavController handle the other menu items
                 val handled =
@@ -151,18 +157,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun observeLogedAgent() {
         sharedAgentViewModel.loggedAgent.observe(this) { agent ->
             if (agent != null) forAgentConnected(agent) else forAgentNotConnected()
         }
     }
-
     private fun forAgentNotConnected() {
         showTheLogIn()
         showDefaultNavHeaderNotConnected()
     }
-
     private fun showDefaultNavHeaderNotConnected() {
         activityMainNavHeaderBinding.username.text =
             getString(R.string.text_view_property_agent_name)
@@ -170,17 +173,14 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.text_view_property_agent_email)
         setImageProfileDefault()
     }
-
     private fun showTheLogIn() {
         navigationView.menu.findItem(R.id.nav_login).isVisible = true
         navigationView.menu.findItem(R.id.nav_logout).isVisible = false
     }
-
     private fun forAgentConnected(agent: AgentEntity) {
         showTheLogOut()
         showAgentNavHeaderConnected(agent)
     }
-
     private fun isOnline(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -202,7 +202,6 @@ class MainActivity : AppCompatActivity() {
         }
         return false
     }
-
     private fun checkHasInternet() {
         if (isOnline(this)) {
             val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -220,12 +219,11 @@ class MainActivity : AppCompatActivity() {
                 agentLocationUpdates()
             }
             setupBottomNavigation()
-            activityMainBinding.viewPager.currentItem = 0 // Switch to the PropertyListFragment
+            activityMainBinding.viewPager?.currentItem = 0 // Switch to the PropertyListFragment
         } else {
-            activityMainBinding.bottomNavigationView.visibility = View.GONE
+            activityMainBinding.bottomNavigationView?.visibility = View.GONE
         }
     }
-
     private fun agentLocationUpdates() {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -237,7 +235,6 @@ class MainActivity : AppCompatActivity() {
             requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
-
     private val requestSinglePermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -246,7 +243,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.gps_enavailable), Toast.LENGTH_LONG).show()
             }
         }
-
     private fun requestLocationUpdates() {
         sharedAgentViewModel.startLocationUpdates()
     }
@@ -277,8 +273,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        activityMainBinding.bottomNavigationView.visibility = View.VISIBLE
-        activityMainBinding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
+        activityMainBinding.bottomNavigationView!!.visibility = View.VISIBLE
+        activityMainBinding.bottomNavigationView!!.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.list_fragment -> {
                     navController.navigate(R.id.propertyListFragment)

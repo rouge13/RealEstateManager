@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
+import android.util.Log
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -24,6 +25,7 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
             setImageInRecyclerView(get.property)
             // Set the onClickListener
             itemView.setOnClickListener {
+                Log.d("PropertyListAdapter", "Item clicked: ${get.property.id}")
                 onPropertyClick(get)
             }
             val propertyLayout = binding.propertyLayout

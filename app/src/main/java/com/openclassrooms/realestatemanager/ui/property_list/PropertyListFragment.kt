@@ -6,17 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentPropertyListBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import android.util.Log
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -44,6 +44,7 @@ class PropertyListFragment : Fragment() {
                         oldItem.photos == newItem.photos
             }
         }, onPropertyClick = { propertyWithDetails ->
+            Log.d("PropertyListFragment", "Property clicked: ${propertyWithDetails.property.id}")
             navigateToInfoPropertyFragment(propertyWithDetails)
         })
         // Set the layout manager for the recyclerView
@@ -55,7 +56,6 @@ class PropertyListFragment : Fragment() {
         initSharedNavigationViewModelSearchAction()
         return binding.root
     }
-
     private fun initSharedNavigationViewModelSearchAction() {
         sharedNavigationViewModel.searchClicked.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
@@ -68,18 +68,20 @@ class PropertyListFragment : Fragment() {
             }
         }
     }
-
     private fun configureRecyclerView() {
         // Observe the combined data from the ViewModel
         propertyListViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
             adapter.submitList(propertiesWithDetails)
         }
     }
-
     private fun navigateToInfoPropertyFragment(propertyWithDetails: PropertyWithDetails) {
         propertyListViewModel.setSelectProperty(propertyWithDetails)
-        val action = PropertyListFragmentDirections.actionPropertyListFragmentToInfoPropertyFragment()
-        binding.root.findNavController().navigate(action)
+        // Check if the detail container exists in this layout
+        val navHostFragmentDetail = activity?.findViewById<View>(R.id.nav_host_fragment_detail)
+        if (navHostFragmentDetail == null) {
+            // We're in a one-pane layout
+            val action = PropertyListFragmentDirections.actionPropertyListFragmentToInfoPropertyFragment()
+            findNavController().navigate(action)
+        } // No else block needed
     }
-
 }

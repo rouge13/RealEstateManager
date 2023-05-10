@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.property
 
-import android.R
+import com.openclassrooms.realestatemanager.R
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,7 +26,7 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyVie
  */
 class PropertyInfoFragment : Fragment() {
     private lateinit var binding: FragmentInfoPropertyBinding
-    private val viewModel: SharedPropertyViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
+    private val sharedPropertyViewModel: SharedPropertyViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
     private val sharedNavigationViewModel: SharedNavigationViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +55,7 @@ class PropertyInfoFragment : Fragment() {
     }
 
     private fun displayPropertyDetails(view: View) {
-        viewModel.getSelectedProperty.observe(viewLifecycleOwner) { propertyWithDetails ->
+        sharedPropertyViewModel.getSelectedProperty.observe(viewLifecycleOwner) { propertyWithDetails ->
             propertyWithDetails?.let {
                 val photoViewPager = binding.photoPropertyViewPager
                 val photoList = propertyWithDetails.photos
@@ -114,7 +114,7 @@ class PropertyInfoFragment : Fragment() {
 
     private fun initIsSoldOrNot(propertyWithDetails: PropertyWithDetails) {
         if (propertyWithDetails.property.isSold == true) {
-            binding.date.setTextColor(resources.getColor(R.color.holo_red_dark))
+            binding.date.setTextColor(resources.getColor(R.color.red))
             binding.date.text = "Solded on : ${propertyWithDetails.property.dateSold}"
         } else
             binding.date.text = "Selling date: ${propertyWithDetails.property.dateStartSelling}"
@@ -127,9 +127,17 @@ class PropertyInfoFragment : Fragment() {
         binding.imageMoveBeforeButton.setOnClickListener {
             photoViewPager.currentItem = photoViewPager.currentItem - 1
         }
-        binding.backwardProperty.setOnClickListener {
-            requireActivity().onBackPressed()
+        // Check if we are in a one-pane layout then remove backward button that aren't required anymore for the two-pane layout
+        val navHostFragmentDetail = activity?.findViewById<View>(R.id.nav_host_fragment_detail)
+
+        if (navHostFragmentDetail == null) {
+            binding.backwardProperty.setOnClickListener {
+                requireActivity().onBackPressed()
+            }
+        } else {
+            binding.backwardProperty.visibility = View.GONE
         }
+
     }
 }
 
