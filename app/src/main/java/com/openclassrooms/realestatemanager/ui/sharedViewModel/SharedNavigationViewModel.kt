@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.ui.sharedViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.openclassrooms.realestatemanager.R
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

@@ -46,8 +46,7 @@ class PropertyInfoFragment : Fragment() {
     private fun initSharedNavigationViewModelSearchAction() {
         sharedNavigationViewModel.searchClicked.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
-                val action =
-                    PropertyInfoFragmentDirections.actionInfoPropertyFragmentToSearchFragment()
+                val action = PropertyInfoFragmentDirections.actionInfoPropertyFragmentToSearchFragment()
                 findNavController().navigate(action)
                 sharedNavigationViewModel.doneNavigatingToSearch()
             }
@@ -74,7 +73,7 @@ class PropertyInfoFragment : Fragment() {
         val address = Geocoder(view.context).getFromLocationName(addressString, 1)
         val location = address?.get(0)?.latitude?.let { it1 -> address[0]?.longitude?.let { it2 -> LatLng(it1, it2) } }
         val marker = "&markers=color:red%7Alabel:S%7C" + location?.latitude + "," + location?.longitude
-        val staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + location?.latitude + "," + location?.longitude + "&zoom=15&size=300x300&markers=$marker&key=" + getString(com.openclassrooms.realestatemanager.R.string.google_map_key)
+        val staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + location?.latitude + "," + location?.longitude + "&zoom=15&size=300x300&markers=$marker&key=" + getString(R.string.google_map_key)
         Glide.with(view.context)
             .load(staticMapUrl)
             .into(binding.staticMapImageView)
@@ -127,17 +126,17 @@ class PropertyInfoFragment : Fragment() {
         binding.imageMoveBeforeButton.setOnClickListener {
             photoViewPager.currentItem = photoViewPager.currentItem - 1
         }
-        // Check if we are in a one-pane layout then remove backward button that aren't required anymore for the two-pane layout
-        val navHostFragmentDetail = activity?.findViewById<View>(R.id.nav_host_fragment_detail)
-
-        if (navHostFragmentDetail == null) {
-            binding.backwardProperty.setOnClickListener {
-                requireActivity().onBackPressed()
-            }
-        } else {
-            binding.backwardProperty.visibility = View.GONE
+        binding.backwardProperty.setOnClickListener {
+            requireActivity().onBackPressed()
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        if (activity?.resources?.getBoolean(R.bool.isTwoPanel) == true) {
+            binding.backwardProperty.visibility = View.GONE
+            findNavController().navigateUp()
+        }
     }
 }
 

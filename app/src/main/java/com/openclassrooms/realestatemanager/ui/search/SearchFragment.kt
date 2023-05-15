@@ -11,20 +11,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.load.model.ByteArrayLoader.Converter
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
 import com.openclassrooms.realestatemanager.databinding.FragmentSearchPropertyBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
-import java.text.ParseException
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 import java.util.TimeZone
-import kotlin.properties.Delegates
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -59,16 +54,16 @@ class SearchFragment : Fragment() {
         initTypeOfHouseBoroughsAndCities()
         initAgentsNames()
         initAllSwitches()
-        initSearchButton()
+//        initSearchButton()
     }
 
-    private fun initSearchButton() {
-        binding.searchProperty.setOnClickListener {
-            sharedPropertyViewModel.setSearchCriteria(searchCriteria)
-            view?.findNavController()
-                ?.navigate(SearchFragmentDirections.actionSearchFragmentToPropertyListFragment())
-        }
-    }
+//    private fun initSearchButton() {
+//        binding.searchProperty.setOnClickListener {
+//            sharedPropertyViewModel.setSearchCriteria(searchCriteria)
+//            view?.findNavController()
+//                ?.navigate(SearchFragmentDirections.actionSearchFragmentToPropertyListFragment())
+//        }
+//    }
 
     private fun getAllValuesEdited() {
         startPriceValue()
@@ -361,8 +356,12 @@ class SearchFragment : Fragment() {
         }
         binding.searchProperty.setOnClickListener {
             sharedPropertyViewModel.setSearchCriteria(searchCriteria)
-            val action = SearchFragmentDirections.actionSearchFragmentToPropertyListFragment()
-            binding.root.findNavController().navigate(action)
+            if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!){
+                val action = SearchFragmentDirections.actionSearchFragmentToPropertyListFragment()
+                binding.root.findNavController().navigate(action)
+            } else {
+                findNavController().popBackStack()
+            }
         }
         binding.removingFilter.setOnClickListener {
             // Reset your search criteria

@@ -11,6 +11,9 @@
         android:label="Property List"
         tools:layout="@layout/fragment_property_list">
         <action
+            android:id="@+id/action_propertyListFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
             android:id="@+id/action_propertyListFragment_to_infoPropertyFragment"
             app:destination="@id/infoPropertyFragment" />
         <action
@@ -46,6 +49,9 @@
             app:destination="@+id/searchFragment"
             app:popUpTo="@id/searchFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_mapFragment_to_propertyListFragment"
+            app:destination="@id/propertyListFragment" />
     </fragment>
 
     <fragment

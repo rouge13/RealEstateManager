@@ -119,6 +119,20 @@
     <string name="remove_filter">Remove filter</string>
     <string name="property_for_sale">For sale</string>
     <string name="for_sale_property">For sale</string>
+    <string name="cancel_add_property">Cancel</string>
+    <string name="validate_add_property">Validate</string>
+    <string name="property_price">Price</string>
+    <string name="agent_email">Agent email</string>
+    <string name="photo_description">Photo Description</string>
+    <string name="street_number">Street Number</string>
+    <string name="property_square_feet">Square Feet</string>
+    <string name="property_rooms_count">Number of rooms</string>
+    <string name="property_bedrooms_count">Number of bedrooms</string>
+    <string name="property_bathrooms_count">Number of bathrooms</string>
+    <string name="property_description">Description</string>
+    <string name="property_type">Type of house</string>
+    <string name="pick_date_of_selling">Pick the date of selling</string>
+    <string name="selling_date">Waiting for the Selling date</string>
 
 
 </resources>

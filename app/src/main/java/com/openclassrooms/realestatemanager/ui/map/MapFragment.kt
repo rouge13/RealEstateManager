@@ -68,8 +68,12 @@ class MapFragment : Fragment() {
     private fun initSharedNavigationViewModelSearchAction() {
         sharedNavigationViewModel.searchClicked.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
-                val action = MapFragmentDirections.actionMapFragmentToSearchFragment()
-                findNavController().navigate(action)
+                if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!) {
+                    val action = MapFragmentDirections.actionMapFragmentToSearchFragment()
+                    findNavController().navigate(action)
+                } else {
+                    findNavController().popBackStack()
+                }
                 sharedNavigationViewModel.doneNavigatingToSearch()
             }
         }
@@ -97,8 +101,12 @@ class MapFragment : Fragment() {
         googleMap.setOnMarkerClickListener { marker ->
             propertyMarkers[marker]?.let { propertyWithDetails ->
                 propertyViewModel.setSelectProperty(propertyWithDetails)
-                val action = MapFragmentDirections.actionMapFragmentToInfoPropertyFragment()
-                fragmentMapBinding.root.findNavController().navigate(action)
+                if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!){
+                    val action = MapFragmentDirections.actionMapFragmentToInfoPropertyFragment()
+                    fragmentMapBinding.root.findNavController().navigate(action)
+                } else {
+                    findNavController().popBackStack()
+                }
                 true
             } ?: false
         }
