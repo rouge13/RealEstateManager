@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
@@ -58,31 +59,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private val REQUEST_IMAGE_CAPTURE = 1
-    private val sharedAgentViewModel: SharedAgentViewModel by viewModels {
-        ViewModelFactory(
-            application as MainApplication
-        )
-    }
-    private val sharedPropertyViewModel: SharedPropertyViewModel by viewModels {
-        ViewModelFactory(
-            application as MainApplication
-        )
-    }
-    private val initializationViewModel: InitializationViewModel by viewModels {
-        ViewModelFactory(
-            application as MainApplication
-        )
-    }
-    private val sharedNavigationViewModel: SharedNavigationViewModel by viewModels {
-        ViewModelFactory(
-            application as MainApplication
-        )
-    }
+    private lateinit var sharedAgentViewModel: SharedAgentViewModel
+    private lateinit var initializationViewModel: InitializationViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
+        // Init the ViewModel
+        initViewModels()
         drawerLayout = activityMainBinding.activityMainDrawerLayout
         navigationView = activityMainBinding.activityMainNavView
         // Set up the drawer toggle
@@ -100,15 +85,22 @@ class MainActivity : AppCompatActivity() {
         initSearchOnClickListeners()
     }
 
+    private fun initViewModels() {
+        sharedAgentViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(SharedAgentViewModel::class.java)
+        initializationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(InitializationViewModel::class.java)
+
+    }
+
     private fun initSearchOnClickListeners() {
         activityMainBinding.btnSearch.setOnClickListener {
-            if (navController.currentDestination?.id == R.id.searchFragment) {
-                navController.popBackStack() // Go back to the previous fragment
+            if (navController.currentDestination?.id != R.id.searchFragment) {
+                navController.navigate(R.id.searchFragment)
             } else {
-                sharedNavigationViewModel.navigateToSearch()
+                navController.popBackStack() // Go back to the previous fragment
             }
         }
     }
+
 
     private fun setupNavigationController() {
         // Init the NavController

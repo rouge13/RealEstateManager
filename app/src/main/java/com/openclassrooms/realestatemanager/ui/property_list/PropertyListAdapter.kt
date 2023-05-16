@@ -15,19 +15,18 @@ import android.util.Log
  */
 class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetails>, private val onPropertyClick: (PropertyWithDetails) -> Unit)
     : ListAdapter<PropertyWithDetails, PropertyListAdapter.PropertyViewHolder>(diffCallback) {
-    class PropertyViewHolder(private val binding: ItemPropertyBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(get: PropertyWithDetails, onPropertyClick: (PropertyWithDetails) -> Unit) {
+
+    inner class PropertyViewHolder(private val binding: ItemPropertyBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(get: PropertyWithDetails) {
             // Set the data to the view
             binding.propertyType.text = get.property.typeOfHouse
             binding.propertySector.text = get.address?.boroughs?.takeIf { it.isNotBlank() } ?: "N/A"
             "$${get.property.price}".also { binding.propertyValue.text = it }
+
             // Set the image to the view
             setImageInRecyclerView(get.property)
-            // Set the onClickListener
-            itemView.setOnClickListener {
-                Log.d("PropertyListAdapter", "Item clicked: ${get.property.id}")
-                onPropertyClick(get)
-            }
+
             val propertyLayout = binding.propertyLayout
             if (get.property.isSold == true) {
                 propertyLayout.alpha = 0.3f
@@ -36,12 +35,21 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
                 propertyLayout.alpha = 1f
                 binding.soldText.visibility = android.view.View.GONE
             }
+
+            // Set the onClickListener
+            itemView.setOnClickListener {
+                val position = this.bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val propertyWithDetails = getItem(position)
+                    Log.d("PropertyListAdapter", "Item clicked: ${propertyWithDetails.property.id}")
+                    onPropertyClick(propertyWithDetails)
+                }
+            }
         }
 
         private fun setImageInRecyclerView(get: PropertyEntity) {
             val context = binding.root.context
-            val id =
-                context.resources.getIdentifier(get.primaryPhoto, "drawable", context.packageName)
+            val id = context.resources.getIdentifier(get.primaryPhoto, "drawable", context.packageName)
             binding.propertyImage.setImageResource(id)
         }
     }
@@ -54,7 +62,6 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
 
     override fun onBindViewHolder(holder: PropertyViewHolder, position: Int) {
         val propertyWithDetails = getItem(position)
-        holder.bind(propertyWithDetails, onPropertyClick)
+        holder.bind(propertyWithDetails)
     }
 }
-

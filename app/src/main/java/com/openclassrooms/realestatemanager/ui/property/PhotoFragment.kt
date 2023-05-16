@@ -11,7 +11,7 @@ import com.openclassrooms.realestatemanager.databinding.FragmentPhotoBinding
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class PhotoFragment(private val get: PhotoEntity, private val soldOut: Boolean) : Fragment() {
+class PhotoFragment : Fragment() {
 
     private var _binding: FragmentPhotoBinding? = null
     private val binding get() = _binding!!
@@ -26,12 +26,18 @@ class PhotoFragment(private val get: PhotoEntity, private val soldOut: Boolean) 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // get the arguments
+        val args = requireArguments()
+        val get = args.getParcelable<PhotoEntity>("photoEntity")
+        val soldOut = args.getBoolean("soldOut")
+
         // Set the photo and description in the view
         val idPhotoResources = resources.getIdentifier(
-            get.photo, "drawable", requireContext().packageName
+            get?.photo, "drawable", requireContext().packageName
         )
         binding.imageInfoView.setImageResource(idPhotoResources)
-        binding.roomType.text = get.description
+        binding.roomType.text = get?.description
         // Hide the sold out banner if the property is not sold
 
         if (!soldOut) {
@@ -46,5 +52,17 @@ class PhotoFragment(private val get: PhotoEntity, private val soldOut: Boolean) 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        fun newInstance(photoEntity: PhotoEntity, soldOut: Boolean): PhotoFragment {
+            val args = Bundle().apply {
+                putParcelable("photoEntity", photoEntity)
+                putBoolean("soldOut", soldOut)
+            }
+            val fragment = PhotoFragment()
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

@@ -20,6 +20,6 @@ class PropertyInfoAdapter(fragment: Fragment, private val photoList: List<PhotoE
 
     override fun createFragment(position: Int): Fragment {
         val photo = photoList?.get(position) ?: defaultPhoto
-        return PhotoFragment(photo, soldOut)
+        return PhotoFragment.newInstance(photo, soldOut)
     }
 }
