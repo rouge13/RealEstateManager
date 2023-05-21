@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.data.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 import java.text.SimpleDateFormat
@@ -22,7 +23,8 @@ import java.util.*
             parentColumns = ["id"],
             childColumns = ["agentId"],
         )
-    ]
+    ],
+    indices = [Index(value = ["agentId"])]
 )
 data class PropertyEntity(
     @PrimaryKey(autoGenerate = true)

@@ -6,7 +6,9 @@
     android:layout_height="wrap_content"
     android:fillViewport="true">
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragment_info_property"
         android:name="com.openclassrooms.realestatemanager.ui.info.InfoPropertyFragment"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
@@ -43,6 +45,7 @@
             android:id="@+id/photo_property_view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layout_constraintDimensionRatio="H,1:1"
             app:layout_constraintBottom_toTopOf="@id/navigation_buttons_card"
             app:layout_constraintTop_toBottomOf="@+id/media_title" />
         <androidx.cardview.widget.CardView
@@ -320,7 +323,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="400dp"
+            android:layout_width="match_parent"
             android:layout_height="400dp"
             android:layout_marginVertical="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -331,11 +334,13 @@
                 android:id="@+id/static_map_image_view"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                app:layout_constraintDimensionRatio="H,1:1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

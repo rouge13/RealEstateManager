@@ -13,7 +13,6 @@ import androidx.navigation.findNavController
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.databinding.FragmentLoginBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
-import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragmentDirections
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 
 /**

@@ -19,18 +19,14 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
@@ -40,13 +36,9 @@ import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.databinding.ActivityMainNavHeaderBinding
-import com.openclassrooms.realestatemanager.ui.login.LoginFragmentDirections
-import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragment
-import com.openclassrooms.realestatemanager.ui.map.MapFragment
-import com.openclassrooms.realestatemanager.ui.property_list.PropertyListFragmentDirections
+import com.openclassrooms.realestatemanager.ui.propertyList.PropertyListFragmentDirections
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
-import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
 
 /**
@@ -61,6 +53,8 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_IMAGE_CAPTURE = 1
     private lateinit var sharedAgentViewModel: SharedAgentViewModel
     private lateinit var initializationViewModel: InitializationViewModel
+    private lateinit var sharedNavigationViewModel: SharedNavigationViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,12 +76,46 @@ class MainActivity : AppCompatActivity() {
         // Set up the NavController and connect it to the NavigationView
         setupNavigationController()
         checkHasInternet()
+        initAddOnClickListeners()
+        initModifyOnClickListeners()
         initSearchOnClickListeners()
     }
 
+    private fun initModifyOnClickListeners() {
+        activityMainBinding.btnModify.setOnClickListener {
+            if (navController.currentDestination?.id != R.id.addAndModifyPropertyFragment) {
+                navController.navigate(R.id.addAndModifyPropertyFragment)
+                sharedNavigationViewModel.setAddOrModifyClicked(true)
+            } else {
+                navController.popBackStack() // Go back to the previous fragment
+            }
+        }
+    }
+
+    private fun initAddOnClickListeners() {
+        activityMainBinding.btnAdd.setOnClickListener {
+            if (navController.currentDestination?.id != R.id.addAndModifyPropertyFragment) {
+                navController.navigate(R.id.addAndModifyPropertyFragment)
+                sharedNavigationViewModel.setAddOrModifyClicked(false)
+            } else {
+                navController.popBackStack() // Go back to the previous fragment
+            }
+        }
+    }
+
     private fun initViewModels() {
-        sharedAgentViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(SharedAgentViewModel::class.java)
-        initializationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(InitializationViewModel::class.java)
+        sharedAgentViewModel =
+            ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
+                SharedAgentViewModel::class.java
+            )
+        initializationViewModel =
+            ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
+                InitializationViewModel::class.java
+            )
+        sharedNavigationViewModel =
+            ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
+                SharedNavigationViewModel::class.java
+            )
 
     }
 
@@ -279,11 +307,13 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.propertyListFragment)
                     true
                 }
+
                 R.id.map_fragment -> {
                     navController.popBackStack(R.id.mapFragment, false)
                     navController.navigate(R.id.mapFragment)
                     true
                 }
+
                 else -> false
             }
         }
@@ -311,12 +341,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun logInActions() {
-        if (!this.resources?.getBoolean(R.bool.isTwoPanel)!!) {
-            val navController = findNavController(R.id.nav_host_fragment)
-            navController.navigate(PropertyListFragmentDirections.actionPropertyListFragmentToLoginFragment())
-        } else {
-            navController.popBackStack()
-        }
+        navController.navigate(PropertyListFragmentDirections.actionPropertyListFragmentToLoginFragment())
         drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
     }
 

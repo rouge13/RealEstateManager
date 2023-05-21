@@ -1,6 +1,8 @@
 package com.openclassrooms.realestatemanager.ui.property
 
+import com.bumptech.glide.request.target.Target
 import android.annotation.SuppressLint
+import android.graphics.drawable.Drawable
 import com.openclassrooms.realestatemanager.R
 import android.location.Geocoder
 import android.os.Bundle
@@ -8,6 +10,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,6 +21,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.google.android.gms.maps.model.LatLng
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
@@ -23,6 +32,7 @@ import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.map.MapFragmentDirections
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.ui.utils.GlideApp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -32,8 +42,17 @@ import java.util.Locale
  */
 class PropertyInfoFragment : Fragment() {
     private lateinit var binding: FragmentInfoPropertyBinding
-    private val sharedPropertyViewModel: SharedPropertyViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
-    private val sharedNavigationViewModel: SharedNavigationViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
+    private val sharedPropertyViewModel: SharedPropertyViewModel by activityViewModels {
+        ViewModelFactory(
+            requireActivity().application as MainApplication
+        )
+    }
+    private val sharedNavigationViewModel: SharedNavigationViewModel by activityViewModels {
+        ViewModelFactory(
+            requireActivity().application as MainApplication
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,7 +71,8 @@ class PropertyInfoFragment : Fragment() {
     private fun initSharedNavigationViewModelSearchAction() {
         sharedNavigationViewModel.searchClicked.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
-                val action = PropertyInfoFragmentDirections.actionInfoPropertyFragmentToSearchFragment()
+                val action =
+                    PropertyInfoFragmentDirections.actionInfoPropertyFragmentToSearchFragment()
                 findNavController().navigate(action)
                 sharedNavigationViewModel.doneNavigatingToSearch()
             }
@@ -62,10 +82,17 @@ class PropertyInfoFragment : Fragment() {
     private fun displayPropertyDetails(view: View) {
         sharedPropertyViewModel.getSelectedProperty.observe(viewLifecycleOwner) { propertyWithDetails ->
             propertyWithDetails?.let {
+                binding.fragmentInfoProperty.visibility = View.VISIBLE
                 initIsSoldOrNot(propertyWithDetails)
                 val photoViewPager = binding.photoPropertyViewPager
                 val photoList = propertyWithDetails.photos
-                val adapter = propertyWithDetails.property.isSold?.let { PropertyInfoAdapter(this, photoList, it) }
+                val adapter = propertyWithDetails.property.isSold?.let {
+                    PropertyInfoAdapter(
+                        this,
+                        photoList,
+                        it
+                    )
+                }
                 photoViewPager.adapter = adapter
                 initStaticMapImageView(propertyWithDetails, view)
                 initAllTextView(propertyWithDetails)
@@ -81,10 +108,10 @@ class PropertyInfoFragment : Fragment() {
         val location = address?.get(0)?.latitude?.let { it1 -> address[0]?.longitude?.let { it2 -> LatLng(it1, it2) } }
         val marker = "&markers=color:red%7Alabel:S%7C" + location?.latitude + "," + location?.longitude
         val staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + location?.latitude + "," + location?.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(R.string.google_map_key)
-        Glide.with(view)
+        GlideApp.with(view)
             .load(staticMapUrl)
+            .centerCrop()
             .into(staticMapImageView)
-
     }
 
     private fun initAllTextView(propertyWithDetails: PropertyWithDetails) {
@@ -104,7 +131,7 @@ class PropertyInfoFragment : Fragment() {
             append(" ")
             append(propertyWithDetails.address?.streetName)
         })
-        if (propertyWithDetails.address?.apartmentDetails != ""){
+        if (propertyWithDetails.address?.apartmentDetails != "") {
             binding.locationLine2.text = (buildString {
                 append(propertyWithDetails.address?.apartmentDetails)
             })

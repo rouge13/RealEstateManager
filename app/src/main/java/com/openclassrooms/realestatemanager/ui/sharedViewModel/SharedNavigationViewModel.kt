@@ -21,4 +21,11 @@ class SharedNavigationViewModel : ViewModel() {
     fun doneNavigatingToSearch() {
         _searchClicked.value = false
     }
+
+    // Navigation to add or modify fragment from any other fragment false is Add and true is Modify
+    private val _addOrModifyClicked = MutableLiveData<Boolean>()
+    val getAddOrModifyClicked: LiveData<Boolean> get() = _addOrModifyClicked
+    fun setAddOrModifyClicked(isModify: Boolean) {
+        _addOrModifyClicked.value = isModify
+    }
 }

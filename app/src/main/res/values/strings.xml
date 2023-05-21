@@ -124,8 +124,8 @@
     <string name="property_price">Price</string>
     <string name="agent_email">Agent email</string>
     <string name="photo_description">Photo Description</string>
-    <string name="street_number">Street Number</string>
-    <string name="property_square_feet">Square Feet</string>
+    <string name="street_number">Street number</string>
+    <string name="property_square_feet">Square feet</string>
     <string name="property_rooms_count">Number of rooms</string>
     <string name="property_bedrooms_count">Number of bedrooms</string>
     <string name="property_bathrooms_count">Number of bathrooms</string>
@@ -133,6 +133,13 @@
     <string name="property_type">Type of house</string>
     <string name="pick_date_of_selling">Pick the date of selling</string>
     <string name="selling_date">Waiting for the Selling date</string>
+    <string name="street_name">Street name</string>
+    <string name="zip_code">Zip code</string>
+    <string name="country">Country</string>
+    <string name="apartment_details">Apartment details</string>
+    <string name="add_photos">Add photos</string>
+    <string name="remove_photo">Remove photo</string>
+    <string name="add_primary_photo">Add primary photo</string>
 
 
 </resources>

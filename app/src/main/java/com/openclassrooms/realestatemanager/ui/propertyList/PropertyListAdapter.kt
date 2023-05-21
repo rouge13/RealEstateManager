@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.property_list
+package com.openclassrooms.realestatemanager.ui.propertyList
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

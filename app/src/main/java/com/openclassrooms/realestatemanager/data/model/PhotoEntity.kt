@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.data.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
@@ -16,7 +17,8 @@ import kotlinx.android.parcel.Parcelize
         entity = PropertyEntity::class,
         parentColumns = ["id"],
         childColumns = ["propertyId"],
-    )]
+    )],
+    indices = [Index(value = ["propertyId"])]
 )
 data class PhotoEntity(
     @PrimaryKey(autoGenerate = true)

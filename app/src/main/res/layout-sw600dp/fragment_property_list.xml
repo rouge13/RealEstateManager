@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.property_list.PropertyListFragment">
+    tools:context=".ui.propertyList.PropertyListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_property_list_recycler_view"
