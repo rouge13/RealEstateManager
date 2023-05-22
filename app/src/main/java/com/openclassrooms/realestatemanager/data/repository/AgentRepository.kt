@@ -18,13 +18,9 @@ class AgentRepository(private val agentDao: AgentDao) {
     suspend fun insert(agent: AgentEntity) {
             agentDao.insert(agent)
     }
-    // get agent by email and password
-    fun agentData(email: String, password: String): Flow<AgentEntity> {
-        return agentDao.getAgentDataToConnect(email, password)
-    }
-    // Check if the email is already used
-    suspend fun getAgentByEmail(email: String): AgentEntity? {
-        return agentDao.getAgentByEmail(email)
+    // get agent by id
+    fun getAgentData(agentId: Int): Flow<AgentEntity> {
+        return agentDao.getAgentData(agentId)
     }
 
 }

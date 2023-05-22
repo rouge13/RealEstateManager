@@ -20,12 +20,8 @@ interface AgentDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(agent: AgentEntity)
     // Get agent data to connect
-    @Query("SELECT * FROM agent WHERE email = :email AND password = :password")
-    fun getAgentDataToConnect(email: String, password: String): Flow<AgentEntity>
-    // See if the email is already used
-    @Query("SELECT * FROM agent WHERE email = :email")
-    suspend fun getAgentByEmail(email: String): AgentEntity?
-//    @Query("SELECT * FROM agent WHERE email = :emailFiltered")
-//    suspend fun agentByEmailFiltered(emailFiltered: String): Flow<AgentEntity>
+    @Query("SELECT * FROM agent WHERE id = :agentId")
+    fun getAgentData(agentId: Int): Flow<AgentEntity>
+
 
 }

@@ -34,15 +34,12 @@ class SharedAgentViewModel(private val repository: AgentRepository, application:
 
     val allAgents: LiveData<List<AgentEntity>> = repository.allAgents.asLiveData()
     // Function to get agent by email and password
-    fun agentData(email: String, password: String): LiveData<AgentEntity> {
-        return repository.agentData(email, password).asLiveData()
+    fun getAgentData(agentId: Int): LiveData<AgentEntity> {
+        return repository.getAgentData(agentId).asLiveData()
     }
     // Insert agent
     suspend fun insertAgent(agent: AgentEntity) {
         repository.insert(agent)
     }
-    // Check if the agent exist by email
-    suspend fun getAgentByEmail(email: String): AgentEntity? {
-        return repository.getAgentByEmail(email)
-    }
+
 }

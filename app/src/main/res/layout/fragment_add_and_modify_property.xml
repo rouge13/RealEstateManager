@@ -29,85 +29,156 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
-                android:id="@+id/btn_property_selling_date"
+                android:id="@+id/btn_property_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5sp"
-                android:text="@string/pick_date_of_selling"
+                android:text="@string/pick_date"
                 android:textSize="10sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/property_switch_sold"
                 tools:ignore="SmallSp" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/property_date_start_text"
+                android:id="@+id/property_date_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/selling_date"
+                android:text="@string/date_to_pick"
                 android:textSize="15sp"
-                app:layout_constraintStart_toEndOf="@+id/btn_property_selling_date"
-                app:layout_constraintTop_toTopOf="@id/btn_property_selling_date"
-                app:layout_constraintBottom_toBottomOf="@id/btn_property_selling_date"
+                app:layout_constraintStart_toEndOf="@id/btn_property_date"
+                app:layout_constraintTop_toTopOf="@id/btn_property_date"
+                app:layout_constraintBottom_toBottomOf="@id/btn_property_date"
                 app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/property_price_text"
+                android:text="@string/property_price"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_property_date" />
 
             <EditText
                 android:id="@+id/property_price"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/property_price"
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/property_price_text"
+                app:layout_constraintTop_toTopOf="@id/property_price_text"
+                app:layout_constraintBottom_toBottomOf="@+id/property_price_text"
+                />
+
+            <TextView
+                android:id="@+id/property_square_feet_text"
+                android:text="@string/property_square_feet"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_date_start_text" />
+                app:layout_constraintTop_toBottomOf="@id/property_price" />
 
             <EditText
                 android:id="@+id/property_square_feet"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/property_square_feet"
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/property_square_feet_text"
+                app:layout_constraintTop_toTopOf="@id/property_square_feet_text"
+                app:layout_constraintBottom_toBottomOf="@+id/property_square_feet_text" />
+
+            <TextView
+                android:id="@+id/property_rooms_count_text"
+                android:text="@string/property_rooms_count"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_price" />
+                app:layout_constraintTop_toBottomOf="@id/property_square_feet" />
 
             <EditText
                 android:id="@+id/property_rooms_count"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/property_rooms_count"
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/property_rooms_count_text"
+                app:layout_constraintTop_toTopOf="@id/property_rooms_count_text"
+                app:layout_constraintBottom_toBottomOf="@id/property_rooms_count_text" />
+
+            <TextView
+                android:id="@+id/property_bedrooms_count_text"
+                android:text="@string/property_bedrooms_count"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_square_feet" />
+                app:layout_constraintTop_toBottomOf="@id/property_rooms_count" />
 
             <EditText
                 android:id="@+id/property_bedrooms_count"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/property_bedrooms_count"
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/property_bedrooms_count_text"
+                app:layout_constraintTop_toTopOf="@id/property_bedrooms_count_text"
+                app:layout_constraintBottom_toBottomOf="@id/property_bedrooms_count_text"/>
+
+            <TextView
+                android:id="@+id/property_bathrooms_count_text"
+                android:text="@string/property_bathrooms_count"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_rooms_count" />
+                app:layout_constraintTop_toBottomOf="@id/property_bedrooms_count" />
 
             <EditText
                 android:id="@+id/property_bathrooms_count"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/property_bathrooms_count"
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/property_bathrooms_count_text"
+                app:layout_constraintTop_toTopOf="@id/property_bathrooms_count_text"
+                app:layout_constraintBottom_toBottomOf="@id/property_bathrooms_count_text"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/paleGray"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_bedrooms_count" />
+                app:layout_constraintTop_toBottomOf="@id/property_bathrooms_count" />
+
+            <TextView
+                android:id="@+id/property_description_text"
+                android:text="@string/property_description"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/property_bathrooms_count" />
 
             <EditText
                 android:id="@+id/property_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/property_description"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_bathrooms_count" />
+                app:layout_constraintTop_toBottomOf="@id/property_description_text" />
+
+            <TextView
+                android:id="@+id/property_type_text"
+                android:text="@string/property_type"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/property_description" />
 
             <EditText
                 android:id="@+id/property_type"
@@ -115,8 +186,18 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/property_type"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/property_type_text"
+                app:layout_constraintTop_toTopOf="@id/property_type_text"
+                app:layout_constraintBottom_toBottomOf="@id/property_type_text" />
+
+            <View
+                android:id="@+id/property_proximity_divider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/paleGray"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_description" />
+                app:layout_constraintTop_toBottomOf="@id/property_type" />
 
             <TextView
                 android:id="@+id/property_proximity_text"
@@ -124,7 +205,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/proximity"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_type" />
+                app:layout_constraintTop_toBottomOf="@id/property_proximity_divider" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/property_switch_school"
@@ -177,6 +258,7 @@
                 app:layout_constraintTop_toBottomOf="@id/property_switch_restaurant" />
 
             <View
+                android:id="@+id/property_agent_divider"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:background="@color/paleGray"
@@ -185,16 +267,23 @@
                 app:layout_constraintTop_toBottomOf="@id/property_switch_public_transport" />
 
             <!-- AgentEntity Fields -->
+            <TextView
+                android:id="@+id/agent_last_first_name_text"
+                android:text="@string/agent_last_first_name"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/property_agent_divider" />
+
             <EditText
-                android:id="@+id/agent_email"
+                android:id="@+id/agent_last_first_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/agent_email"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/property_switch_public_transport" />
-
-            <!-- Continue with other fields like lastName, email, etc. -->
+                app:layout_constraintStart_toEndOf="@id/agent_last_first_name_text"
+                app:layout_constraintTop_toTopOf="@id/agent_last_first_name_text"
+                app:layout_constraintBottom_toBottomOf="@id/agent_last_first_name_text"/>
 
             <!-- PhotoEntity Fields -->
             <Button
@@ -204,17 +293,17 @@
                 android:hint="@string/add_photos"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/agent_email" />
+                app:layout_constraintTop_toBottomOf="@id/agent_last_first_name" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/photo_add_remove_view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintDimensionRatio="H,1:1"
                 app:layout_constraintTop_toBottomOf="@id/add_photos"
                 tools:listitem="@layout/item_photo" />
 
             <View
+                android:id="@+id/property_address_divider"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:background="@color/paleGray"
@@ -223,68 +312,131 @@
                 app:layout_constraintTop_toBottomOf="@id/photo_add_remove_view_pager" />
 
             <!-- AddressEntity Fields -->
+            <TextView
+                android:id="@+id/address_street_number_text"
+                android:text="@string/street_number"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/property_address_divider" />
+
             <EditText
                 android:id="@+id/address_street_number"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/street_number"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/address_street_number_text"
+                app:layout_constraintTop_toTopOf="@id/address_street_number_text"
+                app:layout_constraintBottom_toBottomOf="@id/address_street_number_text"/>
+
+            <TextView
+                android:id="@+id/address_street_name_text"
+                android:text="@string/street_name"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/photo_add_remove_view_pager" />
+                app:layout_constraintTop_toBottomOf="@id/address_street_number" />
 
             <EditText
                 android:id="@+id/address_street_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/street_name"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/address_street_name_text"
+                app:layout_constraintTop_toTopOf="@id/address_street_name_text"
+                app:layout_constraintBottom_toBottomOf="@+id/address_street_name_text"/>
+
+            <TextView
+                android:id="@+id/address_city_text"
+                android:text="@string/city"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/address_street_number" />
+                app:layout_constraintTop_toBottomOf="@id/address_street_name" />
 
             <EditText
                 android:id="@+id/address_city"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/city"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/address_city_text"
+                app:layout_constraintTop_toTopOf="@id/address_city_text"
+                app:layout_constraintBottom_toBottomOf="@id/address_city_text"/>
+
+            <TextView
+                android:id="@+id/address_boroughs_text"
+                android:text="@string/boroughs"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/address_street_name" />
+                app:layout_constraintTop_toBottomOf="@id/address_city" />
 
             <EditText
                 android:id="@+id/address_boroughs"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/boroughs"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/address_boroughs_text"
+                app:layout_constraintTop_toTopOf="@id/address_boroughs_text"
+                app:layout_constraintBottom_toBottomOf="@id/address_boroughs_text"/>
+
+            <TextView
+                android:id="@+id/address_zip_code_text"
+                android:text="@string/zip_code"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/address_city" />
+                app:layout_constraintTop_toBottomOf="@id/address_boroughs" />
 
             <EditText
                 android:id="@+id/address_zip_code"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/zip_code"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/address_zip_code_text"
+                app:layout_constraintTop_toTopOf="@id/address_zip_code_text"
+                app:layout_constraintBottom_toBottomOf="@id/address_zip_code_text"/>
+
+            <TextView
+                android:id="@+id/address_country_text"
+                android:text="@string/country"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/address_boroughs" />
+                app:layout_constraintTop_toBottomOf="@id/address_zip_code" />
 
             <EditText
                 android:id="@+id/address_country"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/country"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/address_country_text"
+                app:layout_constraintTop_toTopOf="@id/address_country_text"
+                app:layout_constraintBottom_toBottomOf="@id/address_country_text"/>
+
+            <TextView
+                android:id="@+id/apartment_details_text"
+                android:text="@string/apartment_details"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/address_zip_code" />
+                app:layout_constraintTop_toBottomOf="@id/address_country" />
 
             <EditText
                 android:id="@+id/apartment_details"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/apartment_details"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/address_country" />
+                app:layout_constraintStart_toEndOf="@id/apartment_details_text"
+                app:layout_constraintTop_toTopOf="@id/apartment_details_text"
+                app:layout_constraintBottom_toBottomOf="@id/apartment_details_text"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

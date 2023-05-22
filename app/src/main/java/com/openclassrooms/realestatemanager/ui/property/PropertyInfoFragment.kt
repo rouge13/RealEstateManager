@@ -146,7 +146,7 @@ class PropertyInfoFragment : Fragment() {
         } else {
             binding.date.setTextColor(resources.getColor(R.color.green))
             val dateStartSelling = propertyWithDetails.property.dateStartSelling?.let { Date(it) }
-            binding.date.text = "Selling date: ${dateStartSelling?.let { sdf.format(it) }}"
+            binding.date.text = "Sale date: ${dateStartSelling?.let { sdf.format(it) }}"
         }
     }
 
