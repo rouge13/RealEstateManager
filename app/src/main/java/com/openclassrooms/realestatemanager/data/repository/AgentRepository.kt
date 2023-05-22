@@ -27,8 +27,4 @@ class AgentRepository(private val agentDao: AgentDao) {
         return agentDao.getAgentByEmail(email)
     }
 
-//    suspend fun agentByEmailFiltered(email: String): Flow<AgentEntity> {
-//        return agentDao.agentByEmailFiltered(email)
-//    }
-
 }

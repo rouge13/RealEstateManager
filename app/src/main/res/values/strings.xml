@@ -132,7 +132,7 @@
     <string name="property_description">Description</string>
     <string name="property_type">Type of house</string>
     <string name="pick_date_of_selling">Pick the date of selling</string>
-    <string name="selling_date">Waiting for the Selling date</string>
+    <string name="selling_date">Waiting Selling date</string>
     <string name="street_name">Street name</string>
     <string name="zip_code">Zip code</string>
     <string name="country">Country</string>

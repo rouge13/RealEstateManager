@@ -1,38 +1,26 @@
 package com.openclassrooms.realestatemanager.ui.property
 
-import com.bumptech.glide.request.target.Target
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
-import com.openclassrooms.realestatemanager.R
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.google.android.gms.maps.model.LatLng
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
-import com.openclassrooms.realestatemanager.ui.map.MapFragmentDirections
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
-import com.openclassrooms.realestatemanager.ui.utils.GlideApp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -108,7 +96,7 @@ class PropertyInfoFragment : Fragment() {
         val location = address?.get(0)?.latitude?.let { it1 -> address[0]?.longitude?.let { it2 -> LatLng(it1, it2) } }
         val marker = "&markers=color:red%7Alabel:S%7C" + location?.latitude + "," + location?.longitude
         val staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + location?.latitude + "," + location?.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(R.string.google_map_key)
-        GlideApp.with(view)
+        Glide.with(view)
             .load(staticMapUrl)
             .centerCrop()
             .into(staticMapImageView)

@@ -17,9 +17,6 @@
             android:id="@+id/action_propertyListFragment_to_infoPropertyFragment"
             app:destination="@id/infoPropertyFragment" />
         <action
-            android:id="@+id/action_propertyListFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-        <action
             android:id="@+id/action_propertyListFragment_to_searchFragment"
             app:destination="@id/searchFragment"
             app:popUpTo="@id/searchFragment"
@@ -82,32 +79,6 @@
             app:popUpToInclusive="true"/>
     </fragment>
 
-    <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.openclassrooms.realestatemanager.ui.login.LoginFragment"
-        android:label="Login"
-        tools:layout="@layout/fragment_login">
-        <action
-            android:id="@+id/action_loginFragment_to_registerFragment"
-            app:destination="@id/registerFragment" />
-        <action
-            android:id="@+id/action_loginFragment_to_propertyListFragment"
-            app:destination="@id/propertyListFragment" />
-    </fragment>
-
-
-    <fragment
-        android:id="@+id/registerFragment"
-        android:name="com.openclassrooms.realestatemanager.ui.register.RegisterFragment"
-        android:label="Register"
-        tools:layout="@layout/fragment_register">
-        <action
-            android:id="@+id/action_registerFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-        <action
-            android:id="@+id/action_registerFragment_to_propertyListFragment"
-            app:destination="@id/propertyListFragment" />
-    </fragment>
 </navigation>
 
 

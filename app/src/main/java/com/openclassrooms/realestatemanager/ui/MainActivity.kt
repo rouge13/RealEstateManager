@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var initializationViewModel: InitializationViewModel
     private lateinit var sharedNavigationViewModel: SharedNavigationViewModel
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -69,8 +68,6 @@ class MainActivity : AppCompatActivity() {
         // Get the header view and bind it to the activityMainNavHeaderBinding
         activityMainNavHeaderBinding =
             ActivityMainNavHeaderBinding.bind(navigationView.getHeaderView(0))
-        // Observe the loged agent to update the UI
-        observeLogedAgent()
         // Initialize the app using the InitializationViewModel
         initializationViewModel.startInitialization(application as MainApplication)
         // Set up the NavController and connect it to the NavigationView
@@ -129,7 +126,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun setupNavigationController() {
         // Init the NavController
         val navHostFragment =
@@ -151,17 +147,6 @@ class MainActivity : AppCompatActivity() {
                 drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
                 return true
             }
-
-            R.id.nav_logout -> {
-                logOutActions()
-                return true
-            }
-
-            R.id.nav_login -> {
-                logInActions()
-                return true
-            }
-
             else -> {
                 // Let the NavController handle the other menu items
                 val handled =
@@ -172,35 +157,6 @@ class MainActivity : AppCompatActivity() {
                 return handled
             }
         }
-    }
-
-    private fun observeLogedAgent() {
-        sharedAgentViewModel.loggedAgent.observe(this) { agent ->
-            if (agent != null) forAgentConnected(agent) else forAgentNotConnected()
-        }
-    }
-
-    private fun forAgentNotConnected() {
-        showTheLogIn()
-        showDefaultNavHeaderNotConnected()
-    }
-
-    private fun showDefaultNavHeaderNotConnected() {
-        activityMainNavHeaderBinding.username.text =
-            getString(R.string.text_view_property_agent_name)
-        activityMainNavHeaderBinding.userEmail.text =
-            getString(R.string.text_view_property_agent_email)
-        setImageProfileDefault()
-    }
-
-    private fun showTheLogIn() {
-        navigationView.menu.findItem(R.id.nav_login).isVisible = true
-        navigationView.menu.findItem(R.id.nav_logout).isVisible = false
-    }
-
-    private fun forAgentConnected(agent: AgentEntity) {
-        showTheLogOut()
-        showAgentNavHeaderConnected(agent)
     }
 
     private fun isOnline(context: Context): Boolean {
@@ -273,31 +229,6 @@ class MainActivity : AppCompatActivity() {
         sharedAgentViewModel.startLocationUpdates()
     }
 
-    private fun showAgentNavHeaderConnected(agent: AgentEntity) {
-        activityMainNavHeaderBinding.username.text = "${agent.firstName} ${agent.lastName}"
-        activityMainNavHeaderBinding.userEmail.text = agent.email
-        setImageProfileAgent(agent)
-    }
-
-    private fun setImageProfileAgent(agent: AgentEntity) {
-        val photoProfileImageView = activityMainNavHeaderBinding.photoProfileImageView
-        photoProfileImageView.setImageResource(
-            this.resources.getIdentifier(agent.photo, "drawable", this.packageName)
-        )
-    }
-
-    private fun setImageProfileDefault() {
-        val photoProfileImageView = activityMainNavHeaderBinding.photoProfileImageView
-        photoProfileImageView.setImageResource(
-            this.resources.getIdentifier("ic_must_be_connected", "drawable", this.packageName)
-        )
-    }
-
-    private fun showTheLogOut() {
-        navigationView.menu.findItem(R.id.nav_login).isVisible = false
-        navigationView.menu.findItem(R.id.nav_logout).isVisible = true
-    }
-
     private fun setupBottomNavigation() {
         activityMainBinding.bottomNavigationView.visibility = View.VISIBLE
         activityMainBinding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
@@ -319,7 +250,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_main_agent_info_menu, menu)
         return true
@@ -338,21 +268,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun logInActions() {
-        navController.navigate(PropertyListFragmentDirections.actionPropertyListFragmentToLoginFragment())
-        drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
-    }
-
-    private fun logOutActions() {
-        navigationView.menu.findItem(R.id.nav_login).isVisible = true
-        sharedAgentViewModel.setLogedAgent(null)
-        observeLogedAgent()
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-        drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
     }
 
     private fun setupDrawerButton() {
