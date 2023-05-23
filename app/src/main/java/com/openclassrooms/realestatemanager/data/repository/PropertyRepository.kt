@@ -48,4 +48,29 @@ class PropertyRepository(private val propertyDao: PropertyDao) {
             boroughsCount = searchCriteria.selectedBoroughsForQuery.size
         )
     }
+    // Update the property
+    suspend fun update(property: PropertyEntity) {
+        property.id?.let {
+            propertyDao.updateProperty(
+                it,
+                property.price,
+                property.squareFeet,
+                property.roomsCount,
+                property.bedroomsCount,
+                property.bathroomsCount,
+                property.description,
+                property.typeOfHouse,
+                property.isSold,
+                property.dateStartSelling,
+                property.dateSold,
+                property.agentId,
+                property.primaryPhoto,
+                property.schoolProximity,
+                property.shoppingProximity,
+                property.parkProximity,
+                property.restaurantProximity,
+                property.publicTransportProximity,
+            )
+        }
+    }
 }

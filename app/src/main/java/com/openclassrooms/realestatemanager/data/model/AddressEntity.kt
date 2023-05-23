@@ -24,14 +24,14 @@ import kotlinx.android.parcel.Parcelize
 )
 data class AddressEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null,
-    val streetNumber: String = "",
-    val streetName: String = "",
-    val city: String = "",
-    val boroughs: String? = "",
-    val zipCode: String = "",
-    val country: String = "",
+    var id: Int? = null,
+    var streetNumber: String = "",
+    var streetName: String = "",
+    var city: String = "",
+    var boroughs: String? = "",
+    var zipCode: String = "",
+    var country: String = "",
     val propertyId: Int? = null,
-    val apartmentDetails: String? = ""
+    var apartmentDetails: String? = ""
 ) : Parcelable {
 }

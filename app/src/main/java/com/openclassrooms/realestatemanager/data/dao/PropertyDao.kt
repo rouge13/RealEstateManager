@@ -18,6 +18,7 @@ interface PropertyDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(property: PropertyEntity)
+
     // Get all properties filtered
     @Query(
         """
@@ -137,5 +138,49 @@ interface PropertyDao {
         cityCount: Int,
         boroughsCount: Int
     ): Flow<List<PropertyEntity>>
+
+    @Query(
+        """
+    UPDATE property
+    SET
+        price = :price,
+        squareFeet = :squareFeet,
+        roomsCount = :roomsCount,
+        bedroomsCount = :bedroomsCount,
+        bathroomsCount = :bathroomsCount,
+        description = :description,
+        typeOfHouse = :typeOfHouse,
+        isSold = :isSold,
+        dateStartSelling = :dateStartSelling,
+        dateSold = :dateSold,
+        agentId = :agentId,
+        primaryPhoto = :primaryPhoto,
+        schoolProximity = :schoolProximity,
+        parkProximity = :parkProximity,
+        shoppingProximity = :shoppingProximity,
+        restaurantProximity = :restaurantProximity,
+        publicTransportProximity = :publicTransportProximity
+    WHERE id = :propertyId
+    """
+    )
+    suspend fun updateProperty(    propertyId: Int,
+                                   price: Int?,
+                                   squareFeet: Int?,
+                                   roomsCount: Int?,
+                                   bedroomsCount: Int?,
+                                   bathroomsCount: Int?,
+                                   description: String?,
+                                   typeOfHouse: String?,
+                                   isSold: Boolean?,
+                                   dateStartSelling: Long?,
+                                   dateSold: Long?,
+                                   agentId: Int,
+                                   primaryPhoto: String?,
+                                   schoolProximity: Boolean?,
+                                   parkProximity: Boolean?,
+                                   shoppingProximity: Boolean?,
+                                   restaurantProximity: Boolean?,
+                                   publicTransportProximity: Boolean?)
+
 
 }

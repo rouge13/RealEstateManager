@@ -22,4 +22,20 @@ class AddressRepository(private val addressDao: AddressDao) {
     fun getAddressRelatedToASpecificProperty(propertyId: Int): Flow<AddressEntity?> {
         return addressDao.getAddressRelatedToASpecificProperty(propertyId)
     }
+
+    // Update Address
+    suspend fun updateAddress(address: AddressEntity) {
+        address.id?.let {
+            addressDao.updateAddress(
+                it,
+                address.apartmentDetails,
+                address.streetNumber,
+                address.streetName,
+                address.city,
+                address.boroughs,
+                address.zipCode,
+                address.country
+            )
+        }
+    }
 }

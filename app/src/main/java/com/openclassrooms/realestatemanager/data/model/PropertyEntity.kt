@@ -28,7 +28,7 @@ import java.util.*
 )
 data class PropertyEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int?,
+    var id: Int?,
     var price: Int? = 0,
     var squareFeet: Int? = 0,
     var roomsCount: Int? = 0,
@@ -41,11 +41,11 @@ data class PropertyEntity(
     var dateSold: Long? = null,
     var agentId: Int,
     var primaryPhoto: String,
-    val schoolProximity: Boolean? = null,
-    val parkProximity: Boolean? = null,
-    val shoppingProximity: Boolean? = null,
-    val restaurantProximity: Boolean? = null,
-    val publicTransportProximity: Boolean? = null,
+    var schoolProximity: Boolean? = null,
+    var parkProximity: Boolean? = null,
+    var shoppingProximity: Boolean? = null,
+    var restaurantProximity: Boolean? = null,
+    var publicTransportProximity: Boolean? = null,
     var lastUpdate: Long = System.currentTimeMillis()
 ) : Parcelable {
 

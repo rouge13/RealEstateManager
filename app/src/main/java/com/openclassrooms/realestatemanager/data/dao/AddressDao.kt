@@ -22,4 +22,27 @@ interface AddressDao {
     // Get Address related to a property
     @Query("SELECT * FROM address WHERE propertyId = :propertyId")
     fun getAddressRelatedToASpecificProperty(propertyId: Int): Flow<AddressEntity?>
+
+    @Query(
+        """
+    UPDATE address
+    SET apartmentDetails = :apartmentDetails,
+        streetNumber = :streetNumber,
+        streetName = :streetName,
+        city = :city,
+        boroughs = :boroughs,
+        zipCode = :zipCode,
+        country = :country  
+    WHERE id = :addressId
+    """
+    )
+    suspend fun updateAddress(
+        addressId: Int,
+        apartmentDetails: String?,
+        streetNumber: String?,
+        streetName: String?,
+        city: String?,
+        boroughs: String?,
+        zipCode: String?,
+        country: String?)
 }

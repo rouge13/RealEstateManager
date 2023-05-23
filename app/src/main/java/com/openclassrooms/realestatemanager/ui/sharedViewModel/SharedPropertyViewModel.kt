@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
+import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -83,6 +84,16 @@ class SharedPropertyViewModel(
             }
         }
         return combinedData
+    }
+
+    // Update property
+    suspend fun updateProperty(property: PropertyEntity) {
+        propertyRepository.update(property)
+    }
+
+    // Update the address of the property
+    suspend fun updateAddress(address: AddressEntity) {
+        addressRepository.updateAddress(address)
     }
 }
 
