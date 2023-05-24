@@ -18,10 +18,12 @@ interface AgentDao {
     fun getAllAgents(): Flow<List<AgentEntity>>
     // Insert agent
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(agent: AgentEntity)
+    suspend fun insert(agent: AgentEntity): Long
     // Get agent data to connect
     @Query("SELECT * FROM agent WHERE id = :agentId")
     fun getAgentData(agentId: Int): Flow<AgentEntity>
 
+    @Query("SELECT * FROM agent WHERE name = :agentName LIMIT 1")
+    fun getAgentByName(agentName: String): Flow<AgentEntity?>
 
 }

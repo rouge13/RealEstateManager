@@ -39,6 +39,7 @@ import com.openclassrooms.realestatemanager.databinding.ActivityMainNavHeaderBin
 import com.openclassrooms.realestatemanager.ui.propertyList.PropertyListFragmentDirections
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
 
 /**
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedAgentViewModel: SharedAgentViewModel
     private lateinit var initializationViewModel: InitializationViewModel
     private lateinit var sharedNavigationViewModel: SharedNavigationViewModel
+    private lateinit var sharedPropertyViewModel: SharedPropertyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,11 +82,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun initModifyOnClickListeners() {
         activityMainBinding.btnModify.setOnClickListener {
-            if (navController.currentDestination?.id != R.id.addAndModifyPropertyFragment) {
-                navController.navigate(R.id.addAndModifyPropertyFragment)
-                sharedNavigationViewModel.setAddOrModifyClicked(true)
-            } else {
-                navController.popBackStack() // Go back to the previous fragment
+            // Check if a property is selected for showing the AddOrModifyPropertyFragment
+            sharedPropertyViewModel.getSelectedProperty.observe(this) { property ->
+                if (property != null) {
+                    if (navController.currentDestination?.id != R.id.addAndModifyPropertyFragment) {
+                        navController.navigate(R.id.addAndModifyPropertyFragment)
+                        sharedNavigationViewModel.setAddOrModifyClicked(true)
+                    } else {
+                        navController.popBackStack() // Go back to the previous fragment
+                    }
+                }
+            }
+            if (sharedPropertyViewModel.getSelectedProperty.value == null) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.no_property_selected),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -113,7 +127,10 @@ class MainActivity : AppCompatActivity() {
             ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
                 SharedNavigationViewModel::class.java
             )
-
+        sharedPropertyViewModel =
+            ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
+                SharedPropertyViewModel::class.java
+            )
     }
 
     private fun initSearchOnClickListeners() {

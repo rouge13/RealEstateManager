@@ -183,4 +183,7 @@ interface PropertyDao {
                                    publicTransportProximity: Boolean?)
 
 
+
+
+
 }

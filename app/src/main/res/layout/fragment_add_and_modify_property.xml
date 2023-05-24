@@ -180,7 +180,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/property_description" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/property_type"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -276,8 +276,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/property_agent_divider" />
 
-            <EditText
-                android:id="@+id/agent_last_first_name"
+            <AutoCompleteTextView
+                android:id="@+id/agent_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -293,7 +293,7 @@
                 android:hint="@string/add_photos"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/agent_last_first_name" />
+                app:layout_constraintTop_toBottomOf="@id/agent_name" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/photo_add_remove_view_pager"
@@ -357,7 +357,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/address_street_name" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/address_city"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -375,7 +375,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/address_city" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/address_boroughs"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -393,7 +393,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/address_boroughs" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/address_zip_code"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -411,7 +411,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/address_zip_code" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/address_country"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

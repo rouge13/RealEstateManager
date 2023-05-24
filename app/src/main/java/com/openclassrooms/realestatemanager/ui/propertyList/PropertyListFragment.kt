@@ -77,8 +77,8 @@ class PropertyListFragment : Fragment() {
     private fun navigateToInfoPropertyFragment(propertyWithDetails: PropertyWithDetails) {
         propertyListViewModel.setSelectProperty(propertyWithDetails)
         if (!isDualPanel()) {
-            val action = PropertyListFragmentDirections.actionPropertyListFragmentToInfoPropertyFragment()
-            binding.root.findNavController().navigate(action)
+//            val action = PropertyListFragmentDirections.actionPropertyListFragmentToInfoPropertyFragment()
+            binding.root.findNavController().navigate(R.id.infoPropertyFragment)
         }
     }
 

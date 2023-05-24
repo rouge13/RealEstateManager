@@ -254,10 +254,10 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun updateSelectedAgentsIds(selectedAgentsEmails: List<String>) {
+    private fun updateSelectedAgentsIds(selectedAgentsNames: List<String>) {
         sharedAgentViewModel.allAgents.observe(viewLifecycleOwner) { agents ->
-            val selectedAgentsIds = selectedAgentsEmails.mapNotNull { selectedEmail ->
-                agents.firstOrNull { it.email == selectedEmail }?.id
+            val selectedAgentsIds = selectedAgentsNames.mapNotNull { selectedNames ->
+                agents.firstOrNull { it.name == selectedNames }?.id
             }
             searchCriteria.selectedAgentsIdsForQuery = selectedAgentsIds
         }
@@ -265,25 +265,25 @@ class SearchFragment : Fragment() {
 
     private fun initAgentsNames() {
         sharedAgentViewModel.allAgents.observe(viewLifecycleOwner) { agents ->
-            val agentsEmails = agents.map { it.email }.distinct()
-            initAgentsEmails(agentsEmails)
+            val agentsNames = agents.map { it.name}.distinct()
+            initAgentsNames(agentsNames)
         }
     }
 
-    private fun initAgentsEmails(agentsEmails: List<String>) {
+    private fun initAgentsNames(agentsNames: List<String>) {
         val multiAutoCompleteTextView = binding.propertyAgentSellerMultiAutoComplete
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_dropdown_item_1line,
-            agentsEmails
+            agentsNames
         )
         multiAutoCompleteTextView.setAdapter(adapter)
         multiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
         multiAutoCompleteTextView.threshold = 2 // Start suggesting after typing one character
         multiAutoCompleteTextView.setOnItemClickListener { _, _, _, _ ->
-            val selectedAgentsEmails = multiAutoCompleteTextView.text
+            val selectedAgentsNames = multiAutoCompleteTextView.text
                 .split(",").map { it.trim() }.filter { it.isNotEmpty() }
-            updateSelectedAgentsIds(selectedAgentsEmails)
+            updateSelectedAgentsIds(selectedAgentsNames)
         }
     }
 

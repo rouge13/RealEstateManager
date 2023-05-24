@@ -2,14 +2,12 @@ package com.openclassrooms.realestatemanager.ui.sharedViewModel
 
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository
 import com.openclassrooms.realestatemanager.ui.LocationLiveData
 import com.openclassrooms.realestatemanager.ui.MainApplication
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -24,22 +22,17 @@ class SharedAgentViewModel(private val repository: AgentRepository, application:
     fun startLocationUpdates() {
         locationLiveData.startLocationUpdates()
     }
-    // Get filtered agent by email in MutalbeLiveData
-    val _agentByEmailFiltered = MutableLiveData<AgentEntity?>()
-
-    // Get filtered agent by email live data
-    fun getAgentByEmailFiltered(email: String): LiveData<AgentEntity?> {
-        return _agentByEmailFiltered
-    }
 
     val allAgents: LiveData<List<AgentEntity>> = repository.allAgents.asLiveData()
-    // Function to get agent by email and password
     fun getAgentData(agentId: Int): LiveData<AgentEntity> {
         return repository.getAgentData(agentId).asLiveData()
     }
     // Insert agent
-    suspend fun insertAgent(agent: AgentEntity) {
-        repository.insert(agent)
+    suspend fun insertAgent(agent: AgentEntity): Long? {
+        return repository.insert(agent)
     }
 
+    fun getAgentByName(agentName: String): Flow<AgentEntity?> {
+        return repository.getAgentByName(agentName)
+    }
 }

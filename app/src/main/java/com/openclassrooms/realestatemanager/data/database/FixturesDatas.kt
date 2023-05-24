@@ -38,8 +38,8 @@ class FixturesDatas {
         )
 
         val AGENT_LIST = listOf(
-            AgentEntity(1, "Julien", "Hammer", "jhammer@gmail.com", "ic_agent_1", "1234"),
-            AgentEntity(2, "Carl", "Smith", "csmith@gmail.com", "ic_agent_2", "1234")
+            AgentEntity(1, "Hammer Julien"),
+            AgentEntity(2, "Smith Carl")
         )
 
         val PROPERTY_ADDRESS_LIST = listOf(

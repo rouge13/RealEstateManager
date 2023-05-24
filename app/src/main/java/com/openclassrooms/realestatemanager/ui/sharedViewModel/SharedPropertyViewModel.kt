@@ -95,6 +95,12 @@ class SharedPropertyViewModel(
     suspend fun updateAddress(address: AddressEntity) {
         addressRepository.updateAddress(address)
     }
+
+    // Insert property
+    suspend fun insertProperty(property: PropertyEntity) {
+        propertyRepository.insert(property)
+    }
+
 }
 
 

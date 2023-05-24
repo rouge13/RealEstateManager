@@ -1,11 +1,14 @@
 package com.openclassrooms.realestatemanager.ui.addAndModification
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -26,8 +29,11 @@ import androidx.navigation.fragment.findNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.converter.Converters
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
+import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -54,7 +60,6 @@ class AddAndModificationFragment : Fragment() {
             requireActivity().application as MainApplication
         )
     }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,28 +74,164 @@ class AddAndModificationFragment : Fragment() {
         sharedNavigationViewModel.getAddOrModifyClicked.observe(viewLifecycleOwner) { isModify ->
             if (isModify) {
                 binding.propertySwitchSold.visibility = View.VISIBLE
-                displayPropertyDetails(view)
+                displayPropertyDetails()
             } else {
                 binding.propertySwitchSold.visibility = View.GONE
+                initAllAutoCompleteTextView()
+                initSelectDate()
+                initCancelButton()
             }
         }
     }
 
-    private fun displayPropertyDetails(view: View) {
+    private fun initAllAutoCompleteTextView() {
+        initAllEditTextRequiredValues()
+    }
+
+    private fun displayPropertyDetails() {
         sharedPropertyViewModel.getSelectedProperty.observe(viewLifecycleOwner) { propertyWithDetails ->
             propertyWithDetails?.let {
                 initDate(propertyWithDetails)
+                initAllEditTextRequiredValues()
                 initAllEditText(propertyWithDetails)
                 initAllSwitch(propertyWithDetails)
                 setupRecyclerView(propertyWithDetails.photos)
-                initUpdateButton()
-                selectDate()
+                sharedNavigationViewModel.getAddOrModifyClicked.observe(viewLifecycleOwner) { isModify ->
+                    if (isModify) {
+                        initUpdateButton()
+                    } else {
+                        initInsertButton()
+                    }
+                }
+                initCancelButton()
+                initSelectDate()
+            }
+        }
+    }
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    private suspend fun createAgentAndWait(agentToAdd: String): Int? {
+        return suspendCancellableCoroutine { continuation ->
+            val inputEditTextField = EditText(requireContext())
+            inputEditTextField.setText(agentToAdd)
+            val builder = AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.create_agent))
+                .setMessage(getString(R.string.create_agent_message))
+                .setView(inputEditTextField)
+                .setPositiveButton(getString(R.string.create)) { _, _ ->
+                    val agentName = inputEditTextField.text.toString()
+                    if (agentName.isNotEmpty()) {
+                        val agentEntity = AgentEntity(name = agentName, id = null)
+                        lifecycleScope.launch {
+                            val generatedId = sharedAgentViewModel.insertAgent(agentEntity)
+                            continuation.resume(generatedId?.toInt()) {}
+                        }
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.agent_name_empty),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        continuation.resume(null) {}
+                    }
+                }
+                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                    dialog.cancel()
+                    continuation.resume(null) {}
+                }
+                .create()
+            builder.show()
 
+            continuation.invokeOnCancellation {
+                builder.dismiss()
             }
         }
     }
 
-    private fun selectDate() {
+    private fun initAllEditTextRequiredValues() {
+        sharedAgentViewModel.allAgents.observe(viewLifecycleOwner) { agents ->
+            val agentsNames = agents.map { it.name }.distinct()
+            initAgentNames(agentsNames)
+        }
+
+        sharedPropertyViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
+            val typesOfHouse = propertiesWithDetails.map { it.property.typeOfHouse }.distinct()
+            val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
+            val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
+            val zipCode = propertiesWithDetails.mapNotNull { it.address?.zipCode }.distinct()
+            val countries = propertiesWithDetails.mapNotNull { it.address?.country }.distinct()
+            initTypesOfHouse(typesOfHouse)
+            initBoroughs(boroughs)
+            initCities(cities)
+            initZipCode(zipCode)
+            initCountries(countries)
+        }
+    }
+
+    private fun initCountries(countries: List<String>) {
+        val autoCompleteTextView = binding.addressCountry
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, countries)
+        autoCompleteTextView.setAdapter(adapter)
+        autoCompleteTextView.threshold = 1
+    }
+
+    private fun initZipCode(zipCode: List<String>) {
+        val autoCompleteTextView = binding.addressZipCode
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, zipCode)
+        autoCompleteTextView.setAdapter(adapter)
+        autoCompleteTextView.threshold = 1
+    }
+
+    private fun initCities(cities: List<String>) {
+        val autoCompleteTextView = binding.addressCity
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, cities)
+        autoCompleteTextView.setAdapter(adapter)
+        autoCompleteTextView.threshold = 1
+    }
+
+    private fun initBoroughs(boroughs: List<String>) {
+        val autoCompleteTextView = binding.addressBoroughs
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, boroughs)
+        autoCompleteTextView.setAdapter(adapter)
+        autoCompleteTextView.threshold = 1
+    }
+
+    private fun initTypesOfHouse(typesOfHouse: List<String>) {
+        val autoCompleteTextView = binding.propertyType
+        val adapter =
+            ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                typesOfHouse
+            )
+        autoCompleteTextView.setAdapter(adapter)
+        autoCompleteTextView.threshold = 1
+    }
+
+    private fun initAgentNames(agentsNames: List<String>) {
+        val autoCompleteTextView = binding.agentName
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, agentsNames)
+        autoCompleteTextView.setAdapter(adapter)
+        autoCompleteTextView.threshold = 1
+    }
+
+    private fun initInsertButton() {
+        binding.btnValidate.setOnClickListener {
+
+        }
+    }
+
+    private fun initCancelButton() {
+        binding.btnCancel.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+    }
+
+    private fun initSelectDate() {
         binding.btnPropertyDate.setOnClickListener {
             // Get the current date as a Calendar instance
             val calendar = Calendar.getInstance()
@@ -127,19 +268,15 @@ class AddAndModificationFragment : Fragment() {
     private fun initUpdateButton() {
         binding.btnValidate.setOnClickListener {
             sharedPropertyViewModel.getSelectedProperty.value?.let { propertyWithDetails ->
-                updatePropertyEntity(propertyWithDetails)
-                updateAddressEntity(propertyWithDetails)
-                updateAgentEntity(propertyWithDetails)
-
-                findNavController().navigate(R.id.propertyListFragment)
-                Toast.makeText(requireContext(), "Property updated", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    updatePropertyEntity(propertyWithDetails)
+                    updateAddressEntity(propertyWithDetails)
+                    findNavController().navigate(R.id.propertyListFragment)
+                    Toast.makeText(requireContext(), "Property updated", Toast.LENGTH_SHORT).show()
 //                sharedNavigationViewModel.setAddOrModifyClicked(false)
+                }
             }
         }
-    }
-
-    private fun updateAgentEntity(propertyWithDetails: PropertyWithDetails) {
-
     }
 
     private fun updateAddressEntity(propertyWithDetails: PropertyWithDetails) {
@@ -152,13 +289,57 @@ class AddAndModificationFragment : Fragment() {
         }
     }
 
-    private fun updatePropertyEntity(propertyWithDetails: PropertyWithDetails) {
+    private suspend fun updatePropertyEntity(propertyWithDetails: PropertyWithDetails) {
         val propertyEntity = propertyWithDetails.property
         propertyEntity.apply {
             propertyToUpdate(propertyWithDetails)
         }
-        lifecycleScope.launch {
-            sharedPropertyViewModel.updateProperty(propertyEntity)
+        val agentName = binding.agentName.text.toString()
+        val agent = sharedAgentViewModel.getAgentByName(agentName).firstOrNull()
+        if (agent != null) {
+            propertyEntity.agentId = agent.id!!
+            lifecycleScope.launch {
+                sharedPropertyViewModel.updateProperty(propertyEntity)
+            }
+        } else {
+            val createdAgentId = createAgentAndWait(agentName)
+            if (createdAgentId != null) {
+                propertyEntity.agentId = createdAgentId
+                lifecycleScope.launch {
+                    sharedPropertyViewModel.updateProperty(propertyEntity)
+                }
+            } else {
+                // Agent creation was canceled, perform cancel actions here
+                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
+                // Cancel any other actions related to property update
+            }
+        }
+    }
+
+    private suspend fun insertPropertyEntity() {
+        val propertyEntity = PropertyEntity()
+        propertyEntity.apply {
+            propertyToInsert()
+        }
+        val agentName = binding.agentName.text.toString()
+        val agent = sharedAgentViewModel.getAgentByName(agentName).firstOrNull()
+        if (agent != null) {
+            propertyEntity.agentId = agent.id!!
+            lifecycleScope.launch {
+                sharedPropertyViewModel.updateProperty(propertyEntity)
+            }
+        } else {
+            val createdAgentId = createAgentAndWait(agentName)
+            if (createdAgentId != null) {
+                propertyEntity.agentId = createdAgentId
+                lifecycleScope.launch {
+                    sharedPropertyViewModel.updateProperty(propertyEntity)
+                }
+            } else {
+                // Agent creation was canceled, perform cancel actions here
+                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
+                // Cancel any other actions related to property update
+            }
         }
     }
 
@@ -167,10 +348,22 @@ class AddAndModificationFragment : Fragment() {
     ) {
         id = propertyWithDetails.property.id
         if (binding.propertySwitchSold.isChecked) {
-            dateSold = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+            dateSold =
+                converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
         } else if (!binding.propertySwitchSold.isChecked && propertyWithDetails.property.dateSold != null) {
             dateSold = null
         }
+        isSold = binding.propertySwitchSold.isChecked
+        primaryElement()
+    }
+
+    private fun PropertyEntity.propertyToInsert() {
+        id = null
+        dateStartSelling = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+        primaryElement()
+    }
+
+    private fun PropertyEntity.primaryElement() {
         price = binding.propertyPrice.text.toString().toInt()
         squareFeet = binding.propertySquareFeet.text.toString().toInt()
         roomsCount = binding.propertyRoomsCount.text.toString().toInt()
@@ -183,7 +376,6 @@ class AddAndModificationFragment : Fragment() {
         shoppingProximity = binding.propertySwitchShopping.isChecked
         restaurantProximity = binding.propertySwitchRestaurant.isChecked
         publicTransportProximity = binding.propertySwitchPublicTransport.isChecked
-        isSold = binding.propertySwitchSold.isChecked
         lastUpdate = System.currentTimeMillis()
     }
 
@@ -277,7 +469,7 @@ class AddAndModificationFragment : Fragment() {
         sharedAgentViewModel.getAgentData(propertyWithDetails.property.agentId)
             .observe(viewLifecycleOwner) { agent ->
                 agent?.let {
-                    binding.agentLastFirstName.setText("${agent.lastName} ${agent.firstName}")
+                    binding.agentName.setText(agent.name)
                 }
             }
         propertyWithDetails.property.typeOfHouse.let { binding.propertyType.setText(it) }
@@ -289,6 +481,4 @@ class AddAndModificationFragment : Fragment() {
         propertyWithDetails.address?.country.let { binding.addressCountry.setText(it) }
         propertyWithDetails.address?.apartmentDetails.let { binding.apartmentDetails.setText(it) }
     }
-
-
 }

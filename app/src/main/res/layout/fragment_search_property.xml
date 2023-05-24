@@ -556,7 +556,7 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/agent_emails" />
+                android:text="@string/agent_names" />
 
             <androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
                 android:id="@+id/property_agent_seller_multi_auto_complete"
@@ -566,7 +566,7 @@
                 android:ems="10"
                 android:imeOptions="actionDone"
                 android:singleLine="true"
-                android:hint="@string/agent_email_hint"
+                android:hint="@string/agent_name_hint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/property_agent_seller_text" />

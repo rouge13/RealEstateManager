@@ -23,7 +23,7 @@ import java.util.concurrent.Executors
  */
 @Database(
     entities = [PropertyEntity::class, AgentEntity::class, AddressEntity::class, PhotoEntity::class],
-    version = 22,
+    version = 25,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
