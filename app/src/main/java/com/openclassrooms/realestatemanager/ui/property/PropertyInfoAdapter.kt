@@ -19,7 +19,11 @@ class PropertyInfoAdapter(fragment: Fragment, private val photoList: List<PhotoE
     override fun getItemCount(): Int = photoList?.size!!
 
     override fun createFragment(position: Int): Fragment {
-        val photo = photoList?.get(position) ?: defaultPhoto
-        return PhotoFragment.newInstance(photo, soldOut)
+        return if (photoList.isNullOrEmpty() || position >= photoList.size) {
+            PhotoFragment.newInstance(defaultPhoto, soldOut)
+        } else {
+            val photo = photoList[position]
+            PhotoFragment.newInstance(photo, soldOut)
+        }
     }
 }

@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
+import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
@@ -74,14 +75,18 @@ class PropertyInfoFragment : Fragment() {
                 initIsSoldOrNot(propertyWithDetails)
                 val photoViewPager = binding.photoPropertyViewPager
                 val photoList = propertyWithDetails.photos
-                val adapter = propertyWithDetails.property.isSold?.let {
-                    PropertyInfoAdapter(
-                        this,
-                        photoList,
-                        it
+                if (photoList.isNullOrEmpty()) {
+                    val defaultPhoto = PhotoEntity(
+                        id = -1,
+                        photo = null,
+                        description = getString(R.string.no_photo_description)
                     )
+                    val adapter = PropertyInfoAdapter(this, listOf(defaultPhoto), propertyWithDetails.property.isSold ?: false)
+                    photoViewPager.adapter = adapter
+                } else {
+                    val adapter = PropertyInfoAdapter(this, photoList, propertyWithDetails.property.isSold ?: false)
+                    photoViewPager.adapter = adapter
                 }
-                photoViewPager.adapter = adapter
                 initStaticMapImageView(propertyWithDetails, view)
                 initAllTextView(propertyWithDetails)
                 initAllButtons(photoViewPager)
@@ -108,9 +113,40 @@ class PropertyInfoFragment : Fragment() {
         binding.roomsValue.text = propertyWithDetails.property.roomsCount.toString()
         binding.bedroomsValue.text = propertyWithDetails.property.bedroomsCount.toString()
         binding.bathroomsValue.text = propertyWithDetails.property.bathroomsCount.toString()
-        binding.description.text = propertyWithDetails.property.description
+        val description = propertyWithDetails.property.description
+        if (description.isNullOrEmpty()) {
+            binding.description.text = getString(R.string.no_description)
+        } else {
+            binding.description.text = description
+        }
+        // Create a list of string with all the proximities of the property with the switch elements
+        initTheProximitiesForThisProperty(propertyWithDetails)
         initAddressDetails(propertyWithDetails)
     }
+
+    private fun initTheProximitiesForThisProperty(propertyWithDetails: PropertyWithDetails) {
+        val proximities = mutableListOf<String>()
+        propertyWithDetails.property.schoolProximity?.let { if (it) { proximities.add(getString(R.string.school_proximity)) } }
+        propertyWithDetails.property.parkProximity?.let { if (it) { proximities.add(getString(R.string.park_proximity)) } }
+        propertyWithDetails.property.shoppingProximity?.let { if (it) { proximities.add(getString(R.string.shopping_proximity)) } }
+        propertyWithDetails.property.restaurantProximity?.let { if (it) { proximities.add(getString(R.string.restaurant_proximity)) } }
+        propertyWithDetails.property.publicTransportProximity?.let { if (it) { proximities.add(getString(R.string.public_transport_proximity)) } }
+        val formattedProximitiesString = proximities.joinToString(", ")
+        val lastIndex = proximities.size - 1
+        if (lastIndex >= 0) {
+            val lastProximity = proximities[lastIndex]
+            val dotFormattedProximitiesString = if (proximities.size > 1) {
+                formattedProximitiesString.substring(0, formattedProximitiesString.lastIndexOf(", ")) +
+                        ", and " + lastProximity + "."
+            } else {
+                "$lastProximity."
+            }
+            binding.propertyProximityText.text = dotFormattedProximitiesString
+        } else {
+            binding.propertyProximityText.text = formattedProximitiesString
+        }
+    }
+
 
     private fun initAddressDetails(propertyWithDetails: PropertyWithDetails) {
         Log.d("PropertyInfoFragment", "initAddressDetails: $propertyWithDetails")
@@ -120,19 +156,11 @@ class PropertyInfoFragment : Fragment() {
             append(propertyWithDetails.address?.streetName)
         })
         if (propertyWithDetails.address?.apartmentDetails != "") {
-            binding.locationLine2.text = (buildString {
-                append(propertyWithDetails.address?.apartmentDetails)
-            })
+            binding.locationLine2.text = (buildString { append(propertyWithDetails.address?.apartmentDetails) })
         }
-        binding.locationLine3.text = (buildString {
-            append(propertyWithDetails.address?.city)
-        })
-        binding.locationLine4.text = (buildString {
-            append(propertyWithDetails.address?.zipCode)
-        })
-        binding.locationLine5.text = (buildString {
-            append(propertyWithDetails.address?.country)
-        })
+        binding.locationLine3.text = (buildString { append(propertyWithDetails.address?.city) })
+        binding.locationLine4.text = (buildString { append(propertyWithDetails.address?.zipCode) })
+        binding.locationLine5.text = (buildString { append(propertyWithDetails.address?.country) })
     }
 
     @SuppressLint("SetTextI18n")

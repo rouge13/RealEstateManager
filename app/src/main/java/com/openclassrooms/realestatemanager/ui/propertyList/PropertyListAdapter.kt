@@ -49,8 +49,13 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
 
         private fun setImageInRecyclerView(get: PropertyEntity) {
             val context = binding.root.context
-            val id = context.resources.getIdentifier(get.primaryPhoto, "drawable", context.packageName)
-            binding.propertyImage.setImageResource(id)
+            if (get.primaryPhoto == null) {
+                val id = context.resources.getIdentifier("ic_default_property", "drawable", context.packageName)
+                binding.propertyImage.setImageResource(id)
+            } else {
+                val id = context.resources.getIdentifier(get.primaryPhoto, "drawable", context.packageName)
+                binding.propertyImage.setImageResource(id)
+            }
         }
     }
 

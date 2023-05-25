@@ -97,8 +97,13 @@ class SharedPropertyViewModel(
     }
 
     // Insert property
-    suspend fun insertProperty(property: PropertyEntity) {
-        propertyRepository.insert(property)
+    suspend fun insertProperty(property: PropertyEntity): Long? {
+        return propertyRepository.insert(property)
+    }
+
+    // Insert address of the property
+    suspend fun insertAddress(address: AddressEntity) {
+        addressRepository.insert(address)
     }
 
 }

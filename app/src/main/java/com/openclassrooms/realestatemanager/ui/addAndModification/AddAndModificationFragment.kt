@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Calendar
 import java.util.TimeZone
+import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -43,6 +44,7 @@ import java.util.TimeZone
 class AddAndModificationFragment : Fragment() {
     private lateinit var adapter: AddAndModificationAdapter
     private lateinit var binding: FragmentAddAndModifyPropertyBinding
+    private lateinit var notificationHelper: NotificationHelper
     private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     private val converters = Converters()
     private val sharedPropertyViewModel: SharedPropertyViewModel by activityViewModels {
@@ -64,13 +66,14 @@ class AddAndModificationFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAddAndModifyPropertyBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        notificationHelper = NotificationHelper(requireContext())
         sharedNavigationViewModel.getAddOrModifyClicked.observe(viewLifecycleOwner) { isModify ->
             if (isModify) {
                 binding.propertySwitchSold.visibility = View.VISIBLE
@@ -79,6 +82,7 @@ class AddAndModificationFragment : Fragment() {
                 binding.propertySwitchSold.visibility = View.GONE
                 initAllAutoCompleteTextView()
                 initSelectDate()
+                initInsertButton()
                 initCancelButton()
             }
         }
@@ -89,24 +93,18 @@ class AddAndModificationFragment : Fragment() {
     }
 
     private fun displayPropertyDetails() {
+        initAllEditTextRequiredValues()
         sharedPropertyViewModel.getSelectedProperty.observe(viewLifecycleOwner) { propertyWithDetails ->
             propertyWithDetails?.let {
                 initDate(propertyWithDetails)
-                initAllEditTextRequiredValues()
                 initAllEditText(propertyWithDetails)
                 initAllSwitch(propertyWithDetails)
                 setupRecyclerView(propertyWithDetails.photos)
-                sharedNavigationViewModel.getAddOrModifyClicked.observe(viewLifecycleOwner) { isModify ->
-                    if (isModify) {
-                        initUpdateButton()
-                    } else {
-                        initInsertButton()
-                    }
-                }
-                initCancelButton()
-                initSelectDate()
             }
         }
+        initCancelButton()
+        initUpdateButton()
+        initSelectDate()
     }
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private suspend fun createAgentAndWait(agentToAdd: String): Int? {
@@ -154,7 +152,7 @@ class AddAndModificationFragment : Fragment() {
         }
 
         sharedPropertyViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
-            val typesOfHouse = propertiesWithDetails.map { it.property.typeOfHouse }.distinct()
+            val typesOfHouse = propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
             val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
             val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
             val zipCode = propertiesWithDetails.mapNotNull { it.address?.zipCode }.distinct()
@@ -221,7 +219,12 @@ class AddAndModificationFragment : Fragment() {
 
     private fun initInsertButton() {
         binding.btnValidate.setOnClickListener {
-
+            lifecycleScope.launch {
+                insertPropertyEntity()
+                notificationHelper.showPropertyInsertedNotification()
+                findNavController().navigate(R.id.propertyListFragment)
+                Toast.makeText(requireContext(), "Property inserted", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -271,6 +274,7 @@ class AddAndModificationFragment : Fragment() {
                 lifecycleScope.launch {
                     updatePropertyEntity(propertyWithDetails)
                     updateAddressEntity(propertyWithDetails)
+                    notificationHelper.showPropertyInsertedNotification()
                     findNavController().navigate(R.id.propertyListFragment)
                     Toast.makeText(requireContext(), "Property updated", Toast.LENGTH_SHORT).show()
 //                sharedNavigationViewModel.setAddOrModifyClicked(false)
@@ -286,6 +290,16 @@ class AddAndModificationFragment : Fragment() {
         }
         lifecycleScope.launch {
             addressEntity?.let { sharedPropertyViewModel.updateAddress(it) }
+        }
+    }
+
+    private fun insertAddressEntity(insertPropertyId: Long) {
+        val addressEntity = AddressEntity()
+        addressEntity.apply {
+            addressToInsert(insertPropertyId)
+        }
+        lifecycleScope.launch {
+            addressEntity.let { sharedPropertyViewModel.insertAddress(it) }
         }
     }
 
@@ -326,14 +340,20 @@ class AddAndModificationFragment : Fragment() {
         if (agent != null) {
             propertyEntity.agentId = agent.id!!
             lifecycleScope.launch {
-                sharedPropertyViewModel.updateProperty(propertyEntity)
+               val insertedPropertyId = sharedPropertyViewModel.insertProperty(propertyEntity)
+                if (insertedPropertyId != null) {
+                    insertAddressEntity(insertedPropertyId)
+                }
             }
         } else {
             val createdAgentId = createAgentAndWait(agentName)
             if (createdAgentId != null) {
                 propertyEntity.agentId = createdAgentId
                 lifecycleScope.launch {
-                    sharedPropertyViewModel.updateProperty(propertyEntity)
+                    val insertPropertyId = sharedPropertyViewModel.insertProperty(propertyEntity)
+                    if (insertPropertyId != null) {
+                        insertAddressEntity(insertPropertyId)
+                    }
                 }
             } else {
                 // Agent creation was canceled, perform cancel actions here
@@ -354,16 +374,20 @@ class AddAndModificationFragment : Fragment() {
             dateSold = null
         }
         isSold = binding.propertySwitchSold.isChecked
-        primaryElement()
+        primaryPropertyElement()
     }
 
     private fun PropertyEntity.propertyToInsert() {
         id = null
-        dateStartSelling = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
-        primaryElement()
+        dateStartSelling = if (binding.propertyDateText.text.toString() == "Waiting date") {
+            System.currentTimeMillis()
+        } else {
+            converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+        }
+        primaryPropertyElement()
     }
 
-    private fun PropertyEntity.primaryElement() {
+    private fun PropertyEntity.primaryPropertyElement() {
         price = binding.propertyPrice.text.toString().toInt()
         squareFeet = binding.propertySquareFeet.text.toString().toInt()
         roomsCount = binding.propertyRoomsCount.text.toString().toInt()
@@ -383,6 +407,16 @@ class AddAndModificationFragment : Fragment() {
         propertyWithDetails: PropertyWithDetails
     ) {
         id = propertyWithDetails.address?.id
+        primaryAddressElement()
+    }
+
+    private fun AddressEntity.addressToInsert(insertPropertyId: Long) {
+        propertyId = insertPropertyId.toInt()
+        id = null
+        primaryAddressElement()
+    }
+
+    private fun AddressEntity.primaryAddressElement() {
         streetNumber = binding.addressStreetNumber.text.toString()
         streetName = binding.addressStreetName.text.toString()
         city = binding.addressCity.text.toString()
@@ -466,12 +500,13 @@ class AddAndModificationFragment : Fragment() {
         propertyWithDetails.property.bedroomsCount?.let { binding.propertyBedroomsCount.setText(it.toString()) }
         propertyWithDetails.property.bathroomsCount?.let { binding.propertyBathroomsCount.setText(it.toString()) }
         binding.propertyDescription.setText(propertyWithDetails.property.description)
-        sharedAgentViewModel.getAgentData(propertyWithDetails.property.agentId)
-            .observe(viewLifecycleOwner) { agent ->
-                agent?.let {
-                    binding.agentName.setText(agent.name)
+        propertyWithDetails.property.agentId?.let {
+            sharedAgentViewModel.getAgentData(it).observe(viewLifecycleOwner) { agent ->
+                    agent?.let {
+                        binding.agentName.setText(agent.name)
+                    }
                 }
-            }
+        }
         propertyWithDetails.property.typeOfHouse.let { binding.propertyType.setText(it) }
         propertyWithDetails.address?.streetNumber.let { binding.addressStreetNumber.setText(it) }
         propertyWithDetails.address?.streetName.let { binding.addressStreetName.setText(it) }

@@ -102,8 +102,7 @@ class MapFragment : Fragment() {
             propertyMarkers[marker]?.let { propertyWithDetails ->
                 propertyViewModel.setSelectProperty(propertyWithDetails)
                 if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!){
-                    val action = MapFragmentDirections.actionMapFragmentToInfoPropertyFragment()
-                    fragmentMapBinding.root.findNavController().navigate(action)
+                    findNavController().navigate(R.id.infoPropertyFragment)
                 } else {
                     findNavController().popBackStack()
                 }

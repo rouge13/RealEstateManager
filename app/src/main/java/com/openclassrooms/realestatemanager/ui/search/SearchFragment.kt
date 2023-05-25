@@ -289,7 +289,7 @@ class SearchFragment : Fragment() {
 
     private fun initTypeOfHouseBoroughsAndCities() {
         sharedPropertyViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
-            val typesOfHouse = propertiesWithDetails.map { it.property.typeOfHouse }.distinct()
+            val typesOfHouse = propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
             val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
             val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
             initTypesOfHouse(typesOfHouse)

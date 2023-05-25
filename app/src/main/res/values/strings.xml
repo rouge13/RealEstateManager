@@ -126,6 +126,15 @@
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
     <string name="agent_created">Agent created</string>
+    <string name="no_description">The description can be set later ! But don\'t forget do add one in later time.</string>
+    <string name="no_photo_description">No photo available</string>
+    <string name="property_proximity_title">Proximity(ies) : </string>
+    <string name="property_proximity_text">Proximity</string>
+    <string name="school_proximity">School</string>
+    <string name="park_proximity">Park</string>
+    <string name="shopping_proximity">Shop</string>
+    <string name="restaurant_proximity">Restaurant</string>
+    <string name="public_transport_proximity">Public transport</string>
 
 
 </resources>

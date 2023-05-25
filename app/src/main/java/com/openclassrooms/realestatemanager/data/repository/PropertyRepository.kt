@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.Flow
 class PropertyRepository(private val propertyDao: PropertyDao) {
     // Get all the properties from the database
     val allProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
-    suspend fun insert(property: PropertyEntity) {
-        propertyDao.insert(property)
+    suspend fun insert(property: PropertyEntity): Long? {
+        val id = propertyDao.insert(property)
+        return if (id != -1L) id else null
     }
 
     // Set and return all Filtered properties
@@ -51,26 +52,28 @@ class PropertyRepository(private val propertyDao: PropertyDao) {
     // Update the property
     suspend fun update(property: PropertyEntity) {
         property.id?.let {
-            propertyDao.updateProperty(
-                it,
-                property.price,
-                property.squareFeet,
-                property.roomsCount,
-                property.bedroomsCount,
-                property.bathroomsCount,
-                property.description,
-                property.typeOfHouse,
-                property.isSold,
-                property.dateStartSelling,
-                property.dateSold,
-                property.agentId,
-                property.primaryPhoto,
-                property.schoolProximity,
-                property.shoppingProximity,
-                property.parkProximity,
-                property.restaurantProximity,
-                property.publicTransportProximity,
-            )
+            property.agentId?.let { it1 ->
+                propertyDao.updateProperty(
+                    it,
+                    property.price,
+                    property.squareFeet,
+                    property.roomsCount,
+                    property.bedroomsCount,
+                    property.bathroomsCount,
+                    property.description,
+                    property.typeOfHouse,
+                    property.isSold,
+                    property.dateStartSelling,
+                    property.dateSold,
+                    it1,
+                    property.primaryPhoto,
+                    property.schoolProximity,
+                    property.shoppingProximity,
+                    property.parkProximity,
+                    property.restaurantProximity,
+                    property.publicTransportProximity,
+                )
+            }
         }
     }
 }

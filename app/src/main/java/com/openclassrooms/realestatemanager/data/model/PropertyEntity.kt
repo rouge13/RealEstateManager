@@ -28,19 +28,19 @@ import java.util.*
 )
 data class PropertyEntity(
     @PrimaryKey(autoGenerate = true)
-    var id: Int?,
+    var id: Int? = null,
     var price: Int? = 0,
     var squareFeet: Int? = 0,
     var roomsCount: Int? = 0,
     var bedroomsCount: Int? = 0,
     var bathroomsCount: Int? = 0,
     var description: String? = "Must add description for this property in later time",
-    var typeOfHouse: String,
+    var typeOfHouse: String? = null,
     var isSold: Boolean? = false,
     var dateStartSelling: Long? = null,
     var dateSold: Long? = null,
-    var agentId: Int,
-    var primaryPhoto: String,
+    var agentId: Int? = null,
+    var primaryPhoto: String? = null,
     var schoolProximity: Boolean? = null,
     var parkProximity: Boolean? = null,
     var shoppingProximity: Boolean? = null,

@@ -17,7 +17,7 @@ interface PropertyDao {
     fun getAllProperties(): Flow<List<PropertyEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(property: PropertyEntity)
+    suspend fun insert(property: PropertyEntity): Long
 
     // Get all properties filtered
     @Query(
@@ -109,10 +109,10 @@ interface PropertyDao {
     """
     )
     fun getAllFilteredProperties(
-        typesOfHouses: List<String>,
-        agentsId: List<Int>,
-        city: List<String>,
-        boroughs: List<String>,
+        typesOfHouses: List<String>?,
+        agentsId: List<Int>?,
+        city: List<String>?,
+        boroughs: List<String>?,
         minPrice: Int?,
         maxPrice: Int?,
         minSquareFeet: Int?,
@@ -133,10 +133,10 @@ interface PropertyDao {
         parkProximity: Boolean?,
         restaurantProximity: Boolean?,
         publicTransportProximity: Boolean?,
-        typesOfHousesCount: Int,
-        agentsIdCount: Int,
-        cityCount: Int,
-        boroughsCount: Int
+        typesOfHousesCount: Int?,
+        agentsIdCount: Int?,
+        cityCount: Int?,
+        boroughsCount: Int?
     ): Flow<List<PropertyEntity>>
 
     @Query(

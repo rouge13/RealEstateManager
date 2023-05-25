@@ -31,7 +31,7 @@ data class AddressEntity(
     var boroughs: String? = "",
     var zipCode: String = "",
     var country: String = "",
-    val propertyId: Int? = null,
+    var propertyId: Int? = null,
     var apartmentDetails: String? = ""
 ) : Parcelable {
 }
