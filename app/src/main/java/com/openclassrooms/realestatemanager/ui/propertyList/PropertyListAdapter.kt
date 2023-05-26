@@ -21,7 +21,7 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
         fun bind(get: PropertyWithDetails) {
             // Set the data to the view
             binding.propertyType.text = get.property.typeOfHouse
-            binding.propertySector.text = get.address?.boroughs?.takeIf { it.isNotBlank() } ?: "N/A"
+            binding.propertySector.text = get.address?.boroughs?.takeIf { it.isNotBlank() }
             "$${get.property.price}".also { binding.propertyValue.text = it }
 
             // Set the image to the view

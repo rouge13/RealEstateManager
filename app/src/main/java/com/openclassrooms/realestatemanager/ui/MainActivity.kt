@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
@@ -19,9 +20,11 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -33,14 +36,13 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
-import com.openclassrooms.realestatemanager.data.model.AgentEntity
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.databinding.ActivityMainNavHeaderBinding
-import com.openclassrooms.realestatemanager.ui.propertyList.PropertyListFragmentDirections
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
+import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -115,22 +117,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViewModels() {
-        sharedAgentViewModel =
-            ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
-                SharedAgentViewModel::class.java
-            )
-        initializationViewModel =
-            ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
-                InitializationViewModel::class.java
-            )
-        sharedNavigationViewModel =
-            ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
-                SharedNavigationViewModel::class.java
-            )
-        sharedPropertyViewModel =
-            ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(
-                SharedPropertyViewModel::class.java
-            )
+        sharedAgentViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(SharedAgentViewModel::class.java)
+        initializationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(InitializationViewModel::class.java)
+        sharedNavigationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(SharedNavigationViewModel::class.java)
+        sharedPropertyViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(SharedPropertyViewModel::class.java)
     }
 
     private fun initSearchOnClickListeners() {
@@ -142,7 +132,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun setupNavigationController() {
         // Init the NavController
         val navHostFragment =
@@ -153,7 +142,6 @@ class MainActivity : AppCompatActivity() {
             handleNavigationItemSelected(menuItem, navController)
         }
     }
-
     private fun handleNavigationItemSelected(
         item: MenuItem,
         navController: NavController
@@ -175,7 +163,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun isOnline(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -213,12 +200,30 @@ class MainActivity : AppCompatActivity() {
                 alert.show()
             } else {
                 agentLocationUpdates()
+                checkHasPermissionToSendNotifications()
             }
             setupBottomNavigation()
             activityMainBinding.viewPager.currentItem = 0 // Switch to the PropertyListFragment
         } else {
             activityMainBinding.bottomNavigationView.visibility = View.GONE
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun checkHasPermissionToSendNotifications() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestSinglePermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun showNotification() {
+        val notificationHelper = NotificationHelper(this)
+        notificationHelper.showPropertyInsertedNotification()
     }
 
     private fun agentLocationUpdates() {
@@ -324,5 +329,25 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, e.message.toString(), Toast.LENGTH_SHORT).show()
         }
     }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, show the notification
+                val notificationHelper = NotificationHelper(this)
+                notificationHelper.showPropertyInsertedNotification()
+            } else {
+                // Permission denied, handle it accordingly (e.g., show a message)
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
+    companion object {
+        const val PERMISSION_REQUEST_CODE = 1
+    }
 }

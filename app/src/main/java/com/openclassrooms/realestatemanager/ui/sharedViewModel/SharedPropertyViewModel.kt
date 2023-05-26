@@ -62,6 +62,20 @@ class SharedPropertyViewModel(
                 }
             }
         }
+        // Observe insertedProperty LiveData
+        propertyRepository.insertedProperty.observeForever { insertedProperty ->
+            viewModelScope.launch {
+                if (insertedProperty != null) {
+                    // Initialize all properties
+                    val properties = propertyRepository.allProperties.firstOrNull()
+                    properties?.let {
+                        val propertyDetails = combinePropertiesWithDetails(it)
+                        propertiesWithDetailsMediator.value = propertyDetails
+                    }
+                }
+            }
+        }
+
     }
 
     val getPropertiesWithDetails: LiveData<List<PropertyWithDetails>> = propertiesWithDetailsMediator

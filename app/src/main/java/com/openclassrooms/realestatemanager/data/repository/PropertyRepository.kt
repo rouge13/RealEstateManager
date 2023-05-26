@@ -1,5 +1,7 @@
 package com.openclassrooms.realestatemanager.data.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.openclassrooms.realestatemanager.data.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
@@ -11,8 +13,14 @@ import kotlinx.coroutines.flow.Flow
 class PropertyRepository(private val propertyDao: PropertyDao) {
     // Get all the properties from the database
     val allProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
+
+    // LiveData for newly inserted property
+    private val _insertedProperty = MutableLiveData<PropertyEntity>()
+    val insertedProperty: LiveData<PropertyEntity> get() = _insertedProperty
+
     suspend fun insert(property: PropertyEntity): Long? {
         val id = propertyDao.insert(property)
+        _insertedProperty.value = property // Set the value of insertedProperty LiveData
         return if (id != -1L) id else null
     }
 

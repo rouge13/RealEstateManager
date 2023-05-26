@@ -62,6 +62,7 @@ class AddAndModificationFragment : Fragment() {
             requireActivity().application as MainApplication
         )
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -106,6 +107,7 @@ class AddAndModificationFragment : Fragment() {
         initUpdateButton()
         initSelectDate()
     }
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private suspend fun createAgentAndWait(agentToAdd: String): Int? {
         return suspendCancellableCoroutine { continuation ->
@@ -152,7 +154,8 @@ class AddAndModificationFragment : Fragment() {
         }
 
         sharedPropertyViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
-            val typesOfHouse = propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
+            val typesOfHouse =
+                propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
             val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
             val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
             val zipCode = propertiesWithDetails.mapNotNull { it.address?.zipCode }.distinct()
@@ -220,10 +223,12 @@ class AddAndModificationFragment : Fragment() {
     private fun initInsertButton() {
         binding.btnValidate.setOnClickListener {
             lifecycleScope.launch {
-                insertPropertyEntity()
-                notificationHelper.showPropertyInsertedNotification()
-                findNavController().navigate(R.id.propertyListFragment)
-                Toast.makeText(requireContext(), "Property inserted", Toast.LENGTH_SHORT).show()
+                val insertedPropertyId = insertPropertyEntity()
+                if (insertedPropertyId != null) {
+                    notificationHelper.showPropertyInsertedNotification()
+                    findNavController().navigate(R.id.propertyListFragment)
+                    Toast.makeText(requireContext(), "Property inserted", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -324,13 +329,15 @@ class AddAndModificationFragment : Fragment() {
                 }
             } else {
                 // Agent creation was canceled, perform cancel actions here
-                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
+                    .show()
                 // Cancel any other actions related to property update
             }
         }
     }
 
-    private suspend fun insertPropertyEntity() {
+    private suspend fun insertPropertyEntity(): Long? {
+        var insertedPropertyId: Long? = null
         val propertyEntity = PropertyEntity()
         propertyEntity.apply {
             propertyToInsert()
@@ -339,29 +346,29 @@ class AddAndModificationFragment : Fragment() {
         val agent = sharedAgentViewModel.getAgentByName(agentName).firstOrNull()
         if (agent != null) {
             propertyEntity.agentId = agent.id!!
-            lifecycleScope.launch {
-               val insertedPropertyId = sharedPropertyViewModel.insertProperty(propertyEntity)
-                if (insertedPropertyId != null) {
-                    insertAddressEntity(insertedPropertyId)
-                }
+            val insertedId = sharedPropertyViewModel.insertProperty(propertyEntity)
+            if (insertedId != null) {
+                insertedPropertyId = insertedId
+                insertAddressEntity(insertedPropertyId)
             }
         } else {
             val createdAgentId = createAgentAndWait(agentName)
             if (createdAgentId != null) {
                 propertyEntity.agentId = createdAgentId
-                lifecycleScope.launch {
-                    val insertPropertyId = sharedPropertyViewModel.insertProperty(propertyEntity)
-                    if (insertPropertyId != null) {
-                        insertAddressEntity(insertPropertyId)
-                    }
+                val insertPropertyId = sharedPropertyViewModel.insertProperty(propertyEntity)
+                if (insertPropertyId != null) {
+                    insertedPropertyId = insertPropertyId
+                    insertAddressEntity(insertedPropertyId)
+                } else {
+                    // Agent creation was canceled, perform cancel actions here
+                    Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
+                    // Cancel any other actions related to property update
                 }
-            } else {
-                // Agent creation was canceled, perform cancel actions here
-                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
-                // Cancel any other actions related to property update
             }
         }
+        return insertedPropertyId
     }
+
 
     private fun PropertyEntity.propertyToUpdate(
         propertyWithDetails: PropertyWithDetails
@@ -502,10 +509,10 @@ class AddAndModificationFragment : Fragment() {
         binding.propertyDescription.setText(propertyWithDetails.property.description)
         propertyWithDetails.property.agentId?.let {
             sharedAgentViewModel.getAgentData(it).observe(viewLifecycleOwner) { agent ->
-                    agent?.let {
-                        binding.agentName.setText(agent.name)
-                    }
+                agent?.let {
+                    binding.agentName.setText(agent.name)
                 }
+            }
         }
         propertyWithDetails.property.typeOfHouse.let { binding.propertyType.setText(it) }
         propertyWithDetails.address?.streetNumber.let { binding.addressStreetNumber.setText(it) }
