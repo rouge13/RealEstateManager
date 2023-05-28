@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.ui.sharedViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
@@ -15,7 +14,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -52,9 +50,9 @@ class SharedPropertyViewModel(
         propertiesWithDetailsMediator.addSource(_searchCriteria) { criteria ->
             viewModelScope.launch {
                 val properties = if (criteria != null) {
-                    propertyRepository.setFilteredProperties(criteria).firstOrNull()
+                    propertyRepository.getFilteredProperties(criteria).firstOrNull()
                 } else {
-                    propertyRepository.allProperties.firstOrNull()
+                    propertyRepository.getAllProperties.firstOrNull()
                 }
                 properties?.let {
                     val propertyDetails = combinePropertiesWithDetails(it)
@@ -67,7 +65,7 @@ class SharedPropertyViewModel(
             viewModelScope.launch {
                 if (insertedProperty != null) {
                     // Initialize all properties
-                    val properties = propertyRepository.allProperties.firstOrNull()
+                    val properties = propertyRepository.getAllProperties.firstOrNull()
                     properties?.let {
                         val propertyDetails = combinePropertiesWithDetails(it)
                         propertiesWithDetailsMediator.value = propertyDetails
@@ -89,8 +87,10 @@ class SharedPropertyViewModel(
         val combinedData = properties.mapNotNull { property ->
             val propertyId = property.id
             if (propertyId != null) {
-                val propertyAddress = addressRepository.getAddressRelatedToASpecificProperty(propertyId).firstOrNull()
-                val propertyPhotos = photoRepository.getAllPhotosRelatedToASpecificProperty(propertyId)?.firstOrNull()
+                val propertyAddress = addressRepository.getAddressRelatedToASpecificProperty(propertyId)
+                    .firstOrNull()
+                val propertyPhotos = photoRepository.getAllPhotosRelatedToASpecificProperty(propertyId)
+                    ?.firstOrNull()
                 Log.d("ViewModel", "Property ID: $propertyId, Address: $propertyAddress")
                 PropertyWithDetails(property, propertyAddress, propertyPhotos)
             } else {

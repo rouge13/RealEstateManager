@@ -438,10 +438,10 @@ class AddAndModificationFragment : Fragment() {
         val sdf = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
         if (propertyWithDetails.property.isSold == true) {
             val dateSold = propertyWithDetails.property.dateSold?.let { Date(it) }
-            binding.propertyDateText.text = "Sold on : ${dateSold?.let { sdf.format(it) }}"
+            binding.propertyDateText.text = "${dateSold?.let { sdf.format(it) }}"
         } else {
             val dateSale = propertyWithDetails.property.dateStartSelling?.let { Date(it) }
-            binding.propertyDateText.text = "Sale date : ${dateSale?.let { sdf.format(it) }}"
+            binding.propertyDateText.text = "${dateSale?.let { sdf.format(it) }}"
         }
     }
 
@@ -481,6 +481,7 @@ class AddAndModificationFragment : Fragment() {
 //        adapter = drawableList?.let { AddAndModificationAdapter(it) }!!
 //        binding.photoAddRemoveViewPager.adapter = adapter
 //    }
+
     private fun setupRecyclerView(photoList: List<PhotoEntity>?) {
         val drawableList = photoList?.map { photoEntity ->
             // Convert PhotoEntity to Drawable

@@ -357,8 +357,8 @@ class SearchFragment : Fragment() {
         binding.searchProperty.setOnClickListener {
             sharedPropertyViewModel.setSearchCriteria(searchCriteria)
             if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!){
-                val action = SearchFragmentDirections.actionSearchFragmentToPropertyListFragment()
-                binding.root.findNavController().navigate(action)
+//                val action = SearchFragmentDirections.actionSearchFragmentToPropertyListFragment()
+                binding.root.findNavController().navigate(R.id.propertyListFragment)
             } else {
                 findNavController().popBackStack()
             }

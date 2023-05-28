@@ -12,20 +12,21 @@ import kotlinx.coroutines.flow.Flow
  */
 class PropertyRepository(private val propertyDao: PropertyDao) {
     // Get all the properties from the database
-    val allProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
+    val getAllProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
 
     // LiveData for newly inserted property
     private val _insertedProperty = MutableLiveData<PropertyEntity>()
     val insertedProperty: LiveData<PropertyEntity> get() = _insertedProperty
 
     suspend fun insert(property: PropertyEntity): Long? {
+        property.isSold = false
         val id = propertyDao.insert(property)
         _insertedProperty.value = property // Set the value of insertedProperty LiveData
         return if (id != -1L) id else null
     }
 
     // Set and return all Filtered properties
-    fun setFilteredProperties(searchCriteria: SearchCriteria): Flow<List<PropertyEntity>> {
+    fun getFilteredProperties(searchCriteria: SearchCriteria): Flow<List<PropertyEntity>> {
         return propertyDao.getAllFilteredProperties(
             typesOfHouses = searchCriteria.selectedTypeOfHouseForQuery,
             agentsId = searchCriteria.selectedAgentsIdsForQuery,

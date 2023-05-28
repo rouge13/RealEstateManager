@@ -104,7 +104,18 @@ interface PropertyDao {
             ELSE 1
         END
     )
-    AND property.id IN (SELECT propertyId FROM photo GROUP BY propertyId HAVING (:minCountPhotos IS NULL OR COUNT(id) >= :minCountPhotos) AND (:maxCountPhotos IS NULL OR COUNT(id) <= :maxCountPhotos))
+    AND (
+        (:minCountPhotos IS NULL AND :maxCountPhotos IS NULL) -- When both min and max are null, include all properties
+        OR (
+            property.id IN (
+            SELECT propertyId FROM photo
+            GROUP BY propertyId
+            HAVING (:minCountPhotos IS NULL OR COUNT(id) >= :minCountPhotos)
+            AND (:maxCountPhotos IS NULL OR COUNT(id) <= :maxCountPhotos)
+            )
+        )
+    )
+    AND (:isSold IS NULL OR isSold = :isSold)
     ORDER BY property.id ASC
     """
     )
@@ -181,9 +192,4 @@ interface PropertyDao {
                                    shoppingProximity: Boolean?,
                                    restaurantProximity: Boolean?,
                                    publicTransportProximity: Boolean?)
-
-
-
-
-
 }
