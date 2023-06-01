@@ -84,14 +84,7 @@ class MapFragment : Fragment() {
             val addressString =
                 (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
             val address = Geocoder(view.context).getFromLocationName(addressString, 1)
-            val location = address?.get(0)?.latitude?.let { it1 ->
-                address[0]?.longitude?.let { it2 ->
-                    LatLng(
-                        it1,
-                        it2
-                    )
-                }
-            }
+            val location = address?.get(0)?.latitude?.let { it1 -> address[0]?.longitude?.let { it2 -> LatLng(it1, it2) } }
             val marker = googleMap.addMarker(
                 MarkerOptions().position(location!!).title(propertyWithDetails.property.typeOfHouse)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))

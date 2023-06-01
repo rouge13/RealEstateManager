@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
+import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
 import kotlinx.coroutines.launch
 
@@ -118,6 +119,34 @@ class SharedPropertyViewModel(
     // Insert address of the property
     suspend fun insertAddress(address: AddressEntity) {
         addressRepository.insert(address)
+    }
+
+    // Insert photo of the property
+    suspend fun insertPhoto(photo: PhotoEntity): Long? {
+        return photoRepository.insert(photo)
+    }
+
+    // Keep the photoId in a pending MutableListOf to be able to insert it in the database when the property is inserted
+    val pendingPhotoIds = MutableLiveData<List<Int>>()
+
+    // Get all the pending photoIds
+    val getPendingPhotoIds: LiveData<List<Int>> get() = pendingPhotoIds
+
+    // Add photoId to the pending list
+    fun addPendingPhotoId(photoId: Int) {
+        val currentPendingPhotoIds = pendingPhotoIds.value.orEmpty().toMutableList()
+        currentPendingPhotoIds.add(photoId)
+        pendingPhotoIds.value = currentPendingPhotoIds
+    }
+
+
+    // Update all photos with the propertyId
+    suspend fun updatePhotosWithPropertyId(propertyId: Int) {
+        val photoIds = pendingPhotoIds.value.orEmpty()
+        for (photoId in photoIds) {
+            photoRepository.updatePhotoWithPropertyId(photoId, propertyId)
+        }
+        pendingPhotoIds.value = emptyList()
     }
 
 }

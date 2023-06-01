@@ -1,9 +1,12 @@
 package com.openclassrooms.realestatemanager.ui.property
 
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
@@ -36,8 +39,12 @@ class PhotoFragment : Fragment() {
         soldOut = args.getBoolean("soldOut")
 
         // Set the photo and description in the view
-        val photoResourceId = getPhotoResourceId(photoEntity.photo)
-        binding.imageInfoView.setImageResource(photoResourceId)
+        val photoDrawable = getPhotoDrawable(photoEntity.photo)
+        if (photoDrawable != null) {
+            binding.imageInfoView.setImageDrawable(photoDrawable)
+        } else {
+            binding.imageInfoView.setImageResource(DEFAULT_PHOTO_RESOURCE_ID)
+        }
         binding.roomType.text = photoEntity.description
 
         // Hide the sold out banner if the property is not sold
@@ -45,14 +52,28 @@ class PhotoFragment : Fragment() {
         binding.imageInfoView.alpha = if (soldOut) 0.3f else 1f
     }
 
-    private fun getPhotoResourceId(photo: String?): Int {
-        return if (photo.isNullOrEmpty()) {
-            DEFAULT_PHOTO_RESOURCE_ID
-        } else {
-            // Retrieve the resource ID using the photo name
+    private fun getPhotoDrawable(photo: String?): Drawable? {
+        if (!photo.isNullOrEmpty()) {
             val context = requireContext()
-            context.resources.getIdentifier(photo, "drawable", context.packageName)
+            val resourceId = context.resources.getIdentifier(photo, "drawable", context.packageName)
+            if (resourceId != 0) {
+                return ContextCompat.getDrawable(context, resourceId)
+            }
+
+            try {
+                val uri = Uri.parse(photo)
+                val inputStream = requireContext().contentResolver.openInputStream(uri)
+                if (inputStream != null) {
+                    val drawable = Drawable.createFromStream(inputStream, uri.toString())
+                    inputStream.close()
+                    return drawable
+                }
+            } catch (e: Exception) {
+                // Handle any exceptions that may occur while loading the drawable from URI
+            }
         }
+
+        return null
     }
 
     override fun onDestroyView() {
@@ -79,5 +100,6 @@ class PhotoFragment : Fragment() {
         }
     }
 }
+
 
 

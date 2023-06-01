@@ -137,6 +137,8 @@
     <string name="public_transport_proximity">Public transport</string>
     <string name="property_inserted_notification_title">Property Inserted</string>
     <string name="property_inserted_notification_text">The property has been inserted successfully.</string>
+    <string name="date_sale_if_sold">Sale date if sold : </string>
+    <string name="date_sale">Sale date</string>
 
 
 </resources>

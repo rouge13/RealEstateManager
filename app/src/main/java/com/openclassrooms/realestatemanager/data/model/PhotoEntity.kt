@@ -13,12 +13,15 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 @Entity(
     tableName = "photo",
-    foreignKeys = [ForeignKey(
-        entity = PropertyEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["propertyId"],
-    )],
-    indices = [Index(value = ["propertyId"])]
+    foreignKeys = [
+        ForeignKey(
+            entity = PropertyEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["propertyId"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 data class PhotoEntity(
     @PrimaryKey(autoGenerate = true)

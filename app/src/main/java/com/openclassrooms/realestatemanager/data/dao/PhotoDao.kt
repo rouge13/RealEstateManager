@@ -23,5 +23,20 @@ interface PhotoDao {
 
     // Insert photo
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(photo: PhotoEntity)
+    suspend fun insert(photo: PhotoEntity): Long
+
+    // Update photo with the propertyId
+    @Query(
+        """
+        UPDATE photo 
+        SET propertyId = :propertyId 
+        WHERE id = :photoId
+        """
+    )
+    suspend fun updatePhotoWithPropertyId(
+        propertyId: Int,
+        photoId: Int
+    )
+
+
 }

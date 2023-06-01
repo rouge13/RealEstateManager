@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <declare-styleable name="DeleteableImageView">
-        <attr name="imageDrawable" format="reference" />
-        <attr name="onDeleteButtonClick" format="string" />
-    </declare-styleable>
-</resources>
