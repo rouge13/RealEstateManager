@@ -28,4 +28,9 @@ class PhotoRepository(private val photoDao: PhotoDao) {
         photoDao.updatePhotoWithPropertyId(photoId = photoId, propertyId = propertyId)
     }
 
+    // Delete photo
+    suspend fun deletePhoto(photoId: Int) {
+        photoDao.deletePhoto(photoId = photoId)
+    }
+
 }

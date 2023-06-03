@@ -65,6 +65,7 @@ import java.io.IOException
  */
 class AddAndModificationFragment : Fragment() {
     private var currentDescription: String? = null
+    private var photoList: List<PhotoEntity>? = null
     private lateinit var adapter: AddAndModificationAdapter
     private lateinit var binding: FragmentAddAndModifyPropertyBinding
     private lateinit var notificationHelper: NotificationHelper
@@ -434,7 +435,7 @@ class AddAndModificationFragment : Fragment() {
     private suspend fun updatePhotosWithPropertyId(propertyId: Int) {
         val currentPendingPhotoIds = sharedPropertyViewModel.getPendingPhotoIds.value ?: emptyList()
         for (photoId in currentPendingPhotoIds) {
-            sharedPropertyViewModel.updatePhotosWithPropertyId(propertyId)
+            sharedPropertyViewModel.updatePhotosWithPropertyId(photoId, propertyId)
         }
         sharedPropertyViewModel.pendingPhotoIds.value = emptyList()
     }
@@ -501,7 +502,6 @@ class AddAndModificationFragment : Fragment() {
             binding.addressStreetNumber.text.toString() + " " + binding.addressStreetName.text.toString() + " " + binding.addressCity.text.toString() + " " + binding.addressZipCode.text.toString() + " " + binding.addressCountry.text.toString()
     }
 
-
     private fun initDate(propertyWithDetails: PropertyWithDetails) {
         val sdf = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
         if (propertyWithDetails.property.isSold == true) {
@@ -544,43 +544,77 @@ class AddAndModificationFragment : Fragment() {
     private fun setupRecyclerView(photoList: List<PhotoEntity>?) {
         val layoutManager = LinearLayoutManager(requireContext())
         binding.fragmentPropertySelectedPhotosRecyclerView.layoutManager = layoutManager
-        val drawableList = mutableListOf<Drawable?>()
-        // Add photos from resources
-        photoList?.forEach { photoEntity ->
-            if (photoEntity.photo?.startsWith("ic_") == true) {
-                // Photo from resources
-                val resourceId = resources.getIdentifier(
-                    photoEntity.photo,
-                    "drawable",
-                    requireActivity().packageName
-                )
-                val drawable: Drawable? = try {
-                    ContextCompat.getDrawable(requireContext(), resourceId)
-                } catch (e: Exception) {
-                    null
-                }
-                drawableList.add(drawable)
-            } else {
-                // Photo from URI
-                val uri = Uri.parse(photoEntity.photo)
-                val drawable: Drawable? = try {
-                    val inputStream = requireContext().contentResolver.openInputStream(uri)
-                    Drawable.createFromStream(inputStream, uri.toString())
-                } catch (e: Exception) {
-                    null
-                }
-                drawableList.add(drawable)
-            }
+
+        val mutablePhotoList: MutableList<PhotoEntity> = photoList?.toMutableList() ?: mutableListOf()
+
+        adapter = AddAndModificationAdapter(mutablePhotoList) { position ->
+            // Delete photo
+            deletePhoto(mutablePhotoList, position)
         }
-        adapter = AddAndModificationAdapter(drawableList)
         binding.fragmentPropertySelectedPhotosRecyclerView.adapter = adapter
         binding.addPhotos.setOnClickListener {
             // Open gallery or camera to select or capture photos
             // After obtaining the selected or captured photo, add it to the adapter
             showPhotoOptionsDialog()
         }
+
+        // Convert the List<PhotoEntity> to List<Drawable?>
+        val drawableList: MutableList<Drawable?> = mutablePhotoList.map { photoEntity ->
+            adapter.getDrawableFromPhotoEntity(requireContext(), photoEntity)
+        }.toMutableList()
+
+        // Update the adapter with the drawableList
+        adapter.updatePhotos(drawableList)
     }
 
+    private fun initPhotoFromURI(
+        photoEntity: PhotoEntity,
+        drawableList: MutableList<Drawable?>
+    ) {
+        // Photo from URI
+        val uri = Uri.parse(photoEntity.photo)
+        val drawable: Drawable? = try {
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            Drawable.createFromStream(inputStream, uri.toString())
+        } catch (e: Exception) {
+            null
+        }
+        drawableList.add(drawable)
+    }
+
+    private fun initPhotoFromDrawableRessources(
+        photoEntity: PhotoEntity,
+        drawableList: MutableList<Drawable?>
+    ) {
+        // Photo from resources
+        val resourceId = resources.getIdentifier(
+            photoEntity.photo,
+            "drawable",
+            requireActivity().packageName
+        )
+        val drawable: Drawable? = try {
+            ContextCompat.getDrawable(requireContext(), resourceId)
+        } catch (e: Exception) {
+            null
+        }
+        drawableList.add(drawable)
+    }
+
+    private fun deletePhoto(
+        mutablePhotoList: MutableList<PhotoEntity>?,
+        position: Int
+    ) {
+        val photo = mutablePhotoList?.get(position)
+        photo?.id?.let { photoId ->
+            // Delete photo from database using the DAO
+            lifecycleScope.launch {
+                sharedPropertyViewModel.deletePhoto(photoId)
+            }
+            // Remove the photo from the list and update the adapter
+            mutablePhotoList.removeAt(position)
+            adapter.removePhoto(position)
+        }
+    }
 
     private fun showPhotoOptionsDialog() {
         val descriptionEditText = EditText(requireContext())
@@ -697,38 +731,10 @@ class AddAndModificationFragment : Fragment() {
         val agentName = binding.agentName.text.toString()
         val date = binding.propertyDateText.text.toString()
         val dateSellingIfSold = binding.dateSale.text.toString()
-        return isAllInputsAdded(
-            typeOfHouse,
-            price,
-            squareFeet,
-            roomsCount,
-            description,
-            streetNumber,
-            streetName,
-            city,
-            zipCode,
-            country,
-            agentName,
-            date,
-            dateSellingIfSold
-        )
+        return isAllInputsAdded(typeOfHouse, price, squareFeet, roomsCount, description, streetNumber, streetName, city, zipCode, country, agentName, date, dateSellingIfSold)
     }
 
-    private fun isAllInputsAdded(
-        typeOfHouse: String,
-        price: String,
-        squareFeet: String,
-        roomsCount: String,
-        description: String,
-        streetNumber: String,
-        streetName: String,
-        city: String,
-        zipCode: String,
-        country: String,
-        agentName: String,
-        date: String,
-        dateSellingIfSold: String
-    ): Boolean {
+    private fun isAllInputsAdded(typeOfHouse: String, price: String, squareFeet: String, roomsCount: String, description: String, streetNumber: String, streetName: String, city: String, zipCode: String, country: String, agentName: String, date: String, dateSellingIfSold: String): Boolean {
         if (typeOfHouse.isBlank()) {
             Toast.makeText(requireContext(), "Please enter the type of house", Toast.LENGTH_SHORT)
                 .show(); return false
@@ -831,7 +837,6 @@ class AddAndModificationFragment : Fragment() {
         }
     }
 
-
     private fun saveImageToGallery(drawable: Drawable): String? {
         val contentValues = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "image_${System.currentTimeMillis()}.jpg")
@@ -863,12 +868,14 @@ class AddAndModificationFragment : Fragment() {
             // Replace `photoDao` with your actual DAO instance
             val photoId = sharedPropertyViewModel.insertPhoto(photoEntity)?.toInt()
             // Update the adapter with the new photo entity
-            drawable?.let { adapter.addPhoto(it) }
+            drawable?.let {
+                adapter.addPhoto(photoEntity, it)
+                // Scroll to the newly added photo
+                binding.fragmentPropertySelectedPhotosRecyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+            }
             // Store the photo ID in the pending list
             if (photoId != null) {
                 sharedPropertyViewModel.addPendingPhotoId(photoId)
-                // Scroll to the newly added photo
-                binding.fragmentPropertySelectedPhotosRecyclerView.smoothScrollToPosition(adapter.itemCount - 1)
             }
         }
     }
@@ -887,6 +894,5 @@ class AddAndModificationFragment : Fragment() {
     companion object {
         private const val REQUEST_IMAGE_CAPTURE = 1
         private const val REQUEST_IMAGE_PICK = 2
-        private const val EXTRA_DESCRIPTION = "description"
     }
 }

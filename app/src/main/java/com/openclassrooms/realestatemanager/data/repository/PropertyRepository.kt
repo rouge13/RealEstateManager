@@ -14,6 +14,11 @@ class PropertyRepository(private val propertyDao: PropertyDao) {
     // Get all the properties from the database
     val getAllProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
 
+    // get property by id
+    fun getPropertyById(id: Long): PropertyEntity {
+        return propertyDao.getPropertyById(id)
+    }
+
     // LiveData for newly inserted property
     private val _insertedProperty = MutableLiveData<PropertyEntity>()
     val insertedProperty: LiveData<PropertyEntity> get() = _insertedProperty

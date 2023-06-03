@@ -38,5 +38,8 @@ interface PhotoDao {
         photoId: Int
     )
 
+    // Delete photo
+    @Query("DELETE FROM photo WHERE id = :photoId")
+    suspend fun deletePhoto(photoId: Int)
 
 }
