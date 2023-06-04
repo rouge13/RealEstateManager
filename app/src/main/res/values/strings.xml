@@ -139,6 +139,7 @@
     <string name="property_inserted_notification_text">The property has been inserted successfully.</string>
     <string name="date_sale_if_sold">Sale date if sold : </string>
     <string name="date_sale">Sale date</string>
+    <string name="address_not_valid">Address isn\'t valid has to be modified</string>
 
 
 </resources>

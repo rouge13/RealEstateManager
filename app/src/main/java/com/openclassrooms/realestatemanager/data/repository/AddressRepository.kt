@@ -34,7 +34,9 @@ class AddressRepository(private val addressDao: AddressDao) {
                 address.city,
                 address.boroughs,
                 address.zipCode,
-                address.country
+                address.country,
+                address.latitude,
+                address.longitude
             )
         }
     }

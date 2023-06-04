@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.ui.sharedViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.openclassrooms.realestatemanager.R
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -27,5 +26,12 @@ class SharedNavigationViewModel : ViewModel() {
     val getAddOrModifyClicked: LiveData<Boolean> get() = _addOrModifyClicked
     fun setAddOrModifyClicked(isModify: Boolean) {
         _addOrModifyClicked.value = isModify
+    }
+
+    // Navigation offline or online with internet for getting location by address
+    private val _onlineClicked = MutableLiveData<Boolean>()
+    val getOnlineClicked: LiveData<Boolean> get() = _onlineClicked
+    fun setOnlineNavigation(isOnline: Boolean) {
+        _onlineClicked.value = isOnline
     }
 }

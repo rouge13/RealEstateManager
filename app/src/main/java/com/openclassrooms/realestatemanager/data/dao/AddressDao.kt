@@ -32,7 +32,9 @@ interface AddressDao {
         city = :city,
         boroughs = :boroughs,
         zipCode = :zipCode,
-        country = :country  
+        country = :country,
+        latitude = :latitude,
+        longitude = :longitude
     WHERE id = :addressId
     """
     )
@@ -44,5 +46,8 @@ interface AddressDao {
         city: String?,
         boroughs: String?,
         zipCode: String?,
-        country: String?)
+        country: String?,
+        latitude: Double?,
+        longitude: Double?
+    )
 }

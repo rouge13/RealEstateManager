@@ -8,8 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -22,6 +24,7 @@ import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBind
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -87,24 +90,48 @@ class PropertyInfoFragment : Fragment() {
                     val adapter = PropertyInfoAdapter(this, photoList, propertyWithDetails.property.isSold ?: false)
                     photoViewPager.adapter = adapter
                 }
-                initStaticMapImageView(propertyWithDetails, view)
+                lifecycleScope.launch {
+                    initStaticMapImageView(propertyWithDetails, view)
+                }
                 initAllTextView(propertyWithDetails)
                 initAllButtons(photoViewPager)
             }
         }
     }
 
-    private fun initStaticMapImageView(propertyWithDetails: PropertyWithDetails, view: View) {
+    private suspend fun initStaticMapImageView(propertyWithDetails: PropertyWithDetails, view: View) {
         val staticMapImageView: ImageView = view.findViewById(R.id.static_map_image_view)
-        val addressString = (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
-        val address = Geocoder(view.context).getFromLocationName(addressString, 1)
-        val location = address?.get(0)?.latitude?.let { it1 -> address[0]?.longitude?.let { it2 -> LatLng(it1, it2) } }
-        val marker = "&markers=color:red%7Alabel:S%7C" + location?.latitude + "," + location?.longitude
-        val staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + location?.latitude + "," + location?.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(R.string.google_map_key)
-        Glide.with(view)
-            .load(staticMapUrl)
-            .centerCrop()
-            .into(staticMapImageView)
+        // Check if has location already set else get location from address
+        val staticMapUrl: String = if ((propertyWithDetails.address?.latitude != null) && (propertyWithDetails.address.longitude != null)) {
+            val location = LatLng(propertyWithDetails.address.latitude!!, propertyWithDetails.address.longitude!!)
+            val marker = "&markers=color:red%7Alabel:S%7C" + location.latitude + "," + location.longitude
+            "https://maps.googleapis.com/maps/api/staticmap?center=" + location.latitude + "," + location.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(R.string.google_map_key)
+        } else {
+            val addressString = (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
+            // Check if address return a location else send a toast to user to tell him that address is not valid
+            if (Geocoder(view.context).getFromLocationName(addressString, 1)?.isEmpty() == true) {
+                Toast.makeText(view.context, getString(R.string.address_not_valid), Toast.LENGTH_SHORT).show()
+                ""
+            } else {
+                val address = Geocoder(view.context).getFromLocationName(addressString, 1)
+                val location = address?.get(0)?.latitude?.let { it1 -> address[0]?.longitude?.let { it2 -> LatLng(it1, it2) } }
+                propertyWithDetails.address?.let {
+                    sharedPropertyViewModel.updateAddressWithLocation(
+                        it, latitude = location?.latitude, longitude = location?.longitude)
+                }
+                val marker = "&markers=color:red%7Alabel:S%7C" + location?.latitude + "," + location?.longitude
+                "https://maps.googleapis.com/maps/api/staticmap?center=" + location?.latitude + "," + location?.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(R.string.google_map_key)
+            }
+        }
+        if (staticMapUrl == "") {
+            staticMapImageView.visibility = View.GONE
+        } else {
+            staticMapImageView.visibility = View.VISIBLE
+            Glide.with(view)
+                .load(staticMapUrl)
+                .centerCrop()
+                .into(staticMapImageView)
+        }
     }
 
     private fun initAllTextView(propertyWithDetails: PropertyWithDetails) {

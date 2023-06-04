@@ -91,8 +91,7 @@ class SharedPropertyViewModel(
         }
     }
 
-    val getPropertiesWithDetails: LiveData<List<PropertyWithDetails>> =
-        propertiesWithDetailsMediator
+    val getPropertiesWithDetails: LiveData<List<PropertyWithDetails>> = propertiesWithDetailsMediator
 
     private suspend fun combinePropertiesWithDetails(
         properties: List<PropertyEntity>?
@@ -119,32 +118,22 @@ class SharedPropertyViewModel(
     }
 
     // Update property
-    suspend fun updateProperty(property: PropertyEntity) {
+    suspend fun updateProperty(property: PropertyEntity, photos: List<PhotoEntity>) {
         withContext(Dispatchers.IO) {
             propertyRepository.update(property)
-            val updatedProperty =
-                property.id?.let { propertyRepository.getPropertyById(it.toLong()) }
+            val updatedProperty = property.id?.let { propertyRepository.getPropertyById(it.toLong()) }
             updatedProperty?.let {
-                val propertyAddress =
-                    updatedProperty.id?.let { it1 ->
-                        addressRepository.getAddressRelatedToASpecificProperty(it1)
-                            .firstOrNull()
-                    }
-                val propertyPhotos =
-                    updatedProperty.id?.let { it1 ->
-                        photoRepository.getAllPhotosRelatedToASpecificProperty(it1)
-                            ?.firstOrNull()
-                    }
-                val propertyWithDetails =
-                    PropertyWithDetails(updatedProperty, propertyAddress, propertyPhotos)
+                val propertyAddress = updatedProperty.id?.let { it1 ->
+                    addressRepository.getAddressRelatedToASpecificProperty(it1)
+                        .firstOrNull()
+                }
+                val propertyWithDetails = PropertyWithDetails(updatedProperty, propertyAddress, photos)
 
                 // Update the property with details in the list
-                val currentPropertiesWithDetails =
-                    propertiesWithDetailsMediator.value.orEmpty().toMutableList()
-                val updatedIndex =
-                    currentPropertiesWithDetails.indexOfFirst { propertyWithDetails ->
-                        propertyWithDetails.property.id == updatedProperty.id
-                    }
+                val currentPropertiesWithDetails = propertiesWithDetailsMediator.value.orEmpty().toMutableList()
+                val updatedIndex = currentPropertiesWithDetails.indexOfFirst { propertyWithDetails ->
+                    propertyWithDetails.property.id == updatedProperty.id
+                }
                 if (updatedIndex != -1) {
                     currentPropertiesWithDetails[updatedIndex] = propertyWithDetails
                     propertiesWithDetailsMediator.postValue(currentPropertiesWithDetails)
@@ -153,9 +142,16 @@ class SharedPropertyViewModel(
         }
     }
 
+
     // Update the address of the property
     suspend fun updateAddress(address: AddressEntity) {
         addressRepository.updateAddress(address)
+    }
+
+    // Update the address of the property with location
+    suspend fun updateAddressWithLocation(address: AddressEntity, latitude: Double?, longitude: Double?) {
+        val updatedAddress = address.copy(latitude = latitude, longitude = longitude)
+        addressRepository.updateAddress(updatedAddress)
     }
 
     // Insert property
@@ -171,22 +167,10 @@ class SharedPropertyViewModel(
     // Insert photo of the property
     suspend fun insertPhoto(photo: PhotoEntity): Long? {
         val insertedPhotoId = photoRepository.insert(photo)
-        insertedPhotoId?.let {
-            val currentPropertyWithDetails = _selectedProperty.value
-            val currentPropertyPhotos = currentPropertyWithDetails?.photos?.toMutableList()
-            currentPropertyPhotos?.add(photo)
-            currentPropertyWithDetails?.let { propertyWithDetails ->
-                val updatedPropertyWithDetails = propertyWithDetails.copy(photos = currentPropertyPhotos)
-                _selectedProperty.postValue(updatedPropertyWithDetails)
-
-                // Update the photos of the propertyWithDetails in the propertiesWithDetailsMediator list
-                val updatedList = propertiesWithDetailsMediator.value.orEmpty().toMutableList()
-                val index = updatedList.indexOf(propertyWithDetails)
-                if (index != -1) {
-                    updatedList[index] = updatedPropertyWithDetails
-                    propertiesWithDetailsMediator.postValue(updatedList)
-                }
-            }
+        insertedPhotoId?.let { photoId ->
+            val currentPendingPhotoIds = pendingPhotoIds.value.orEmpty().toMutableList()
+            currentPendingPhotoIds.add(photoId.toInt())
+            pendingPhotoIds.value = currentPendingPhotoIds
         }
         return insertedPhotoId
     }
@@ -213,21 +197,31 @@ class SharedPropertyViewModel(
 
     // Delete photo
     suspend fun deletePhoto(photoId: Int) {
-        val currentPropertyWithDetails = _selectedProperty.value
-        val currentPropertyPhotos = currentPropertyWithDetails?.photos?.toMutableList()
-        currentPropertyPhotos?.removeAll { it.id == photoId }
-        currentPropertyWithDetails?.let { propertyWithDetails ->
-            val updatedPropertyWithDetails = propertyWithDetails.copy(photos = currentPropertyPhotos)
-            _selectedProperty.postValue(updatedPropertyWithDetails)
+        val currentPendingPhotoIds = pendingPhotoIds.value.orEmpty().toMutableList()
+        currentPendingPhotoIds.remove(photoId)
+        pendingPhotoIds.value = currentPendingPhotoIds
 
-            // Update the photos of the propertyWithDetails in the propertiesWithDetailsMediator list
-            val updatedList = propertiesWithDetailsMediator.value.orEmpty().toMutableList()
-            val index = updatedList.indexOf(propertyWithDetails)
+        // Update the photos of the _selectedProperty by excluding the deleted photo
+        _selectedProperty.value?.let { propertyWithDetails ->
+            val updatedPhotos = propertyWithDetails.photos?.filter { it.id != photoId }
+            val updatedPropertyWithDetails = propertyWithDetails.copy(photos = updatedPhotos)
+            _selectedProperty.value = updatedPropertyWithDetails
+        }
+
+        // Update the photos of the propertiesWithDetailsMediator list by excluding the deleted photo
+        val updatedList = propertiesWithDetailsMediator.value.orEmpty().toMutableList()
+        val propertyWithDeletedPhoto = updatedList.find { it -> it.photos?.any { it.id == photoId } == true }
+        propertyWithDeletedPhoto?.let { propertyDetails ->
+            val updatedPhotos = propertyDetails.photos?.filter { it.id != photoId }
+            val updatedPropertyWithDetails = propertyDetails.copy(photos = updatedPhotos)
+            val index = updatedList.indexOf(propertyDetails)
             if (index != -1) {
                 updatedList[index] = updatedPropertyWithDetails
-                propertiesWithDetailsMediator.postValue(updatedList)
+                propertiesWithDetailsMediator.value = updatedList
             }
         }
+
+        // Delete the photo from the database
         photoRepository.deletePhoto(photoId)
     }
 

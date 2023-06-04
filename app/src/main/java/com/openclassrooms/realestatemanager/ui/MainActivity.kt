@@ -24,7 +24,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -59,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedNavigationViewModel: SharedNavigationViewModel
     private lateinit var sharedPropertyViewModel: SharedPropertyViewModel
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -117,10 +117,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViewModels() {
-        sharedAgentViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(SharedAgentViewModel::class.java)
-        initializationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(InitializationViewModel::class.java)
-        sharedNavigationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(SharedNavigationViewModel::class.java)
-        sharedPropertyViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication)).get(SharedPropertyViewModel::class.java)
+        sharedAgentViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedAgentViewModel::class.java]
+        initializationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[InitializationViewModel::class.java]
+        sharedNavigationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedNavigationViewModel::class.java]
+        sharedPropertyViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedPropertyViewModel::class.java]
     }
 
     private fun initSearchOnClickListeners() {
@@ -185,8 +185,11 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkHasInternet() {
         if (isOnline(this)) {
+            // Navigation has internet access
+            sharedNavigationViewModel.setOnlineNavigation(true)
             val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 val builder = AlertDialog.Builder(this)
