@@ -12,15 +12,15 @@ import kotlinx.coroutines.launch
  */
 class PhotoRepository(private val photoDao: PhotoDao) {
     // Get all the propertiesPhoto from the database
-    val allPhoto: Flow<List<PhotoEntity>> = photoDao.getAllPhotos()
+    val getAllPhotos: Flow<List<PhotoEntity>> = photoDao.getAllPhotos()
     // Insert Photo
     suspend fun insert(photo: PhotoEntity): Long? {
            return photoDao.insert(photo)
     }
 
     // Get all photos related to a property
-    fun getAllPhotosRelatedToASpecificProperty(propertyId: Int): Flow<List<PhotoEntity>>? {
-        return photoDao.getAllPhotosRelatedToASpecificProperty(propertyId)
+    suspend fun getAllPhotosRelatedToASpecificProperty(): Flow<List<PhotoEntity>>? {
+        return photoDao.getAllPhotosRelatedToASpecificProperty()
     }
 
     // Update photo with the propertyId
@@ -28,9 +28,14 @@ class PhotoRepository(private val photoDao: PhotoDao) {
         photoDao.updatePhotoWithPropertyId(photoId = photoId, propertyId = propertyId)
     }
 
+
     // Delete photo
     suspend fun deletePhoto(photoId: Int) {
         photoDao.deletePhoto(photoId = photoId)
+    }
+
+    suspend fun deletePhotosWithNullPropertyId() {
+        photoDao.deletePhotosWithNullPropertyId()
     }
 
 }

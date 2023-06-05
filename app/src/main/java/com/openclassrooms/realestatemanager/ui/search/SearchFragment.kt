@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.openclassrooms.realestatemanager.R
@@ -18,6 +19,7 @@ import com.openclassrooms.realestatemanager.databinding.FragmentSearchPropertyBi
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -288,14 +290,17 @@ class SearchFragment : Fragment() {
     }
 
     private fun initTypeOfHouseBoroughsAndCities() {
-        sharedPropertyViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
-            val typesOfHouse = propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
-            val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
-            val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
-            initTypesOfHouse(typesOfHouse)
-            initBoroughs(boroughs)
-            initCities(cities)
+        viewLifecycleOwner.lifecycleScope.launch{
+            sharedPropertyViewModel.getPropertiesWithDetails.collect { propertiesWithDetails ->
+                val typesOfHouse = propertiesWithDetails.mapNotNull { it.property.typeOfHouse }.distinct()
+                val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
+                val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
+                initTypesOfHouse(typesOfHouse)
+                initBoroughs(boroughs)
+                initCities(cities)
+            }
         }
+
     }
 
     private fun initCities(cities: List<String>) {

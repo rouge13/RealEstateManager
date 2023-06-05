@@ -140,6 +140,15 @@
     <string name="date_sale_if_sold">Sale date if sold : </string>
     <string name="date_sale">Sale date</string>
     <string name="address_not_valid">Address isn\'t valid has to be modified</string>
+    <string name="no_proximities">There is no proximities for this property.</string>
+    <string name="loan_simulator">Real Estate loan simulator</string>
+    <string name="loan_amount">Loan amount :</string>
+    <string name="interest_rate_percent">Interest rate (%)</string>
+    <string name="loan_duration_years">Loan duration (years)</string>
+    <string name="monthly_payment">Monthly payement : </string>
+    <string name="calculate">Calculate</string>
+    <string name="loan_simulator_button">Simulator</string>
+    <string name="real_estate_loan_simulator">Real estate loan simulator</string>
 
 
 </resources>

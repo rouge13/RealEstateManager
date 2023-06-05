@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
  */
 class AddressRepository(private val addressDao: AddressDao) {
     // Get all the propertiesAddress from the database
-    val allAddress: Flow<List<AddressEntity>> = addressDao.getAllAddress()
+    val getAllAddresses: Flow<List<AddressEntity>> = addressDao.getAllAddress()
     // Insert Address
     suspend fun insert(address: AddressEntity) {
             addressDao.insert(address)

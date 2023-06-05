@@ -22,6 +22,7 @@ import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.loan.LoanSimulatorAlertDialog
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import kotlinx.coroutines.launch
@@ -94,7 +95,7 @@ class PropertyInfoFragment : Fragment() {
                     initStaticMapImageView(propertyWithDetails, view)
                 }
                 initAllTextView(propertyWithDetails)
-                initAllButtons(photoViewPager)
+                initAllButtons(photoViewPager, propertyWithDetails)
             }
         }
     }
@@ -158,19 +159,18 @@ class PropertyInfoFragment : Fragment() {
         propertyWithDetails.property.shoppingProximity?.let { if (it) { proximities.add(getString(R.string.shopping_proximity)) } }
         propertyWithDetails.property.restaurantProximity?.let { if (it) { proximities.add(getString(R.string.restaurant_proximity)) } }
         propertyWithDetails.property.publicTransportProximity?.let { if (it) { proximities.add(getString(R.string.public_transport_proximity)) } }
-        val formattedProximitiesString = proximities.joinToString(", ")
-        val lastIndex = proximities.size - 1
-        if (lastIndex >= 0) {
-            val lastProximity = proximities[lastIndex]
+        if (proximities.isNotEmpty()) {
+            val formattedProximitiesString = proximities.joinToString(", ")
+            val lastIndex = proximities.size - 1
             val dotFormattedProximitiesString = if (proximities.size > 1) {
                 formattedProximitiesString.substring(0, formattedProximitiesString.lastIndexOf(", ")) +
-                        ", and " + lastProximity + "."
+                        ", and " + proximities[lastIndex] + "."
             } else {
-                "$lastProximity."
+                "$formattedProximitiesString."
             }
             binding.propertyProximityText.text = dotFormattedProximitiesString
         } else {
-            binding.propertyProximityText.text = formattedProximitiesString
+            binding.propertyProximityText.text = getString(R.string.no_proximities)
         }
     }
 
@@ -205,7 +205,7 @@ class PropertyInfoFragment : Fragment() {
         }
     }
 
-    private fun initAllButtons(photoViewPager: ViewPager2) {
+    private fun initAllButtons(photoViewPager: ViewPager2, propertyWithDetails: PropertyWithDetails) {
         Log.d("PropertyInfoFragment", "initAllButtons: $photoViewPager")
 
         binding.imageMoveAfterButton.setOnClickListener {
@@ -216,6 +216,14 @@ class PropertyInfoFragment : Fragment() {
         }
         binding.backwardProperty.setOnClickListener {
             requireActivity().onBackPressed()
+        }
+        binding.loanSimulatorButton.setOnClickListener {
+            val loanSimulatorAlertDialog = LoanSimulatorAlertDialog(requireContext())
+            propertyWithDetails.property.price?.let { it1 ->
+                loanSimulatorAlertDialog.showLoanSimulatorAlertDialog(
+                    it1
+                )
+            }
         }
     }
 

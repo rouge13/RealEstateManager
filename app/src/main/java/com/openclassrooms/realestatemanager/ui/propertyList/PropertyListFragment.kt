@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -18,6 +19,7 @@ import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.property.PropertyInfoFragment
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import kotlinx.coroutines.launch
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -70,8 +72,11 @@ class PropertyListFragment : Fragment() {
     }
     private fun configureRecyclerView() {
         // Observe the combined data from the ViewModel
-        propertyListViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
-            adapter.submitList(propertiesWithDetails)
+        viewLifecycleOwner.lifecycleScope.launch {
+            propertyListViewModel.getPropertiesWithDetails.collect { propertiesWithDetails ->
+                adapter.submitList(propertiesWithDetails)
+            }
+
         }
     }
     private fun navigateToInfoPropertyFragment(propertyWithDetails: PropertyWithDetails) {

@@ -28,7 +28,7 @@ data class PhotoEntity(
     val id: Int? = null,
     val photo: String? = null,
     val description: String? = null,
-    val propertyId: Int? = null
+    var propertyId: Int? = null
 ) : Parcelable {
 
 }

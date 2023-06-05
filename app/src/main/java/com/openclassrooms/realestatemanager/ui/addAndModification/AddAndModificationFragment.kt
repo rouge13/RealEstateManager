@@ -22,10 +22,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
@@ -56,8 +54,6 @@ import java.util.TimeZone
 import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 
 /**
@@ -189,19 +185,22 @@ class AddAndModificationFragment : Fragment() {
             initAgentNames(agentsNames)
         }
 
-        sharedPropertyViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) { propertiesWithDetails ->
-            val typesOfHouse =
-                propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
-            val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
-            val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
-            val zipCode = propertiesWithDetails.mapNotNull { it.address?.zipCode }.distinct()
-            val countries = propertiesWithDetails.mapNotNull { it.address?.country }.distinct()
-            initTypesOfHouse(typesOfHouse)
-            initBoroughs(boroughs)
-            initCities(cities)
-            initZipCode(zipCode)
-            initCountries(countries)
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedPropertyViewModel.getPropertiesWithDetails.collect { propertiesWithDetails ->
+                val typesOfHouse =
+                    propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
+                val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
+                val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
+                val zipCode = propertiesWithDetails.mapNotNull { it.address?.zipCode }.distinct()
+                val countries = propertiesWithDetails.mapNotNull { it.address?.country }.distinct()
+                initTypesOfHouse(typesOfHouse)
+                initBoroughs(boroughs)
+                initCities(cities)
+                initZipCode(zipCode)
+                initCountries(countries)
+            }
         }
+
     }
 
     private fun initCountries(countries: List<String>) {
@@ -274,6 +273,9 @@ class AddAndModificationFragment : Fragment() {
 
     private fun initCancelButton() {
         binding.btnCancel.setOnClickListener {
+            lifecycleScope.launch {
+                sharedPropertyViewModel.deletePhotosWithNullPropertyId()
+            }
             requireActivity().onBackPressed()
         }
     }
@@ -387,15 +389,13 @@ class AddAndModificationFragment : Fragment() {
         val agent = sharedAgentViewModel.getAgentByName(agentName).firstOrNull()
         if (agent != null) {
             propertyEntity.agentId = agent.id!!
-            val updatePhotos = propertyWithDetails.photos ?: emptyList()
-            sharedPropertyViewModel.updateProperty(propertyEntity, updatePhotos)
+            sharedPropertyViewModel.updateProperty(propertyEntity)
 
         } else {
             val createdAgentId = createAgentAndWait(agentName)
             if (createdAgentId != null) {
                 propertyEntity.agentId = createdAgentId
-                val updatedPhotos = propertyWithDetails.photos ?: emptyList()
-                sharedPropertyViewModel.updateProperty(propertyEntity, updatedPhotos)
+                sharedPropertyViewModel.updateProperty(propertyEntity)
             } else {
                 // Agent creation was canceled, perform cancel actions here
                 Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
@@ -444,11 +444,13 @@ class AddAndModificationFragment : Fragment() {
     }
 
     private suspend fun updatePhotosWithPropertyId(propertyId: Int) {
-        val currentPendingPhotoIds = sharedPropertyViewModel.getPendingPhotoIds.value ?: emptyList()
-        for (photoId in currentPendingPhotoIds) {
-            sharedPropertyViewModel.updatePhotosWithPropertyId(photoId, propertyId)
+        val photosWithNullPropertyId =
+            sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId()?.firstOrNull()
+        photosWithNullPropertyId?.let { photos ->
+            for (photo in photos) {
+                photo.id?.let { sharedPropertyViewModel.updatePhotosWithPropertyId(it, propertyId) }
+            }
         }
-        sharedPropertyViewModel.pendingPhotoIds.value = emptyList()
     }
 
     private fun PropertyEntity.propertyToUpdate(
@@ -587,8 +589,9 @@ class AddAndModificationFragment : Fragment() {
         sharedPropertyViewModel.deletePhoto(photoEntity.id ?: 0)
         // Remove the photo from the list
         photoList.removeAt(position)
-        // Notify the adapter about the data change
-        adapter.notifyItemRemoved(position)
+        // Update the adapter with the updated list
+        adapter.updatePhotos(photoList.map { adapter.getDrawableFromPhotoEntity(requireContext(), it) })
+
     }
 
     private suspend fun insertPhoto(photoEntity: PhotoEntity) {
@@ -607,7 +610,6 @@ class AddAndModificationFragment : Fragment() {
         descriptionDialog.setOnShowListener {
             val positiveButton = descriptionDialog.getButton(DialogInterface.BUTTON_POSITIVE)
             positiveButton.isEnabled = false
-
             descriptionEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
@@ -616,9 +618,7 @@ class AddAndModificationFragment : Fragment() {
                     after: Int
                 ) {
                 }
-
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
                 override fun afterTextChanged(s: Editable?) {
                     positiveButton.isEnabled = !s.isNullOrBlank()
                 }
@@ -703,33 +703,20 @@ class AddAndModificationFragment : Fragment() {
     }
 
     private fun requiredAllValidateInputsOk(): Boolean {
-        val typeOfHouse = binding.propertyType.text.toString()
-        val price = binding.propertyPrice.text.toString()
-        val squareFeet = binding.propertySquareFeet.text.toString()
-        val roomsCount = binding.propertyRoomsCount.text.toString()
-        val description = binding.propertyDescription.text.toString()
-        val streetNumber = binding.addressStreetNumber.text.toString()
-        val streetName = binding.addressStreetName.text.toString()
-        val city = binding.addressCity.text.toString()
-        val zipCode = binding.addressZipCode.text.toString()
-        val country = binding.addressCountry.text.toString()
-        val agentName = binding.agentName.text.toString()
-        val date = binding.propertyDateText.text.toString()
-        val dateSellingIfSold = binding.dateSale.text.toString()
         return isAllInputsAdded(
-            typeOfHouse,
-            price,
-            squareFeet,
-            roomsCount,
-            description,
-            streetNumber,
-            streetName,
-            city,
-            zipCode,
-            country,
-            agentName,
-            date,
-            dateSellingIfSold
+            typeOfHouse = binding.propertyType.text.toString(),
+            price = binding.propertyPrice.text.toString(),
+            squareFeet = binding.propertySquareFeet.text.toString(),
+            roomsCount = binding.propertyRoomsCount.text.toString(),
+            description = binding.propertyDescription.text.toString(),
+            streetNumber = binding.addressStreetNumber.text.toString(),
+            streetName = binding.addressStreetName.text.toString(),
+            city = binding.addressCity.text.toString(),
+            zipCode = binding.addressZipCode.text.toString(),
+            country = binding.addressCountry.text.toString(),
+            agentName = binding.agentName.text.toString(),
+            date = binding.propertyDateText.text.toString(),
+            dateSellingIfSold = binding.dateSale.text.toString()
         )
     }
 
@@ -817,13 +804,9 @@ class AddAndModificationFragment : Fragment() {
                     // Photo captured from the camera
                     val description = currentDescription ?: ""
                     if (description.isNotBlank()) {
-                        val photoUri = data?.data
-                        photoUri?.let { it ->
-                            val drawable = Drawable.createFromStream(
-                                requireContext().contentResolver.openInputStream(it),
-                                it.toString()
-                            )
-                            val uriString = drawable?.let { it1 -> saveImageToGallery(it1) }
+                        val photoBitmap = data?.extras?.get("data") as? Bitmap
+                        photoBitmap?.let { bitmap ->
+                            val uriString = saveImageToGallery(bitmap.toDrawable(resources))
                             uriString?.let { saveUriToDatabase(it, description) }
                         }
                         currentDescription = null

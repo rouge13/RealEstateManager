@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.openclassrooms.realestatemanager.R
@@ -28,6 +29,7 @@ import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import kotlinx.coroutines.launch
 
 class MapFragment : Fragment() {
     private val agentViewModel: SharedAgentViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
@@ -56,9 +58,11 @@ class MapFragment : Fragment() {
                     updateMapWithAgentLocation(it)
                 }
             }
-            propertyViewModel.getPropertiesWithDetails.observe(viewLifecycleOwner) {
-                if (it != null) {
-                    setMarkers(it, view)
+            viewLifecycleOwner.lifecycleScope.launch {
+                propertyViewModel.getPropertiesWithDetails.collect {
+                    if (it != null) {
+                        setMarkers(it, view)
+                    }
                 }
             }
         }
