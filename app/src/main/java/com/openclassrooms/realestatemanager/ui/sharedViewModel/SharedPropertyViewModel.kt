@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.ui.sharedViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
@@ -13,6 +14,7 @@ import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 
 
 /**
@@ -43,18 +45,27 @@ class SharedPropertyViewModel(
     val previousSearchCriteria: LiveData<SearchCriteria?> get() = _previousSearchCriteria
 
     val getPropertiesWithDetails: Flow<List<PropertyWithDetails>> = combine(
+        searchCriteria.asFlow(),
         propertyRepository.getAllProperties,
         addressRepository.getAllAddresses,
         photoRepository.getAllPhotos
-    ) { properties, addresses, photos ->
-        combinePropertiesWithDetails(properties, addresses, photos)
+    ) { criteria, properties, addresses, photos ->
+        if (criteria != null) {
+            val filteredProperties = propertyRepository.getFilteredProperties(criteria).firstOrNull()
+            combinePropertiesWithDetails(filteredProperties, addresses, photos)
+        } else {
+            combinePropertiesWithDetails(properties, addresses, photos)
+        }
     }
 
     private suspend fun combinePropertiesWithDetails(
-        properties: List<PropertyEntity>,
+        properties: List<PropertyEntity>?,
         addresses: List<AddressEntity>,
         photos: List<PhotoEntity>
     ): List<PropertyWithDetails> {
+        if (properties == null) {
+            return emptyList()
+        }
         val combinedData = mutableListOf<PropertyWithDetails>()
         for (property in properties) {
             val propertyAddress = addresses.find { it.propertyId == property.id }
@@ -105,18 +116,28 @@ class SharedPropertyViewModel(
         photoRepository.updatePhotoWithPropertyId(photoId, propertyId)
     }
 
+    // Update is Primary photo with the photoId
+    suspend fun updateIsPrimaryPhoto(isPrimary: Boolean, photoId: Int) {
+        photoRepository.updateIsPrimaryPhoto(isPrimary = isPrimary, photoId = photoId)
+    }
+
     // Delete photo
     suspend fun deletePhoto(photoId: Int) {
         // Delete the photo from the database
         photoRepository.deletePhoto(photoId)
     }
 
-    suspend fun getAllPhotosRelatedToSetThePropertyId(): Flow<List<PhotoEntity>>? {
-        return photoRepository.getAllPhotosRelatedToASpecificProperty()
+    suspend fun getAllPhotosRelatedToSetThePropertyId(propertyId: Int? = null): List<PhotoEntity>? {
+        return photoRepository.getAllPhotosRelatedToASpecificProperty(propertyId)
     }
 
     suspend fun deletePhotosWithNullPropertyId() {
         photoRepository.deletePhotosWithNullPropertyId()
+    }
+
+    // Update the primary photo of the property
+    suspend fun updatePrimaryPhoto(propertyId: Int?, photoUri: String) {
+        propertyRepository.updatePrimaryPhoto(propertyId, photoUri)
     }
 }
 

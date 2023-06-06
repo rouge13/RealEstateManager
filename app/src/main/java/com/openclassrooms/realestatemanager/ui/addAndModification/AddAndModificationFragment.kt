@@ -257,8 +257,8 @@ class AddAndModificationFragment : Fragment() {
 
     private fun initInsertButton() {
         binding.btnValidate.setOnClickListener {
-            if (requiredAllValidateInputsOk()) {
-                lifecycleScope.launch {
+            lifecycleScope.launch {
+                if (requiredAllValidateInputsOk() && isPrimaryPhotoSelected(null)) {
                     val insertedPropertyId = insertPropertyEntity()
                     if (insertedPropertyId != null) {
                         notificationHelper.showPropertyInsertedNotification()
@@ -317,8 +317,9 @@ class AddAndModificationFragment : Fragment() {
     private fun initUpdateButton() {
         binding.btnValidate.setOnClickListener {
             sharedPropertyViewModel.getSelectedProperty.value?.let { propertyWithDetails ->
-                if (requiredAllValidateInputsOk()) {
-                    lifecycleScope.launch {
+                lifecycleScope.launch {
+                    if (requiredAllValidateInputsOk() && isPrimaryPhotoSelected(propertyWithDetails.property.id)) {
+                        updatePhotosWithPropertyId(propertyWithDetails.property.id)
                         updatePropertyEntity(propertyWithDetails)
                         updateAddressEntity(propertyWithDetails)
                         findNavController().navigate(R.id.propertyListFragment)
@@ -389,13 +390,10 @@ class AddAndModificationFragment : Fragment() {
         val agent = sharedAgentViewModel.getAgentByName(agentName).firstOrNull()
         if (agent != null) {
             propertyEntity.agentId = agent.id!!
-            sharedPropertyViewModel.updateProperty(propertyEntity)
-
         } else {
             val createdAgentId = createAgentAndWait(agentName)
             if (createdAgentId != null) {
                 propertyEntity.agentId = createdAgentId
-                sharedPropertyViewModel.updateProperty(propertyEntity)
             } else {
                 // Agent creation was canceled, perform cancel actions here
                 Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
@@ -404,7 +402,7 @@ class AddAndModificationFragment : Fragment() {
                 return
             }
         }
-        updatePhotosWithPropertyId(propertyId = propertyEntity.id!!)
+        sharedPropertyViewModel.updateProperty(propertyEntity)
     }
 
     private suspend fun insertPropertyEntity(): Long? {
@@ -443,12 +441,44 @@ class AddAndModificationFragment : Fragment() {
         return insertedPropertyId
     }
 
-    private suspend fun updatePhotosWithPropertyId(propertyId: Int) {
+    private suspend fun updatePhotosWithPropertyId(propertyId: Int?) {
         val photosWithNullPropertyId =
-            sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId()?.firstOrNull()
+            sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(null)
         photosWithNullPropertyId?.let { photos ->
+            var isPrimaryPhotoSet = false
+            var primaryPhotoUri: String? = null
             for (photo in photos) {
-                photo.id?.let { sharedPropertyViewModel.updatePhotosWithPropertyId(it, propertyId) }
+                photo.id?.let {
+                    if (propertyId != null) {
+                        sharedPropertyViewModel.updatePhotosWithPropertyId(it, propertyId)
+                    }
+                }
+            }
+
+            val photosWithPropertyId =
+                sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(propertyId)
+            photosWithPropertyId?.let { photosWithPropertyId ->
+                for (photo in photosWithPropertyId) {
+                    if (photo.isPrimaryPhoto && photo.propertyId == propertyId) {
+                        photo.photoURI?.let {
+                            // Set the primary photo URI
+                            primaryPhotoUri = it
+                            isPrimaryPhotoSet = true
+                        }
+                    }
+                }
+            }
+
+            // Update the primary photo URI for the property
+            if (isPrimaryPhotoSet && primaryPhotoUri != null) {
+                sharedPropertyViewModel.updatePrimaryPhoto(propertyId, primaryPhotoUri!!)
+            } else {
+                // Display a message to ask the agent to select a primary photo
+                Toast.makeText(
+                    requireContext(),
+                    "Please select a primary photo",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -559,14 +589,26 @@ class AddAndModificationFragment : Fragment() {
         val layoutManager = LinearLayoutManager(requireContext())
         binding.fragmentPropertySelectedPhotosRecyclerView.layoutManager = layoutManager
 
-        val mutablePhotoList: MutableList<PhotoEntity> = photoList?.toMutableList() ?: mutableListOf()
+        val mutablePhotoList: MutableList<PhotoEntity> =
+            photoList?.toMutableList() ?: mutableListOf()
 
-        adapter = AddAndModificationAdapter(mutablePhotoList) { position ->
-            // Delete photo
-            lifecycleScope.launch {
-                deletePhoto(mutablePhotoList, position)
+        adapter = AddAndModificationAdapter(mutablePhotoList,
+            onDeletePhoto = { position ->
+                // Delete photo
+                lifecycleScope.launch {
+                    deletePhoto(mutablePhotoList, position)
+                }
+            },
+            onSetPrimaryPhoto = { position ->
+                // Set primary photo
+                lifecycleScope.launch {
+                    setPrimaryPhoto(mutablePhotoList, position)
+                    Toast.makeText(requireContext(), R.string.primary_photo_set, Toast.LENGTH_SHORT)
+                        .show()
+                    updatePrimaryPhotoIcons(position)
+                }
             }
-        }
+        )
         binding.fragmentPropertySelectedPhotosRecyclerView.adapter = adapter
         binding.addPhotos.setOnClickListener {
             // Open gallery or camera to select or capture photos
@@ -576,11 +618,40 @@ class AddAndModificationFragment : Fragment() {
 
         // Convert the List<PhotoEntity> to List<Drawable?>
         val drawableList: MutableList<Drawable?> = mutablePhotoList.map { photoEntity ->
-            adapter.getDrawableFromPhotoEntity(requireContext(), photoEntity)
+            adapter.getDrawableFromPhotoEntity(requireContext(), photoEntity, isPrimary = false)
         }.toMutableList()
 
         // Update the adapter with the drawableList
         adapter.updatePhotos(drawableList)
+    }
+
+    private fun updatePrimaryPhotoIcons(selectedPosition: Int) {
+        adapter.updatePrimaryPhotoIcons(selectedPosition)
+    }
+
+    private suspend fun setPrimaryPhoto(photoList: MutableList<PhotoEntity>, position: Int) {
+        if (position >= 0 && position < photoList.size) {
+            val photoEntity = photoList[position]
+
+            // Remove isPrimaryPhoto flag from other photos
+            for (photo in photoList) {
+                if (photo != photoEntity) {
+                    sharedPropertyViewModel.updateIsPrimaryPhoto(false, photo.id ?: 0)
+                }
+            }
+
+            // Update the selected photo as the primary photo
+            sharedPropertyViewModel.updateIsPrimaryPhoto(true, photoEntity.id ?: 0)
+
+            // Update the adapter with the updated list
+            val drawableList = photoList.mapIndexed { index, photoEntity ->
+                adapter.getDrawableFromPhotoEntity(requireContext(), photoEntity, index == position)
+            }
+            adapter.updatePhotos(drawableList)
+        } else {
+            // Handle an invalid position
+            Toast.makeText(requireContext(), "Invalid position", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private suspend fun deletePhoto(photoList: MutableList<PhotoEntity>, position: Int) {
@@ -590,12 +661,18 @@ class AddAndModificationFragment : Fragment() {
         // Remove the photo from the list
         photoList.removeAt(position)
         // Update the adapter with the updated list
-        adapter.updatePhotos(photoList.map { adapter.getDrawableFromPhotoEntity(requireContext(), it) })
+        adapter.updatePhotos(photoList.map {
+            adapter.getDrawableFromPhotoEntity(
+                requireContext(),
+                it,
+                isPrimary = false
+            )
+        })
 
     }
 
-    private suspend fun insertPhoto(photoEntity: PhotoEntity) {
-        sharedPropertyViewModel.insertPhoto(photoEntity)
+    private suspend fun insertPhoto(photoEntity: PhotoEntity): Long? {
+        return sharedPropertyViewModel.insertPhoto(photoEntity)
     }
 
     private fun showPhotoOptionsDialog() {
@@ -618,6 +695,7 @@ class AddAndModificationFragment : Fragment() {
                     after: Int
                 ) {
                 }
+
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable?) {
                     positiveButton.isEnabled = !s.isNullOrBlank()
@@ -860,14 +938,21 @@ class AddAndModificationFragment : Fragment() {
     private fun saveUriToDatabase(uri: String, description: String) {
         lifecycleScope.launch {
             val drawable = getDrawableFromUri(uri)
-            val photoEntity = PhotoEntity(photo = uri, description = description)
-            insertPhoto(photoEntity)
-            // Update the adapter with the new photo entity and drawable
-            drawable?.let {
-                adapter.addPhoto(photoEntity, it)
+            val photoEntity = PhotoEntity(photoURI = uri, description = description)
+            val insertedId = insertPhoto(photoEntity)?.toInt()
+            if (insertedId != null) {
+                photoEntity.id = insertedId
+                // Update the adapter with the new photo entity and drawable
+                drawable?.let {
+                    adapter.addPhoto(photoEntity, it)
+                }
+                // Scroll to the newly added photo
+                binding.fragmentPropertySelectedPhotosRecyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+            } else {
+                // Handle the case where photo insertion fails
+                Toast.makeText(requireContext(), "Failed to insert photo", Toast.LENGTH_SHORT)
+                    .show()
             }
-            // Scroll to the newly added photo
-            binding.fragmentPropertySelectedPhotosRecyclerView.smoothScrollToPosition(adapter.itemCount - 1)
         }
     }
 
@@ -880,6 +965,15 @@ class AddAndModificationFragment : Fragment() {
                 BitmapDrawable(context.resources, bitmap)
             }
         }
+    }
+
+    private suspend fun isPrimaryPhotoSelected(propertyId: Int?): Boolean {
+        val photos: List<PhotoEntity>? = if (propertyId == null) {
+            sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(null)
+        } else {
+            sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(propertyId)
+        }
+        return photos?.any { it.isPrimaryPhoto } ?: false
     }
 
     companion object {

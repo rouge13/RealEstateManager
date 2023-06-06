@@ -39,7 +39,7 @@ class PhotoFragment : Fragment() {
         soldOut = args.getBoolean("soldOut")
 
         // Set the photo and description in the view
-        val photoDrawable = getPhotoDrawable(photoEntity.photo)
+        val photoDrawable = getPhotoDrawable(photoEntity.photoURI)
         if (photoDrawable != null) {
             binding.imageInfoView.setImageDrawable(photoDrawable)
         } else {
@@ -85,7 +85,7 @@ class PhotoFragment : Fragment() {
         private const val DEFAULT_PHOTO_RESOURCE_ID = R.drawable.ic_default_property
         private val defaultPhoto = PhotoEntity(
             id = -1,
-            photo = null,
+            photoURI = null,
             description = "No photo!"
         )
 

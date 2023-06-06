@@ -90,4 +90,9 @@ class PropertyRepository(private val propertyDao: PropertyDao) {
             }
         }
     }
+
+    // Update the primary photo of the property
+    suspend fun updatePrimaryPhoto(propertyId: Int?, photoUri: String) {
+        propertyDao.updatePrimaryPhoto(propertyId, photoUri)
+    }
 }

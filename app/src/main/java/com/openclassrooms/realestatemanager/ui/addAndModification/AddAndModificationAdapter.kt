@@ -1,16 +1,13 @@
 package com.openclassrooms.realestatemanager.ui.addAndModification
 
 import android.content.Context
-import android.content.ContextWrapper
-import android.content.res.Resources
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.databinding.ItemPhotoBinding
 
@@ -19,10 +16,12 @@ import com.openclassrooms.realestatemanager.databinding.ItemPhotoBinding
  */
 class AddAndModificationAdapter(
     private val photoList: MutableList<PhotoEntity>,
-    private val onDeletePhoto: (position: Int) -> Unit
+    private val onDeletePhoto: (position: Int) -> Unit,
+    private val onSetPrimaryPhoto: (Int) -> Unit
 ) : RecyclerView.Adapter<AddAndModificationAdapter.PhotoViewHolder>() {
 
     private val photos: MutableList<Pair<PhotoEntity, Drawable?>> = mutableListOf()
+    private var selectedPrimaryPhotoPosition: Int = -1
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemPhotoBinding.inflate(inflater, parent, false)
@@ -31,17 +30,13 @@ class AddAndModificationAdapter(
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         val (photoEntity, drawable) = photos[position]
-        holder.bind(photoEntity, drawable)
+        holder.bind(drawable, photoEntity.isPrimaryPhoto, position == selectedPrimaryPhotoPosition)
     }
 
     fun addPhoto(photoEntity: PhotoEntity, drawable: Drawable?) {
+        photoList.add(photoEntity)
         photos.add(photoEntity to drawable)
         notifyItemInserted(photos.size - 1)
-    }
-
-    fun removePhoto(position: Int) {
-        photos.removeAt(position)
-        notifyItemRemoved(position)
     }
 
     fun updatePhotos(drawableList: List<Drawable?>) {
@@ -50,6 +45,10 @@ class AddAndModificationAdapter(
         notifyDataSetChanged()
     }
 
+    fun updatePrimaryPhotoIcons(selectedPosition: Int) {
+        selectedPrimaryPhotoPosition = selectedPosition
+        notifyDataSetChanged()
+    }
     override fun getItemCount(): Int = photos.size
 
     inner class PhotoViewHolder(private val binding: ItemPhotoBinding) :
@@ -62,38 +61,59 @@ class AddAndModificationAdapter(
                     onDeletePhoto(position) // Call onDeletePhoto callback
                 }
             }
+            binding.primaryPhotoButton.setOnClickListener {
+                // Add to primary photo
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    if (selectedPrimaryPhotoPosition != position) {
+                        // Set the clicked item as the primary photo
+                        onSetPrimaryPhoto(position) // Call onSetPrimaryPhoto callback
+                    }
+                }
+            }
         }
 
-        fun bind(photoEntity: PhotoEntity, drawable: Drawable?) {
+        fun bind(drawable: Drawable?, isPrimary: Boolean = false, isItemSelected: Boolean = false) {
             binding.imageView.setImageDrawable(drawable)
+
+            val primaryPhotoIcon = when {
+                isItemSelected -> {
+                    if (isPrimary) R.drawable.ic_primary_photo_added_true
+                    else R.drawable.ic_primary_photo_added_false
+                }
+                isPrimary -> R.drawable.ic_primary_photo_added_true
+                else -> R.drawable.ic_primary_photo_added_false
+            }
+            binding.primaryPhotoButton.setImageResource(primaryPhotoIcon)
         }
     }
 
-    fun getDrawableFromPhotoEntity(context: Context, photoEntity: PhotoEntity): Drawable? {
-        return if (photoEntity.photo?.startsWith("ic_") == true) {
+    fun getDrawableFromPhotoEntity(context: Context, photoEntity: PhotoEntity, isPrimary: Boolean): Drawable? {
+        return if (photoEntity.photoURI?.startsWith("ic_") == true) {
             // Photo from resources
             val resourceId = context.resources.getIdentifier(
-                photoEntity.photo,
+                photoEntity.photoURI,
                 "drawable",
                 context.packageName
             )
             try {
-                ContextCompat.getDrawable(context, resourceId)
+                val drawable = ContextCompat.getDrawable(context, resourceId)
+                drawable?.mutate()
             } catch (e: Exception) {
                 null
             }
         } else {
             // Photo from URI
-            val uri = Uri.parse(photoEntity.photo)
+            val uri = Uri.parse(photoEntity.photoURI)
             try {
                 val inputStream = context.contentResolver.openInputStream(uri)
                 inputStream?.use {
-                    Drawable.createFromStream(it, uri.toString())
+                    val drawable = Drawable.createFromStream(it, uri.toString())
+                    drawable?.mutate()
                 }
             } catch (e: Exception) {
                 null
             }
         }
     }
-
 }

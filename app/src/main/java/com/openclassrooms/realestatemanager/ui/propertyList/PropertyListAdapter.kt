@@ -1,5 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.propertyList
 
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -50,11 +52,32 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
         private fun setImageInRecyclerView(get: PropertyEntity) {
             val context = binding.root.context
             if (get.primaryPhoto == null) {
-                val id = context.resources.getIdentifier("ic_default_property", "drawable", context.packageName)
-                binding.propertyImage.setImageResource(id)
+                val defaultImageId = context.resources.getIdentifier("ic_default_property", "drawable", context.packageName)
+                binding.propertyImage.setImageResource(defaultImageId)
             } else {
-                val id = context.resources.getIdentifier(get.primaryPhoto, "drawable", context.packageName)
-                binding.propertyImage.setImageResource(id)
+                val resourceId = context.resources.getIdentifier(get.primaryPhoto, "drawable", context.packageName)
+                if (resourceId != 0) {
+                    // The primary photo is a drawable resource
+                    binding.propertyImage.setImageResource(resourceId)
+                } else {
+                    // The primary photo is a URI
+                    try {
+                        val uri = Uri.parse(get.primaryPhoto)
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        if (inputStream != null) {
+                            val bitmap = BitmapFactory.decodeStream(inputStream)
+                            binding.propertyImage.setImageBitmap(bitmap)
+                        } else {
+                            // Failed to load the image from URI, use default image
+                            val defaultImageId = context.resources.getIdentifier("ic_default_property", "drawable", context.packageName)
+                            binding.propertyImage.setImageResource(defaultImageId)
+                        }
+                    } catch (e: Exception) {
+                        // Error loading the image from URI, use default image
+                        val defaultImageId = context.resources.getIdentifier("ic_default_property", "drawable", context.packageName)
+                        binding.propertyImage.setImageResource(defaultImageId)
+                    }
+                }
             }
         }
     }

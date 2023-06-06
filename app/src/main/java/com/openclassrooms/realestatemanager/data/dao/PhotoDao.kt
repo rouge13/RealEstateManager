@@ -18,8 +18,8 @@ interface PhotoDao {
     fun getAllPhotos(): Flow<List<PhotoEntity>>
 
     // Get all photos related to a property
-    @Query("SELECT * FROM photo WHERE propertyId IS NULL")
-    fun getAllPhotosRelatedToASpecificProperty(): Flow<List<PhotoEntity>>?
+    @Query("SELECT * FROM photo WHERE propertyId IS NULL OR propertyId = :propertyId")
+    suspend fun getAllPhotosRelatedToASpecificProperty(propertyId: Int? = null): List<PhotoEntity>
 
     // Insert photo
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -45,6 +45,19 @@ interface PhotoDao {
     // Delete photos with propertyId equal to null
     @Query("DELETE FROM photo WHERE propertyId IS NULL")
     suspend fun deletePhotosWithNullPropertyId()
+
+    // Update is Primary photo with the photoId
+    @Query(
+        """
+        UPDATE photo 
+        SET isPrimaryPhoto = :isPrimary 
+        WHERE id = :photoId
+        """
+    )
+    suspend fun updateIsPrimaryPhoto(
+        isPrimary: Boolean,
+        photoId: Int
+    )
 
 
 }

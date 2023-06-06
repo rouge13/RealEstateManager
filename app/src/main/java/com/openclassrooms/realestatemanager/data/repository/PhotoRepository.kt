@@ -19,13 +19,18 @@ class PhotoRepository(private val photoDao: PhotoDao) {
     }
 
     // Get all photos related to a property
-    suspend fun getAllPhotosRelatedToASpecificProperty(): Flow<List<PhotoEntity>>? {
-        return photoDao.getAllPhotosRelatedToASpecificProperty()
+    suspend fun getAllPhotosRelatedToASpecificProperty(propertyId: Int? = null): List<PhotoEntity>? {
+        return photoDao.getAllPhotosRelatedToASpecificProperty(propertyId)
     }
 
     // Update photo with the propertyId
     suspend fun updatePhotoWithPropertyId(photoId: Int, propertyId: Int) {
         photoDao.updatePhotoWithPropertyId(photoId = photoId, propertyId = propertyId)
+    }
+
+    // Update is Primary photo with the photoId
+    suspend fun updateIsPrimaryPhoto(isPrimary: Boolean, photoId: Int) {
+        photoDao.updateIsPrimaryPhoto(isPrimary = isPrimary, photoId = photoId)
     }
 
 

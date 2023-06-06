@@ -12,7 +12,7 @@ class PropertyInfoAdapter(fragment: Fragment, private val photoList: List<PhotoE
 
     private val defaultPhoto = PhotoEntity(
         id = -1,
-        photo = "ic_default_property", // Replace with the resource name of your default photo
+        photoURI = "ic_default_property", // Replace with the resource name of your default photo
         description = "No photo!" // Replace with the default description
     )
 

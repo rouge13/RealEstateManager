@@ -82,7 +82,7 @@ class PropertyInfoFragment : Fragment() {
                 if (photoList.isNullOrEmpty()) {
                     val defaultPhoto = PhotoEntity(
                         id = -1,
-                        photo = null,
+                        photoURI = null,
                         description = getString(R.string.no_photo_description)
                     )
                     val adapter = PropertyInfoAdapter(this, listOf(defaultPhoto), propertyWithDetails.property.isSold ?: false)

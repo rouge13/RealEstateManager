@@ -196,4 +196,8 @@ interface PropertyDao {
                                    shoppingProximity: Boolean?,
                                    restaurantProximity: Boolean?,
                                    publicTransportProximity: Boolean?)
+
+    // Update primary photo of the property
+    @Query("UPDATE property SET primaryPhoto = :primaryPhotoURI WHERE id = :propertyId")
+    suspend fun updatePrimaryPhoto(propertyId: Int?, primaryPhotoURI: String)
 }

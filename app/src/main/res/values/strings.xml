@@ -149,6 +149,7 @@
     <string name="calculate">Calculate</string>
     <string name="loan_simulator_button">Simulator</string>
     <string name="real_estate_loan_simulator">Real estate loan simulator</string>
+    <string name="primary_photo_set">Primary photo set</string>
 
 
 </resources>

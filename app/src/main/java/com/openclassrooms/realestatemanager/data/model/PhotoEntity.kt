@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.data.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
@@ -25,10 +24,11 @@ import kotlinx.android.parcel.Parcelize
 )
 data class PhotoEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null,
-    val photo: String? = null,
+    var id: Int? = null,
+    val photoURI: String? = null,
     val description: String? = null,
-    var propertyId: Int? = null
+    var propertyId: Int? = null,
+    var isPrimaryPhoto: Boolean = false
 ) : Parcelable {
 
 }
