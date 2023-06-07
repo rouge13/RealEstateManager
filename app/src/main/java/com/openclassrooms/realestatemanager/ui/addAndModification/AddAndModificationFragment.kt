@@ -61,7 +61,6 @@ import java.io.IOException
  */
 class AddAndModificationFragment : Fragment() {
     private var currentDescription: String? = null
-    private var photoList: List<PhotoEntity>? = null
     private lateinit var adapter: AddAndModificationAdapter
     private lateinit var binding: FragmentAddAndModifyPropertyBinding
     private lateinit var notificationHelper: NotificationHelper
@@ -158,11 +157,7 @@ class AddAndModificationFragment : Fragment() {
                             continuation.resume(generatedId?.toInt()) {}
                         }
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.agent_name_empty),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), getString(R.string.agent_name_empty), Toast.LENGTH_SHORT).show()
                         continuation.resume(null) {}
                     }
                 }
@@ -266,6 +261,12 @@ class AddAndModificationFragment : Fragment() {
                         Toast.makeText(requireContext(), "Property inserted", Toast.LENGTH_SHORT)
                             .show()
                     }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please fill all required fields. And check if you have a photo and primary one selected.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -276,7 +277,7 @@ class AddAndModificationFragment : Fragment() {
             lifecycleScope.launch {
                 sharedPropertyViewModel.deletePhotosWithNullPropertyId()
             }
-            requireActivity().onBackPressed()
+            findNavController().popBackStack()
         }
     }
 
@@ -304,10 +305,7 @@ class AddAndModificationFragment : Fragment() {
                     set(Calendar.MONTH, datePickerDialog.datePicker.month)
                     set(Calendar.DAY_OF_MONTH, datePickerDialog.datePicker.dayOfMonth)
                 }
-                binding.propertyDateText.text = SimpleDateFormat(
-                    "MM/dd/yyyy",
-                    Locale.getDefault()
-                ).format(Date(calendar.timeInMillis))
+                binding.propertyDateText.text = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(Date(calendar.timeInMillis))
             }
             // Show the date picker dialog
             datePickerDialog.show()
@@ -323,8 +321,9 @@ class AddAndModificationFragment : Fragment() {
                         updatePropertyEntity(propertyWithDetails)
                         updateAddressEntity(propertyWithDetails)
                         findNavController().navigate(R.id.propertyListFragment)
-                        Toast.makeText(requireContext(), "Property updated", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(requireContext(), "Property updated.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Please select a primary photo.", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -344,11 +343,7 @@ class AddAndModificationFragment : Fragment() {
                     addressEntity?.longitude = location.longitude
                     addressEntity?.let { sharedPropertyViewModel.updateAddress(it) }
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Address not found, please check the address if correct !",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Address not found, please check the address if correct !", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 addressEntity?.let { sharedPropertyViewModel.updateAddress(it) }
@@ -369,11 +364,7 @@ class AddAndModificationFragment : Fragment() {
                     addressEntity.longitude = location.longitude
                     addressEntity.let { sharedPropertyViewModel.insertAddress(it) }
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Address not found, please check the address if correct !",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Address not found, please check the address if correct !", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 addressEntity.let { sharedPropertyViewModel.insertAddress(it) }
@@ -390,19 +381,21 @@ class AddAndModificationFragment : Fragment() {
         val agent = sharedAgentViewModel.getAgentByName(agentName).firstOrNull()
         if (agent != null) {
             propertyEntity.agentId = agent.id!!
+            sharedPropertyViewModel.updateProperty(propertyEntity)
+
         } else {
             val createdAgentId = createAgentAndWait(agentName)
             if (createdAgentId != null) {
                 propertyEntity.agentId = createdAgentId
+                sharedPropertyViewModel.updateProperty(propertyEntity)
             } else {
                 // Agent creation was canceled, perform cancel actions here
-                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
                 // Cancel any other actions related to property update
                 return
             }
         }
-        sharedPropertyViewModel.updateProperty(propertyEntity)
+        updatePhotosWithPropertyId(propertyId = propertyEntity.id!!)
     }
 
     private suspend fun insertPropertyEntity(): Long? {
@@ -430,8 +423,7 @@ class AddAndModificationFragment : Fragment() {
                     insertAddressEntity(insertedPropertyId)
                 } else {
                     // Agent creation was canceled, perform cancel actions here
-                    Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
                     // Cancel any other actions related to property update
                     return null
                 }
@@ -541,8 +533,7 @@ class AddAndModificationFragment : Fragment() {
         zipCode = binding.addressZipCode.text.toString()
         country = binding.addressCountry.text.toString()
         apartmentDetails = binding.apartmentDetails.text.toString()
-        addressString =
-            binding.addressStreetNumber.text.toString() + " " + binding.addressStreetName.text.toString() + " " + binding.addressCity.text.toString() + " " + binding.addressZipCode.text.toString() + " " + binding.addressCountry.text.toString()
+        addressString = "$streetNumber $streetName $city $zipCode $country"
     }
 
     private fun initDate(propertyWithDetails: PropertyWithDetails) {
@@ -603,8 +594,7 @@ class AddAndModificationFragment : Fragment() {
                 // Set primary photo
                 lifecycleScope.launch {
                     setPrimaryPhoto(mutablePhotoList, position)
-                    Toast.makeText(requireContext(), R.string.primary_photo_set, Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(requireContext(), R.string.primary_photo_set, Toast.LENGTH_SHORT).show()
                     updatePrimaryPhotoIcons(position)
                 }
             }
@@ -662,11 +652,7 @@ class AddAndModificationFragment : Fragment() {
         photoList.removeAt(position)
         // Update the adapter with the updated list
         adapter.updatePhotos(photoList.map {
-            adapter.getDrawableFromPhotoEntity(
-                requireContext(),
-                it,
-                isPrimary = false
-            )
+            adapter.getDrawableFromPhotoEntity(requireContext(), it, isPrimary = false)
         })
 
     }
@@ -880,34 +866,42 @@ class AddAndModificationFragment : Fragment() {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
                     // Photo captured from the camera
-                    val description = currentDescription ?: ""
-                    if (description.isNotBlank()) {
-                        val photoBitmap = data?.extras?.get("data") as? Bitmap
-                        photoBitmap?.let { bitmap ->
-                            val uriString = saveImageToGallery(bitmap.toDrawable(resources))
-                            uriString?.let { saveUriToDatabase(it, description) }
-                        }
-                        currentDescription = null
-                    }
+                    initImageCapture(data)
                 }
 
                 REQUEST_IMAGE_PICK -> {
                     // Photo selected from the gallery
-                    val description = currentDescription ?: ""
-                    if (description.isNotBlank()) {
-                        val uri = data?.data
-                        uri?.let { it ->
-                            val drawable = Drawable.createFromStream(
-                                requireContext().contentResolver.openInputStream(it),
-                                it.toString()
-                            )
-                            val uriString = drawable?.let { it1 -> saveImageToGallery(it1) }
-                            uriString?.let { saveUriToDatabase(it, description) }
-                        }
-                        currentDescription = null
-                    }
+                    initImagePick(data)
                 }
             }
+        }
+    }
+
+    private fun initImageCapture(data: Intent?) {
+        val description = currentDescription ?: ""
+        if (description.isNotBlank()) {
+            val photoBitmap = data?.extras?.get("data") as? Bitmap
+            photoBitmap?.let { bitmap ->
+                val uriString = saveImageToGallery(bitmap.toDrawable(resources))
+                uriString?.let { saveUriToDatabase(it, description) }
+            }
+            currentDescription = null
+        }
+    }
+
+    private fun initImagePick(data: Intent?) {
+        val description = currentDescription ?: ""
+        if (description.isNotBlank()) {
+            val uri = data?.data
+            uri?.let { it ->
+                val drawable = Drawable.createFromStream(
+                    requireContext().contentResolver.openInputStream(it),
+                    it.toString()
+                )
+                val uriString = drawable?.let { it1 -> saveImageToGallery(it1) }
+                uriString?.let { saveUriToDatabase(it, description) }
+            }
+            currentDescription = null
         }
     }
 
@@ -950,8 +944,7 @@ class AddAndModificationFragment : Fragment() {
                 binding.fragmentPropertySelectedPhotosRecyclerView.smoothScrollToPosition(adapter.itemCount - 1)
             } else {
                 // Handle the case where photo insertion fails
-                Toast.makeText(requireContext(), "Failed to insert photo", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "Failed to insert photo", Toast.LENGTH_SHORT).show()
             }
         }
     }

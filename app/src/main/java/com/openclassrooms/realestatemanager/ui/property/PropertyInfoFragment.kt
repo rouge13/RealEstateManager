@@ -22,7 +22,7 @@ import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
-import com.openclassrooms.realestatemanager.ui.loan.LoanSimulatorAlertDialog
+import com.openclassrooms.realestatemanager.ui.alterDialog.LoanSimulatorAlertDialog
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import kotlinx.coroutines.launch
@@ -215,7 +215,7 @@ class PropertyInfoFragment : Fragment() {
             photoViewPager.currentItem = photoViewPager.currentItem - 1
         }
         binding.backwardProperty.setOnClickListener {
-            requireActivity().onBackPressed()
+            findNavController().popBackStack()
         }
         binding.loanSimulatorButton.setOnClickListener {
             val loanSimulatorAlertDialog = LoanSimulatorAlertDialog(requireContext())

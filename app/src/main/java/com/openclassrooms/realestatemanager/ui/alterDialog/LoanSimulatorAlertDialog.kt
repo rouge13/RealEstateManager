@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.loan
+package com.openclassrooms.realestatemanager.ui.alterDialog
 
 import android.app.AlertDialog
 import android.content.Context
@@ -34,11 +34,10 @@ class LoanSimulatorAlertDialog(private val context: Context) {
 
     private fun setupListeners(priceOfProperty: Int) {
         val decimalFormat = DecimalFormat("#,###")
-        val formattedLoanAmount = decimalFormat.format(priceOfProperty)
-        binding.loanAmountValue.setText(formattedLoanAmount)
+        binding.loanAmountValue.setText(priceOfProperty.toString())
 
         binding.calculateButton.setOnClickListener {
-            val loanAmountText = binding.loanAmountValue.text.toString().replace(",", "") // Remove commas (thousands separator)
+            val loanAmountText = binding.loanAmountValue.text.toString()
             val loanAmount = loanAmountText.toDoubleOrNull()
             val interestRate = binding.interestRateValue.text.toString().toDoubleOrNull()
             val loanDuration = binding.loanDurationValue.text.toString().toIntOrNull()
@@ -52,6 +51,8 @@ class LoanSimulatorAlertDialog(private val context: Context) {
             }
         }
     }
+
+
 
     private fun calculateMonthlyPayment(loanAmount: Double, interestRate: Double, loanDuration: Int): Double {
         val monthlyInterestRate = interestRate / 100 / 12
