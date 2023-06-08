@@ -16,6 +16,17 @@
         android:layout_height="wrap_content" />
 
     <TextView
+        android:id="@+id/personal_contribution_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/personal_contribution" />
+
+    <EditText
+        android:id="@+id/personal_contribution_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
         android:id="@+id/interest_rate_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

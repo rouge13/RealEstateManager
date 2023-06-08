@@ -150,6 +150,16 @@
     <string name="loan_simulator_button">Simulator</string>
     <string name="real_estate_loan_simulator">Real estate loan simulator</string>
     <string name="primary_photo_set">Primary photo set</string>
+    <string name="personal_contribution">Personal contribution</string>
+    <string name="set_settings_utils">Settings utils</string>
+    <string name="settings_utils_selection">Select Currency and Date Format</string>
+    <string name="settings_utils_currency_value">Edit the currency values if needed</string>
+    <string name="date_format_us">USA date</string>
+    <string name="date_format_eu">EU date</string>
+    <string name="dollars_selection">Dollars</string>
+    <string name="euros_selection">Euros</string>
+    <string name="settings_utils_currency_value_hint">Currency Value</string>
+    <string name="conversion_removed">Default value</string>
 
 
 </resources>

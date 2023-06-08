@@ -30,15 +30,31 @@ object Utils {
         return (dollars * rateOfChange).roundToInt()
     }
 
+    @JvmStatic
+    fun convertEurosToDollars(euros: Int, rateOfChange: Double): Int {
+        return (euros * rateOfChange).roundToInt()
+    }
+
     /**
      * Conversion de la date d'aujourd'hui en un format plus approprié
      * NOTE : NE PAS SUPPRIMER, A MONTRER DURANT LA SOUTENANCE
      * @return
      */
-    val todayDate: String
+//    val todayDateFranceFormat: String
+//        get() {
+//            val dateFormat: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+//            return dateFormat.format(Date())
+//        }
+
+    // I want to return a DateFormat and not a String so I changed the return type of the function and then I can change the dateFormat in the fragments
+    val todayDateFranceFormat: SimpleDateFormat
         get() {
-            val dateFormat: DateFormat = SimpleDateFormat("yyyy/MM/dd")
-            return dateFormat.format(Date())
+            return SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+        }
+
+    val todayDateUsaFormat: SimpleDateFormat
+        get() {
+            return SimpleDateFormat("yyyy/MM/dd", Locale.US)
         }
 
     /**

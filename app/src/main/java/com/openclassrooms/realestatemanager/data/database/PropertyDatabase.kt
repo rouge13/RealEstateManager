@@ -8,10 +8,12 @@ import androidx.room.TypeConverters
 import com.openclassrooms.realestatemanager.data.converter.Converters
 import com.openclassrooms.realestatemanager.data.dao.AddressDao
 import com.openclassrooms.realestatemanager.data.dao.AgentDao
+import com.openclassrooms.realestatemanager.data.dao.ConvertMoneyDao
 import com.openclassrooms.realestatemanager.data.dao.PhotoDao
 import com.openclassrooms.realestatemanager.data.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
+import com.openclassrooms.realestatemanager.data.model.ConvertMoneyEntity
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import kotlinx.coroutines.Dispatchers
@@ -22,8 +24,8 @@ import java.util.concurrent.Executors
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 @Database(
-    entities = [PropertyEntity::class, AgentEntity::class, AddressEntity::class, PhotoEntity::class],
-    version = 37,
+    entities = [PropertyEntity::class, AgentEntity::class, AddressEntity::class, PhotoEntity::class, ConvertMoneyEntity::class],
+    version = 39,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -32,7 +34,7 @@ abstract class PropertyDatabase : RoomDatabase() {
     abstract fun agentDao(): AgentDao
     abstract fun addressDao(): AddressDao
     abstract fun photoDao(): PhotoDao
-
+    abstract fun convertMoneyDao(): ConvertMoneyDao
     companion object {
         @Volatile
         private var INSTANCE: PropertyDatabase? = null
@@ -54,7 +56,8 @@ abstract class PropertyDatabase : RoomDatabase() {
                         instance.propertyDao(),
                         instance.agentDao(),
                         instance.addressDao(),
-                        instance.photoDao()
+                        instance.photoDao(),
+                        instance.convertMoneyDao()
                     )
                 }
             }
@@ -64,7 +67,8 @@ abstract class PropertyDatabase : RoomDatabase() {
             propertyDao: PropertyDao,
             agentDao: AgentDao,
             addressDao: AddressDao,
-            photoDao: PhotoDao
+            photoDao: PhotoDao,
+            convertMoneyDao: ConvertMoneyDao
         ) {
             // Add agents
             FixturesDatas.AGENT_LIST.forEach { agent ->
@@ -81,6 +85,10 @@ abstract class PropertyDatabase : RoomDatabase() {
             // Add photos
             FixturesDatas.PROPERTY_PHOTO_LIST.forEach { photo ->
                 photoDao.insert(photo)
+            }
+            // Add Change money
+            FixturesDatas.CHANGE_MONEY_LIST.forEach { changeMoney ->
+                convertMoneyDao.insert(changeMoney)
             }
         }
     }

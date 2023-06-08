@@ -17,19 +17,15 @@ class LoanSimulatorAlertDialog(private val context: Context) {
     private var alertDialog: AlertDialog? = null
     private lateinit var binding: DialogRealEstateLoanSimulatorBinding
 
-    fun showLoanSimulatorAlertDialog(priceOfProperty : Int) {
+    fun show(priceOfProperty : Int) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(R.string.real_estate_loan_simulator)
-
         val inflater = LayoutInflater.from(context)
         binding = DialogRealEstateLoanSimulatorBinding.inflate(inflater)
-
         builder.setView(binding.root)
         alertDialog = builder.create()
         alertDialog?.show()
-
         setupListeners(priceOfProperty)
-
     }
 
     private fun setupListeners(priceOfProperty: Int) {
@@ -38,12 +34,13 @@ class LoanSimulatorAlertDialog(private val context: Context) {
 
         binding.calculateButton.setOnClickListener {
             val loanAmountText = binding.loanAmountValue.text.toString()
-            val loanAmount = loanAmountText.toDoubleOrNull()
+            val loanAmount = loanAmountText.toIntOrNull()
             val interestRate = binding.interestRateValue.text.toString().toDoubleOrNull()
             val loanDuration = binding.loanDurationValue.text.toString().toIntOrNull()
+            val personalContribution = binding.personalContributionValue.text.toString().toIntOrNull()
 
-            if (loanAmount != null && interestRate != null && loanDuration != null) {
-                val monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate, loanDuration)
+            if (loanAmount != null && interestRate != null && loanDuration != null && personalContribution != null) {
+                val monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate, loanDuration, personalContribution)
                 val formattedMonthlyPayment = decimalFormat.format(monthlyPayment)
                 binding.monthlyPaymentTextView.text = "Monthly payment: $formattedMonthlyPayment"
             } else {
@@ -52,12 +49,19 @@ class LoanSimulatorAlertDialog(private val context: Context) {
         }
     }
 
-
-
-    private fun calculateMonthlyPayment(loanAmount: Double, interestRate: Double, loanDuration: Int): Double {
+    private fun calculateMonthlyPayment(
+        loanAmount: Int,
+        interestRate: Double,
+        loanDuration: Int,
+        personalContribution: Int
+    ): Double {
+        val loanAmount = loanAmount - personalContribution
         val monthlyInterestRate = interestRate / 100 / 12
         val numberOfPayments = loanDuration * 12
+        // Pow means power for mathematical use example of, so 2.pow(3) = 2^3 = 8 same as 2 * 2 * 2 = 8
+        // Denominator equal to (1 + monthlyInterestRate)^numberOfPayments - 1 to get the result of the fraction in number of payments
         val denominator = (1 + monthlyInterestRate).pow(numberOfPayments.toDouble()) - 1
+        // Return the monthly payment amount using the formula from https://www.thebalance.com/loan-payment-calculations-315564
         return loanAmount * monthlyInterestRate * (1 + monthlyInterestRate).pow(numberOfPayments.toDouble()) / denominator
     }
 

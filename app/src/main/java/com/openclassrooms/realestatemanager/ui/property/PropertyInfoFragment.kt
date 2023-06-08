@@ -25,10 +25,10 @@ import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.alterDialog.LoanSimulatorAlertDialog
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -41,6 +41,11 @@ class PropertyInfoFragment : Fragment() {
         )
     }
     private val sharedNavigationViewModel: SharedNavigationViewModel by activityViewModels {
+        ViewModelFactory(
+            requireActivity().application as MainApplication
+        )
+    }
+    private val sharedUtilsViewModel: SharedUtilsViewModel by activityViewModels {
         ViewModelFactory(
             requireActivity().application as MainApplication
         )
@@ -193,15 +198,22 @@ class PropertyInfoFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun initIsSoldOrNot(propertyWithDetails: PropertyWithDetails) {
         Log.d("PropertyInfoFragment", "initIsSoldOrNot: $propertyWithDetails")
-        val sdf = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+        sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
+            dateFormat?.let { format ->
+                updateDate(propertyWithDetails, format)
+            }
+        }
+    }
+
+    private fun updateDate(propertyWithDetails: PropertyWithDetails, dateFormat: SimpleDateFormat) {
         if (propertyWithDetails.property.isSold == true) {
             binding.date.setTextColor(resources.getColor(R.color.red))
             val dateSold = propertyWithDetails.property.dateSold?.let { Date(it) }
-            binding.date.text = "Sold on : ${dateSold?.let { sdf.format(it) }}"
+            binding.date.text = "Sold on : ${dateSold?.let { dateFormat.format(it) }}"
         } else {
             binding.date.setTextColor(resources.getColor(R.color.green))
             val dateStartSelling = propertyWithDetails.property.dateStartSelling?.let { Date(it) }
-            binding.date.text = "Sale date: ${dateStartSelling?.let { sdf.format(it) }}"
+            binding.date.text = "Sale date: ${dateStartSelling?.let { dateFormat.format(it) }}"
         }
     }
 
@@ -220,7 +232,7 @@ class PropertyInfoFragment : Fragment() {
         binding.loanSimulatorButton.setOnClickListener {
             val loanSimulatorAlertDialog = LoanSimulatorAlertDialog(requireContext())
             propertyWithDetails.property.price?.let { it1 ->
-                loanSimulatorAlertDialog.showLoanSimulatorAlertDialog(
+                loanSimulatorAlertDialog.show(
                     it1
                 )
             }

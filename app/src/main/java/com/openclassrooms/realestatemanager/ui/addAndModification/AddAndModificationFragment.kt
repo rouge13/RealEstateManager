@@ -52,6 +52,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Calendar
 import java.util.TimeZone
 import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -66,7 +67,6 @@ class AddAndModificationFragment : Fragment() {
     private lateinit var notificationHelper: NotificationHelper
     private lateinit var geocoder: Geocoder
     private lateinit var addressString: String
-    private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     private val converters = Converters()
     private val sharedPropertyViewModel: SharedPropertyViewModel by activityViewModels {
         ViewModelFactory(
@@ -79,6 +79,11 @@ class AddAndModificationFragment : Fragment() {
         )
     }
     private val sharedAgentViewModel: SharedAgentViewModel by activityViewModels {
+        ViewModelFactory(
+            requireActivity().application as MainApplication
+        )
+    }
+    private val sharedUtilsViewModel: SharedUtilsViewModel by activityViewModels {
         ViewModelFactory(
             requireActivity().application as MainApplication
         )
@@ -102,7 +107,9 @@ class AddAndModificationFragment : Fragment() {
                 displayPropertyDetails()
             } else {
                 binding.propertySwitchSold.visibility = View.GONE
-                binding.propertyDateText.text = dateFormat.format(System.currentTimeMillis())
+                sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
+                    binding.propertyDateText.text = dateFormat.format(System.currentTimeMillis())
+                }
                 initAllAutoCompleteTextView()
                 initSelectDate()
                 initInsertButton()
@@ -126,9 +133,13 @@ class AddAndModificationFragment : Fragment() {
                 binding.dateSale.visibility = View.GONE
             }
             propertyWithDetails?.let {
-                binding.dateSale.text =
-                    dateFormat.format(propertyWithDetails.property.dateStartSelling)
-                initDate(propertyWithDetails)
+
+                sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
+                    dateFormat?.let {
+                        binding.dateSale.text = it.format(propertyWithDetails.property.dateStartSelling)
+                        initDate(propertyWithDetails, it)
+                    }
+                }
                 initAllEditText(propertyWithDetails)
                 initAllSwitch(propertyWithDetails)
                 setupRecyclerView(propertyWithDetails.photos)
@@ -293,7 +304,10 @@ class AddAndModificationFragment : Fragment() {
                     // When a date is selected, update the EditText with the selected date
                     val selectedMonth = month + 1 // Add 1 to the month value
                     val selectedDate = "$selectedMonth/$dayOfMonth/$year"
-                    binding.propertyDateText.text = selectedDate
+                    sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) {
+                        binding.propertyDateText.text = it.format(selectedDate)
+                    }
+
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -305,7 +319,9 @@ class AddAndModificationFragment : Fragment() {
                     set(Calendar.MONTH, datePickerDialog.datePicker.month)
                     set(Calendar.DAY_OF_MONTH, datePickerDialog.datePicker.dayOfMonth)
                 }
-                binding.propertyDateText.text = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(Date(calendar.timeInMillis))
+                sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
+                    binding.propertyDateText.text = dateFormat.format(Date(calendar.timeInMillis))
+                }
             }
             // Show the date picker dialog
             datePickerDialog.show()
@@ -480,8 +496,10 @@ class AddAndModificationFragment : Fragment() {
     ) {
         id = propertyWithDetails.property.id
         if (binding.propertySwitchSold.isChecked) {
-            dateSold =
-                converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+            sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
+                dateSold = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+            }
+
         } else if (!binding.propertySwitchSold.isChecked && propertyWithDetails.property.dateSold != null) {
             dateSold = null
         }
@@ -491,8 +509,9 @@ class AddAndModificationFragment : Fragment() {
 
     private fun PropertyEntity.propertyToInsert() {
         id = null
-        dateStartSelling =
-            converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+        sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
+            dateStartSelling = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+        }
         primaryPropertyElement()
     }
 
@@ -536,21 +555,20 @@ class AddAndModificationFragment : Fragment() {
         addressString = "$streetNumber $streetName $city $zipCode $country"
     }
 
-    private fun initDate(propertyWithDetails: PropertyWithDetails) {
-        val sdf = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    private fun initDate(propertyWithDetails: PropertyWithDetails, dateFormat: SimpleDateFormat) {
         if (propertyWithDetails.property.isSold == true) {
             val dateSold = propertyWithDetails.property.dateSold?.let { Date(it) }
             if (propertyWithDetails.property.dateSold == null) {
                 binding.propertyDateText.text = dateFormat.format(System.currentTimeMillis())
             } else {
-                binding.propertyDateText.text = "${dateSold?.let { sdf.format(it) }}"
+                binding.propertyDateText.text = "${dateSold?.let { dateFormat.format(it) }}"
             }
         } else {
             val dateSale = propertyWithDetails.property.dateStartSelling?.let { Date(it) }
             if (propertyWithDetails.property.dateStartSelling == null) {
                 binding.propertyDateText.text = dateFormat.format(System.currentTimeMillis())
             } else {
-                binding.propertyDateText.text = "${dateSale?.let { sdf.format(it) }}"
+                binding.propertyDateText.text = "${dateSale?.let { dateFormat.format(it) }}"
             }
         }
     }

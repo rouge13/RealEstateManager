@@ -1,17 +1,12 @@
 package com.openclassrooms.realestatemanager.data.di
 
-import android.app.Application
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.openclassrooms.realestatemanager.data.repository.AddressRepository
-import com.openclassrooms.realestatemanager.data.repository.AgentRepository
-import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
-import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
 
 /**
@@ -29,6 +24,9 @@ class ViewModelFactory(private val mainApplication: MainApplication) : ViewModel
                 mainApplication.addressRepository!!,
                 mainApplication.photoRepository!!
             ) as T
+        } else if (modelClass.isAssignableFrom(SharedUtilsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return SharedUtilsViewModel(mainApplication.convertMoneyRepository!!) as T
         } else if (modelClass.isAssignableFrom(SharedNavigationViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return SharedNavigationViewModel() as T

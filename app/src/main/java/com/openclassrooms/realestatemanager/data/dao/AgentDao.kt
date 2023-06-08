@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
-import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -19,6 +19,7 @@ import com.openclassrooms.realestatemanager.databinding.FragmentSearchPropertyBi
 import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
@@ -34,6 +35,11 @@ class SearchFragment : Fragment() {
         )
     }
     private val sharedAgentViewModel: SharedAgentViewModel by activityViewModels {
+        ViewModelFactory(
+            requireActivity().application as MainApplication
+        )
+    }
+    private val sharedUtilsViewModel: SharedUtilsViewModel by activityViewModels {
         ViewModelFactory(
             requireActivity().application as MainApplication
         )
@@ -391,7 +397,9 @@ class SearchFragment : Fragment() {
                     // When a date is selected, update the EditText with the selected date
                     val selectedMonth = month + 1 // Add 1 to the month value
                     val selectedDate = "$selectedMonth/$dayOfMonth/$year"
-                    binding.propertyDateEndText.text = selectedDate
+                    sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner){
+                        binding.propertyDateEndText.text = it.format(selectedDate)
+                    }
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -422,7 +430,9 @@ class SearchFragment : Fragment() {
                     val selectedMonth = month + 1 // Add 1 to the month value
                     val selectedDate = "$selectedMonth/$dayOfMonth/$year"
                     // When a date is selected, update the EditText with the selected date
-                    binding.propertyDateStartText.text = selectedDate
+                    sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner){
+                        binding.propertyDateStartText.text = it.format(selectedDate)
+                    }
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),

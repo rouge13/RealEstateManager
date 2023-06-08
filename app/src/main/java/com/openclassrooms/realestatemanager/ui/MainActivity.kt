@@ -42,7 +42,10 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationV
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
 import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
+import com.openclassrooms.realestatemanager.ui.alterDialog.SettingsCurrencyDateAlertDialog
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.utils.Utils
+import java.text.SimpleDateFormat
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -58,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var initializationViewModel: InitializationViewModel
     private lateinit var sharedNavigationViewModel: SharedNavigationViewModel
     private lateinit var sharedPropertyViewModel: SharedPropertyViewModel
+    private lateinit var sharedUtilsViewModel: SharedUtilsViewModel
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(activityMainBinding.root)
         // Init the ViewModel
         initViewModels()
+        setDefaultValueOfDateFormat()
         drawerLayout = activityMainBinding.activityMainDrawerLayout
         navigationView = activityMainBinding.activityMainNavView
         // Set up the drawer toggle
@@ -122,6 +127,11 @@ class MainActivity : AppCompatActivity() {
         initializationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[InitializationViewModel::class.java]
         sharedNavigationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedNavigationViewModel::class.java]
         sharedPropertyViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedPropertyViewModel::class.java]
+        sharedUtilsViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedUtilsViewModel::class.java]
+    }
+
+    private fun setDefaultValueOfDateFormat() {
+        sharedUtilsViewModel.setDateFormatSelected(Utils.todayDateUsaFormat)
     }
 
     private fun initSearchOnClickListeners() {
@@ -148,8 +158,10 @@ class MainActivity : AppCompatActivity() {
         navController: NavController
     ): Boolean {
         when (item.itemId) {
-            R.id.nav_take_photo -> {
-                dispatchTakePictureIntent()
+            R.id.nav_settings_utils -> {
+                // Open the alert dialog to choose the currency and date format
+                val settingsCurrencyDateAlertDialog = SettingsCurrencyDateAlertDialog(context = this, sharedUtilsViewModel = sharedUtilsViewModel)
+                settingsCurrencyDateAlertDialog.show()
                 drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
                 return true
             }
