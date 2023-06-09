@@ -30,4 +30,14 @@ class ConvertMoneyRepository(private val convertMoneyDao: ConvertMoneyDao) {
             }
         }
     }
+
+    // Set the active selection of the moneyRate in the database
+    suspend fun setActiveSelectionMoneyRate(nameOfMoney: String, activeSelection: Boolean) {
+        convertMoneyDao.setActiveSelectionMoneyRate(nameOfMoney, activeSelection)
+    }
+
+    // Get the money rate selected by the agent
+    fun getMoneyRateSelected(): Flow<ConvertMoneyEntity> {
+        return convertMoneyDao.getMoneyRateSelected()
+    }
 }

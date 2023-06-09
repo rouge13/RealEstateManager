@@ -35,4 +35,21 @@ interface ConvertMoneyDao {
         nameOfMoney: String,
         activeSelection: Boolean
     )
+
+    // Set the active selection of the moneyRate
+    @Query(
+        """
+        UPDATE money 
+        SET activeSelection = :activeSelection
+        WHERE nameOfMoney = :nameOfMoney
+        """
+    )
+    suspend fun setActiveSelectionMoneyRate(
+        nameOfMoney: String,
+        activeSelection: Boolean
+    )
+
+    // Get the money rate selected by the agent
+    @Query("SELECT * FROM money WHERE activeSelection = 1")
+    fun getMoneyRateSelected(): Flow<ConvertMoneyEntity>
 }

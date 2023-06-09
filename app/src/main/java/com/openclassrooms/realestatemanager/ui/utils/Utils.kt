@@ -46,7 +46,7 @@ object Utils {
 //            return dateFormat.format(Date())
 //        }
 
-    // I want to return a DateFormat and not a String so I changed the return type of the function and then I can change the dateFormat in the fragments
+    // I want to return a SimpleDateFormat and not a String so I changed the return type of the function and then I can change the SimpleDateFormat in the fragments
     val todayDateFranceFormat: SimpleDateFormat
         get() {
             return SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)

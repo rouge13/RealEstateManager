@@ -133,7 +133,6 @@ class AddAndModificationFragment : Fragment() {
                 binding.dateSale.visibility = View.GONE
             }
             propertyWithDetails?.let {
-
                 sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
                     dateFormat?.let {
                         binding.dateSale.text = it.format(propertyWithDetails.property.dateStartSelling)

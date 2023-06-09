@@ -11,6 +11,7 @@ import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
 import android.util.Log
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -24,7 +25,8 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
             // Set the data to the view
             binding.propertyType.text = get.property.typeOfHouse
             binding.propertySector.text = get.address?.boroughs?.takeIf { it.isNotBlank() }
-            "$${get.property.price}".also { binding.propertyValue.text = it }
+
+            "${get.property.price}".also { binding.propertyValue.text = it }
 
             // Set the image to the view
             setImageInRecyclerView(get.property)

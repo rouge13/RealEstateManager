@@ -22,7 +22,8 @@ class ViewModelFactory(private val mainApplication: MainApplication) : ViewModel
             return SharedPropertyViewModel(
                 mainApplication.propertyRepository!!,
                 mainApplication.addressRepository!!,
-                mainApplication.photoRepository!!
+                mainApplication.photoRepository!!,
+                mainApplication.convertMoneyRepository!!
             ) as T
         } else if (modelClass.isAssignableFrom(SharedUtilsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

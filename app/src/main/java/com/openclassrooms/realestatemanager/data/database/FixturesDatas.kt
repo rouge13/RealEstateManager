@@ -45,7 +45,8 @@ class FixturesDatas {
 
         val CHANGE_MONEY_LIST = listOf(
             ConvertMoneyEntity(1, "DollarToEuro", 0.93028, false),
-            ConvertMoneyEntity(2, "EuroToDollar", 1.07473, false)
+            ConvertMoneyEntity(2, "EuroToDollar", 1.07473, false),
+            ConvertMoneyEntity(3, "DefaultValue", 1.0, false),
         )
 
         val PROPERTY_ADDRESS_LIST = listOf(

@@ -6,13 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -28,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
@@ -45,7 +43,7 @@ import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
 import com.openclassrooms.realestatemanager.ui.alterDialog.SettingsCurrencyDateAlertDialog
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.utils.Utils
-import java.text.SimpleDateFormat
+import kotlinx.coroutines.launch
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -71,6 +69,7 @@ class MainActivity : AppCompatActivity() {
         // Init the ViewModel
         initViewModels()
         setDefaultValueOfDateFormat()
+        setDefaultValueOfPriceCurrency()
         drawerLayout = activityMainBinding.activityMainDrawerLayout
         navigationView = activityMainBinding.activityMainNavView
         // Set up the drawer toggle
@@ -87,6 +86,13 @@ class MainActivity : AppCompatActivity() {
         initModifyOnClickListeners()
         initSearchOnClickListeners()
     }
+
+    private fun setDefaultValueOfPriceCurrency() {
+        lifecycleScope.launch {
+            sharedUtilsViewModel.setActiveSelectionMoneyRate("DefaultValue", activeSelection = true)
+        }
+    }
+
 
     private fun initModifyOnClickListeners() {
         activityMainBinding.btnModify.setOnClickListener {
@@ -123,11 +129,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViewModels() {
-        sharedAgentViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedAgentViewModel::class.java]
-        initializationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[InitializationViewModel::class.java]
-        sharedNavigationViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedNavigationViewModel::class.java]
-        sharedPropertyViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedPropertyViewModel::class.java]
-        sharedUtilsViewModel = ViewModelProvider(this, ViewModelFactory(application as MainApplication))[SharedUtilsViewModel::class.java]
+        sharedAgentViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application as MainApplication)
+        )[SharedAgentViewModel::class.java]
+        initializationViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application as MainApplication)
+        )[InitializationViewModel::class.java]
+        sharedNavigationViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application as MainApplication)
+        )[SharedNavigationViewModel::class.java]
+        sharedPropertyViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application as MainApplication)
+        )[SharedPropertyViewModel::class.java]
+        sharedUtilsViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application as MainApplication)
+        )[SharedUtilsViewModel::class.java]
     }
 
     private fun setDefaultValueOfDateFormat() {
@@ -143,6 +164,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun setupNavigationController() {
         // Init the NavController
         val navHostFragment =
@@ -153,18 +175,27 @@ class MainActivity : AppCompatActivity() {
             handleNavigationItemSelected(menuItem, navController)
         }
     }
+
     private fun handleNavigationItemSelected(
         item: MenuItem,
         navController: NavController
     ): Boolean {
         when (item.itemId) {
             R.id.nav_settings_utils -> {
-                // Open the alert dialog to choose the currency and date format
-                val settingsCurrencyDateAlertDialog = SettingsCurrencyDateAlertDialog(context = this, sharedUtilsViewModel = sharedUtilsViewModel)
-                settingsCurrencyDateAlertDialog.show()
-                drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
+                lifecycleScope.launch {
+                    sharedUtilsViewModel.getMoneyRateSelected.collect { moneyRate ->
+                        val settingsCurrencyDateAlertDialog = SettingsCurrencyDateAlertDialog(
+                            context = this@MainActivity,
+                            sharedUtilsViewModel = sharedUtilsViewModel,
+                            moneyRate = moneyRate
+                        )
+                        settingsCurrencyDateAlertDialog.show()
+                        drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
+                    }
+                }
                 return true
             }
+
             else -> {
                 // Let the NavController handle the other menu items
                 val handled =
@@ -176,6 +207,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun isOnline(context: Context): Boolean {
         return Utils.isInternetAvailable(context)
     }
@@ -327,6 +359,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, e.message.toString(), Toast.LENGTH_SHORT).show()
         }
     }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
