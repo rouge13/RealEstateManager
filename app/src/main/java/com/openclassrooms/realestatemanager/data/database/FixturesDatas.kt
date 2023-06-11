@@ -3,11 +3,9 @@ package com.openclassrooms.realestatemanager.data.database
 import com.openclassrooms.realestatemanager.data.converter.Converters
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
-import com.openclassrooms.realestatemanager.data.model.ConvertMoneyEntity
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 /**
@@ -41,12 +39,6 @@ class FixturesDatas {
         val AGENT_LIST = listOf(
             AgentEntity(1, "Hammer Julien"),
             AgentEntity(2, "Smith Carl")
-        )
-
-        val CHANGE_MONEY_LIST = listOf(
-            ConvertMoneyEntity(1, "DollarToEuro", 0.93028, false),
-            ConvertMoneyEntity(2, "EuroToDollar", 1.07473, false),
-            ConvertMoneyEntity(3, "DefaultValue", 1.0, false),
         )
 
         val PROPERTY_ADDRESS_LIST = listOf(

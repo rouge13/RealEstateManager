@@ -31,30 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/euros_selection" />
-
-        <RadioButton
-            android:id="@+id/conversion_removed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/conversion_removed" />
     </RadioGroup>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/settings_utils_currency_value"
-        android:layout_gravity="center"
-        android:padding="16dp" />
-
-    <EditText
-        android:id="@+id/currency_value"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:hint="@string/settings_utils_currency_value_hint"
-        android:inputType="numberDecimal"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="8dp" />
 
     <RadioGroup
         android:id="@+id/radio_group_date_format"

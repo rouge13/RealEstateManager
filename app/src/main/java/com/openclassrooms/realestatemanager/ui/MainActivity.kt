@@ -1,14 +1,12 @@
 package com.openclassrooms.realestatemanager.ui
 
 import android.Manifest
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
@@ -33,16 +31,17 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
+import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.databinding.ActivityMainNavHeaderBinding
+import com.openclassrooms.realestatemanager.ui.alterDialog.SettingsCurrencyDateAlertDialog
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
-import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
-import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
-import com.openclassrooms.realestatemanager.ui.alterDialog.SettingsCurrencyDateAlertDialog
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.utils.Utils
+import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 /**
@@ -68,8 +67,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(activityMainBinding.root)
         // Init the ViewModel
         initViewModels()
-        setDefaultValueOfDateFormat()
-        setDefaultValueOfPriceCurrency()
         drawerLayout = activityMainBinding.activityMainDrawerLayout
         navigationView = activityMainBinding.activityMainNavView
         // Set up the drawer toggle
@@ -79,6 +76,8 @@ class MainActivity : AppCompatActivity() {
             ActivityMainNavHeaderBinding.bind(navigationView.getHeaderView(0))
         // Initialize the app using the InitializationViewModel
         initializationViewModel.startInitialization(application as MainApplication)
+        setDefaultValueOfDateFormat()
+        sharedUtilsViewModel.setActiveSelectionMoneyRate(false)
         // Set up the NavController and connect it to the NavigationView
         setupNavigationController()
         checkHasInternet()
@@ -86,13 +85,6 @@ class MainActivity : AppCompatActivity() {
         initModifyOnClickListeners()
         initSearchOnClickListeners()
     }
-
-    private fun setDefaultValueOfPriceCurrency() {
-        lifecycleScope.launch {
-            sharedUtilsViewModel.setActiveSelectionMoneyRate("DefaultValue", activeSelection = true)
-        }
-    }
-
 
     private fun initModifyOnClickListeners() {
         activityMainBinding.btnModify.setOnClickListener {
@@ -129,22 +121,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViewModels() {
-        sharedAgentViewModel = ViewModelProvider(
-            this,
-            ViewModelFactory(application as MainApplication)
-        )[SharedAgentViewModel::class.java]
         initializationViewModel = ViewModelProvider(
             this,
             ViewModelFactory(application as MainApplication)
         )[InitializationViewModel::class.java]
-        sharedNavigationViewModel = ViewModelProvider(
-            this,
-            ViewModelFactory(application as MainApplication)
-        )[SharedNavigationViewModel::class.java]
         sharedPropertyViewModel = ViewModelProvider(
             this,
             ViewModelFactory(application as MainApplication)
         )[SharedPropertyViewModel::class.java]
+        sharedNavigationViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application as MainApplication)
+        )[SharedNavigationViewModel::class.java]
+        sharedAgentViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(application as MainApplication)
+        )[SharedAgentViewModel::class.java]
         sharedUtilsViewModel = ViewModelProvider(
             this,
             ViewModelFactory(application as MainApplication)
@@ -183,15 +175,11 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.nav_settings_utils -> {
                 lifecycleScope.launch {
-                    sharedUtilsViewModel.getMoneyRateSelected.collect { moneyRate ->
-                        val settingsCurrencyDateAlertDialog = SettingsCurrencyDateAlertDialog(
-                            context = this@MainActivity,
-                            sharedUtilsViewModel = sharedUtilsViewModel,
-                            moneyRate = moneyRate
-                        )
-                        settingsCurrencyDateAlertDialog.show()
-                        drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
-                    }
+                    SettingsCurrencyDateAlertDialog(
+                        context = this@MainActivity,
+                        sharedUtilsViewModel = sharedUtilsViewModel
+                    ).show() // Show the dialog
+                    drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
                 }
                 return true
             }
@@ -248,12 +236,6 @@ class MainActivity : AppCompatActivity() {
         ) {
             requestSinglePermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun showNotification() {
-        val notificationHelper = NotificationHelper(this)
-        notificationHelper.showPropertyInsertedNotification()
     }
 
     private fun agentLocationUpdates() {
@@ -348,16 +330,6 @@ class MainActivity : AppCompatActivity() {
             imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
-    }
-
-    private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-        } catch (e: ActivityNotFoundException) {
-            // display error state to the user in a Toast
-            Toast.makeText(this, e.message.toString(), Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun onRequestPermissionsResult(

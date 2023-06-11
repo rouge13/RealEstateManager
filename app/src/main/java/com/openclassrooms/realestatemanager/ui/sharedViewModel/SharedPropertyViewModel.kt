@@ -10,12 +10,10 @@ import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
-import com.openclassrooms.realestatemanager.data.model.ConvertMoneyEntity
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.SearchCriteria
-import com.openclassrooms.realestatemanager.data.repository.ConvertMoneyRepository
+import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -27,8 +25,7 @@ import kotlinx.coroutines.flow.firstOrNull
 class SharedPropertyViewModel(
     private val propertyRepository: PropertyRepository,
     private val addressRepository: AddressRepository,
-    private val photoRepository: PhotoRepository,
-    private val convertMoneyRepository: ConvertMoneyRepository
+    private val photoRepository: PhotoRepository
 ) : ViewModel() {
     // Get and Set selected property
     private val _selectedProperty = MutableLiveData<PropertyWithDetails>()
@@ -55,7 +52,8 @@ class SharedPropertyViewModel(
         photoRepository.getAllPhotos
     ) { criteria, properties, addresses, photos ->
         if (criteria != null) {
-            val filteredProperties = propertyRepository.getFilteredProperties(criteria).firstOrNull()
+            val filteredProperties =
+                propertyRepository.getFilteredProperties(criteria).firstOrNull()
             combinePropertiesWithDetails(filteredProperties, addresses, photos)
         } else {
             combinePropertiesWithDetails(properties, addresses, photos)
@@ -145,24 +143,29 @@ class SharedPropertyViewModel(
     }
 
     // Convert property price
-    suspend fun convertPropertyPrice(property: PropertyEntity): String {
-        val moneyRateSelected: ConvertMoneyEntity = convertMoneyRepository.getMoneyRateSelected().first()
-        val convertedPrice = if (moneyRateSelected.nameOfMoney == "DollarToEuro") {
-            convertDollarsToEuros(property.price)
-        } else if (moneyRateSelected == "EuroToDollar") {
-            convertEurosToDollars(property.price)
+
+    fun convertPropertyPrice(property: PropertyEntity, isEuroSelected: Boolean? = false): Int? {
+        val convertedPrice = if (isEuroSelected == true) {
+            property.price?.let {
+                convertDollarsToEuros(it)
+            }
         } else {
-            property.price // No conversion needed
+            property.price?.let {
+                convertEurosToDollars(it)
+            }
         }
-        return "${convertedPrice}€" // Assuming the converted price is in euros
+        return convertedPrice
     }
 
-    private suspend fun convertDollarsToEuros(dollars: Double): Double {
+
+    private fun convertDollarsToEuros(dollars: Int): Int {
         // Perform the conversion logic here
+        return Utils.convertDollarsToEuros(dollars)
     }
 
-    private suspend fun convertEurosToDollars(euros: Double): Double {
+    private fun convertEurosToDollars(euros: Int): Int {
         // Perform the conversion logic here
+        return Utils.convertEurosToDollars(euros)
     }
 }
 

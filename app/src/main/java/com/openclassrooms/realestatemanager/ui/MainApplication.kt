@@ -4,12 +4,10 @@ import android.app.Application
 import com.openclassrooms.realestatemanager.data.database.PropertyDatabase
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository
-import com.openclassrooms.realestatemanager.data.repository.ConvertMoneyRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -46,8 +44,6 @@ class MainApplication : Application() {
         get() = database?.addressDao()?.let { AddressRepository(it) }
     val photoRepository: PhotoRepository?
         get() = database?.photoDao()?.let { PhotoRepository(it) }
-    val convertMoneyRepository: ConvertMoneyRepository?
-        get() = database?.convertMoneyDao()?.let { ConvertMoneyRepository(it) }
 
     private val initJob = applicationScope.launch {
         database = PropertyDatabase.getDatabase(this@MainApplication)

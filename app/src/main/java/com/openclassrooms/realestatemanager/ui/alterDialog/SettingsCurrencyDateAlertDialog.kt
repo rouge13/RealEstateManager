@@ -6,26 +6,23 @@ import android.view.LayoutInflater
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.data.model.ConvertMoneyEntity
 import com.openclassrooms.realestatemanager.databinding.DialogSettingsUtilsBinding
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.utils.Utils
-import java.text.SimpleDateFormat
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class SettingsCurrencyDateAlertDialog(
     private val context: Context,
-    private val sharedUtilsViewModel: SharedUtilsViewModel,
-    private val moneyRate: ConvertMoneyEntity
+    private val sharedUtilsViewModel: SharedUtilsViewModel
 ) {
 
     private var alertDialog: AlertDialog? = null
     private lateinit var binding: DialogSettingsUtilsBinding
-
 
     fun show() {
         val builder = AlertDialog.Builder(context)
@@ -36,12 +33,10 @@ class SettingsCurrencyDateAlertDialog(
         sharedUtilsViewModel.getDateFormatSelected.observe(context as MainActivity) {
             initDateFormatSelected(it)
         }
-        initMoneyRateSelected(moneyRate)
+        initMoneyRateSelected()
 
         builder.setPositiveButton("Save") { dialog, _ ->
-            (context as? LifecycleOwner)?.lifecycleScope?.launch {
-                setMoneyRateSelected()
-            }
+            setConvertMoney()
             setSimpleDateFormat()
             dialog.dismiss()
         }
@@ -56,23 +51,14 @@ class SettingsCurrencyDateAlertDialog(
         setupListeners()
     }
 
-    private fun initMoneyRateSelected(moneyRate: ConvertMoneyEntity) {
-        when (moneyRate.nameOfMoney) {
-            "DollarToEuro" -> {
-                binding.radioButtonDollars.isChecked = true
-                binding.radioButtonEuros.isChecked = false
-                binding.conversionRemoved.isChecked = false
-            }
-            "EuroToDollar" -> {
-                binding.radioButtonDollars.isChecked = false
-                binding.radioButtonEuros.isChecked = true
-                binding.conversionRemoved.isChecked = false
-            }
-            else -> {
-                binding.radioButtonDollars.isChecked = false
-                binding.radioButtonEuros.isChecked = false
-                binding.conversionRemoved.isChecked = true
-            }
+
+    private fun initMoneyRateSelected() {
+        if (sharedUtilsViewModel.getMoneyRateSelected.value == true) {
+            binding.radioButtonDollars.isChecked = false
+            binding.radioButtonEuros.isChecked = true
+        } else {
+            binding.radioButtonEuros.isChecked = false
+            binding.radioButtonDollars.isChecked = true
         }
     }
 
@@ -85,16 +71,6 @@ class SettingsCurrencyDateAlertDialog(
         sharedUtilsViewModel.setDateFormatSelected(dateFormatSelected)
     }
 
-    private suspend fun setMoneyRateSelected() {
-        val moneyRateSelected = if (binding.radioButtonDollars.isSelected) {
-            "DollarToEuro"
-        } else if (binding.radioButtonEuros.isSelected) {
-            "EuroToDollar"
-        } else {
-            "ConversionRemoved"
-        }
-        sharedUtilsViewModel.setActiveSelectionMoneyRate(moneyRateSelected, true)
-    }
 
     private fun initDateFormatSelected(dateFormat: SimpleDateFormat?) {
         val dateFormatSelected = dateFormat?.toPattern()
@@ -107,27 +83,17 @@ class SettingsCurrencyDateAlertDialog(
 
     private fun setupListeners() {
         // Setup the listener for the button to save the new currency
-
         // Update the date format selected by the agent in the settings
         setDateFormat()
         setConvertMoney()
     }
 
     private fun setConvertMoney() {
-        binding.conversionRemoved.setOnClickListener {
-            binding.conversionRemoved.isSelected = true
-            binding.radioButtonDollars.isSelected = false
-            binding.radioButtonEuros.isSelected = false
-        }
         binding.radioButtonDollars.setOnClickListener {
-            binding.radioButtonDollars.isSelected = true
-            binding.radioButtonEuros.isSelected = false
-            binding.conversionRemoved.isSelected = false
+            sharedUtilsViewModel.setActiveSelectionMoneyRate(false)
         }
         binding.radioButtonEuros.setOnClickListener {
-            binding.radioButtonEuros.isSelected = true
-            binding.radioButtonDollars.isSelected = false
-            binding.conversionRemoved.isSelected = false
+            sharedUtilsViewModel.setActiveSelectionMoneyRate(true)
         }
     }
 

@@ -1,22 +1,28 @@
 package com.openclassrooms.realestatemanager.ui.propertyList
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import com.openclassrooms.realestatemanager.databinding.ItemPropertyBinding
-import android.util.Log
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetails>, private val onPropertyClick: (PropertyWithDetails) -> Unit)
+class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private val sharedPropertyViewModel: SharedPropertyViewModel, private val sharedUtilsViewModel: SharedUtilsViewModel, diffCallback: DiffUtil.ItemCallback<PropertyWithDetails>, private val onPropertyClick: (PropertyWithDetails) -> Unit)
     : ListAdapter<PropertyWithDetails, PropertyListAdapter.PropertyViewHolder>(diffCallback) {
 
     inner class PropertyViewHolder(private val binding: ItemPropertyBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -26,7 +32,24 @@ class PropertyListAdapter(diffCallback: DiffUtil.ItemCallback<PropertyWithDetail
             binding.propertyType.text = get.property.typeOfHouse
             binding.propertySector.text = get.address?.boroughs?.takeIf { it.isNotBlank() }
 
-            "${get.property.price}".also { binding.propertyValue.text = it }
+//            "${get.property.price}".also { binding.propertyValue.text = it }
+
+            // Use coroutine scope to collect the value of getMoneyRateSelected
+            CoroutineScope(Dispatchers.Main).launch {
+                sharedUtilsViewModel.getMoneyRateSelected.observe(lifecycleOwner) { isEuroSelected ->
+                    val convertedPrice = sharedPropertyViewModel.convertPropertyPrice(get.property, isEuroSelected)
+                    binding.propertyValue.text = when (convertedPrice) {
+                        is Int -> {
+                            if (isEuroSelected) {
+                                "$convertedPrice€"
+                            } else {
+                                "$$convertedPrice"
+                            }
+                        }
+                        else -> "$${get.property.price}" // Handle the case when price or conversion is null
+                    }
+                }
+            }
 
             // Set the image to the view
             setImageInRecyclerView(get.property)

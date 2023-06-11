@@ -19,6 +19,7 @@ import com.openclassrooms.realestatemanager.ui.MainApplication
 import com.openclassrooms.realestatemanager.ui.property.PropertyInfoFragment
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import kotlinx.coroutines.launch
 
 /**
@@ -29,6 +30,8 @@ class PropertyListFragment : Fragment() {
     private lateinit var adapter: PropertyListAdapter
     private val propertyListViewModel: SharedPropertyViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
     private val sharedNavigationViewModel: SharedNavigationViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
+    private val sharedUtilsViewModel: SharedUtilsViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
+    private val sharedPropertyViewModel: SharedPropertyViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +40,7 @@ class PropertyListFragment : Fragment() {
     ): View? {
         binding = FragmentPropertyListBinding.inflate(inflater, container, false)
         // Configure the adapter
-        adapter = PropertyListAdapter(object : DiffUtil.ItemCallback<PropertyWithDetails>() {
+        adapter = PropertyListAdapter(viewLifecycleOwner,sharedPropertyViewModel, sharedUtilsViewModel ,object : DiffUtil.ItemCallback<PropertyWithDetails>() {
             override fun areItemsTheSame(oldItem: PropertyWithDetails, newItem: PropertyWithDetails): Boolean {
                 return oldItem.property.id == newItem.property.id
             }

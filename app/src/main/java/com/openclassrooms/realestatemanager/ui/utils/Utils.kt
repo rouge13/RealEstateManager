@@ -26,13 +26,13 @@ object Utils {
 //    }
 
     @JvmStatic
-    fun convertDollarsToEuros(dollars: Int, rateOfChange: Double): Int {
-        return (dollars * rateOfChange).roundToInt()
+    fun convertDollarsToEuros(dollars: Int): Int {
+        return (dollars * 0.93028).roundToInt()
     }
 
     @JvmStatic
-    fun convertEurosToDollars(euros: Int, rateOfChange: Double): Int {
-        return (euros * rateOfChange).roundToInt()
+    fun convertEurosToDollars(euros: Int): Int {
+        return (euros * 1.07473).roundToInt()
     }
 
     /**
