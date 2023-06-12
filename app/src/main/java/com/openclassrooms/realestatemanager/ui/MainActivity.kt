@@ -41,7 +41,6 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyVie
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.utils.Utils
 import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 /**
@@ -178,7 +177,7 @@ class MainActivity : AppCompatActivity() {
                     SettingsCurrencyDateAlertDialog(
                         context = this@MainActivity,
                         sharedUtilsViewModel = sharedUtilsViewModel
-                    ).show() // Show the dialog
+                    ).showSettings() // Show the dialog
                     drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
                 }
                 return true

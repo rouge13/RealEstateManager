@@ -160,6 +160,9 @@
     <string name="euros_selection">Euros</string>
     <string name="settings_utils_currency_value_hint">Currency Value</string>
     <string name="conversion_removed">Default value</string>
+    <string name="description">Description</string>
+    <string name="loan_amount_in_euro">Loan amount in euro :</string>
+    <string name="loan_amount_in_dollar">Loan amount in dollar :</string>
 
 
 </resources>

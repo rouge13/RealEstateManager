@@ -24,9 +24,9 @@ class SettingsCurrencyDateAlertDialog(
     private var alertDialog: AlertDialog? = null
     private lateinit var binding: DialogSettingsUtilsBinding
 
-    fun show() {
+    fun showSettings() {
         val builder = AlertDialog.Builder(context)
-        builder.setTitle(R.string.real_estate_loan_simulator)
+        builder.setTitle(R.string.settings)
         val inflater = LayoutInflater.from(context)
         binding = DialogSettingsUtilsBinding.inflate(inflater)
         builder.setView(binding.root)
@@ -36,7 +36,7 @@ class SettingsCurrencyDateAlertDialog(
         initMoneyRateSelected()
 
         builder.setPositiveButton("Save") { dialog, _ ->
-            setConvertMoney()
+            setConvertMoneyValidate()
             setSimpleDateFormat()
             dialog.dismiss()
         }
@@ -90,11 +90,18 @@ class SettingsCurrencyDateAlertDialog(
 
     private fun setConvertMoney() {
         binding.radioButtonDollars.setOnClickListener {
-            sharedUtilsViewModel.setActiveSelectionMoneyRate(false)
+            binding.radioButtonEuros.isSelected = false
+            binding.radioButtonDollars.isSelected = true
         }
         binding.radioButtonEuros.setOnClickListener {
-            sharedUtilsViewModel.setActiveSelectionMoneyRate(true)
+            binding.radioButtonEuros.isSelected = true
+            binding.radioButtonDollars.isSelected = false
         }
+    }
+
+    private fun setConvertMoneyValidate() {
+        val isEurosSelected = binding.radioButtonEuros.isSelected
+        sharedUtilsViewModel.setActiveSelectionMoneyRate(isEurosSelected)
     }
 
     private fun setDateFormat() {

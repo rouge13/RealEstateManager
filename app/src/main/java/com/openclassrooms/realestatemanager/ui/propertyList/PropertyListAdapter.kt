@@ -43,7 +43,7 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
                             if (isEuroSelected) {
                                 "$convertedPrice€"
                             } else {
-                                "$$convertedPrice"
+                                "$${get.property.price}"
                             }
                         }
                         else -> "$${get.property.price}" // Handle the case when price or conversion is null

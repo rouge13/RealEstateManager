@@ -38,18 +38,19 @@ class PhotoFragment : Fragment() {
         photoEntity = args.getParcelable("photoEntity") ?: defaultPhoto
         soldOut = args.getBoolean("soldOut")
 
-        // Set the photo and description in the view
+        // Set the photo and description in the CustomImageView
         val photoDrawable = getPhotoDrawable(photoEntity.photoURI)
         if (photoDrawable != null) {
-            binding.imageInfoView.setImageDrawable(photoDrawable)
+            binding.customImageView.setImageDrawable(photoDrawable)
         } else {
-            binding.imageInfoView.setImageResource(DEFAULT_PHOTO_RESOURCE_ID)
+            binding.customImageView.setImageResource(DEFAULT_PHOTO_RESOURCE_ID)
         }
-        binding.roomType.text = photoEntity.description
 
-        // Hide the sold out banner if the property is not sold
-        binding.soldText.visibility = if (soldOut) View.VISIBLE else View.GONE
-        binding.imageInfoView.alpha = if (soldOut) 0.3f else 1f
+        // Set the description and soldOut separately in the CustomImageView
+        binding.customImageView.setDescriptionValue(photoEntity.description ?: "")
+        binding.customImageView.setSoldOut(soldOut)
+
+
     }
 
     private fun getPhotoDrawable(photo: String?): Drawable? {

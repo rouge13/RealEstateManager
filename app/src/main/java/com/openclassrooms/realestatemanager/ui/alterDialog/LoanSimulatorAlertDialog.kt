@@ -17,21 +17,29 @@ class LoanSimulatorAlertDialog(private val context: Context) {
     private var alertDialog: AlertDialog? = null
     private lateinit var binding: DialogRealEstateLoanSimulatorBinding
 
-    fun show(priceOfProperty : Int) {
+    fun showLoanSimulator(priceOfProperty : Int, isEuroOrDollarSelected: Boolean) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(R.string.real_estate_loan_simulator)
         val inflater = LayoutInflater.from(context)
         binding = DialogRealEstateLoanSimulatorBinding.inflate(inflater)
         builder.setView(binding.root)
+        // Add the cancel button
+        builder.setNegativeButton(R.string.cancel) { _, _ ->
+            alertDialog?.dismiss()
+        }
         alertDialog = builder.create()
         alertDialog?.show()
-        setupListeners(priceOfProperty)
+        setupListeners(priceOfProperty, isEuroOrDollarSelected)
     }
 
-    private fun setupListeners(priceOfProperty: Int) {
+    private fun setupListeners(priceOfProperty: Int, isEuroOrDollarSelected: Boolean) {
         val decimalFormat = DecimalFormat("#,###")
         binding.loanAmountValue.setText(priceOfProperty.toString())
-
+        if (isEuroOrDollarSelected) {
+            binding.loanAmountTextView.setText(R.string.loan_amount_in_euro) // Loan amount: €
+        } else {
+            binding.loanAmountTextView.setText(R.string.loan_amount_in_dollar) // Loan amount: $
+        }
         binding.calculateButton.setOnClickListener {
             val loanAmountText = binding.loanAmountValue.text.toString()
             val loanAmount = loanAmountText.toIntOrNull()
@@ -42,7 +50,11 @@ class LoanSimulatorAlertDialog(private val context: Context) {
             if (loanAmount != null && interestRate != null && loanDuration != null && personalContribution != null) {
                 val monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate, loanDuration, personalContribution)
                 val formattedMonthlyPayment = decimalFormat.format(monthlyPayment)
-                binding.monthlyPaymentTextView.text = "Monthly payment: $formattedMonthlyPayment"
+                if (isEuroOrDollarSelected) {
+                    binding.monthlyPaymentTextView.text = "Monthly payment: $formattedMonthlyPayment€" // Loan amount: €
+                } else {
+                    binding.monthlyPaymentTextView.text = "Monthly payment: $$formattedMonthlyPayment" // Loan amount: $
+                }
             } else {
                 Toast.makeText(context, "Make sure all values entered are valid!", Toast.LENGTH_SHORT).show()
             }
