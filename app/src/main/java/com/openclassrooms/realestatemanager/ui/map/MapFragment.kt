@@ -22,6 +22,7 @@ import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.LocationDetails
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.property.PropertyInfoFragment
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
@@ -46,7 +47,7 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        val mapFragment = if(!isDualPanel()) {childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?} else {childFragmentManager.findFragmentById(R.id.map_600sp) as SupportMapFragment?}
         mapFragment?.getMapAsync { map ->
             googleMap = map
             agentViewModel.getLocationLiveData().observe(viewLifecycleOwner) {
@@ -97,7 +98,9 @@ class MapFragment : Fragment() {
                 if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!){
                     findNavController().navigate(R.id.infoPropertyFragment)
                 } else {
-                    findNavController().popBackStack()
+                    childFragmentManager.beginTransaction()
+                        .replace(R.id.info_fragment_container, PropertyInfoFragment())
+                        .commit()
                 }
                 true
             } ?: false
@@ -119,5 +122,18 @@ class MapFragment : Fragment() {
             }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 10f))
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isDualPanel()) {
+            childFragmentManager.beginTransaction()
+                .replace(R.id.info_fragment_container, PropertyInfoFragment())
+                .commit()
+        }
+    }
+
+    private fun isDualPanel(): Boolean {
+        return resources.getBoolean(R.bool.isTwoPanel)
     }
 }

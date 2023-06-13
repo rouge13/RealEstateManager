@@ -31,9 +31,6 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
             // Set the data to the view
             binding.propertyType.text = get.property.typeOfHouse
             binding.propertySector.text = get.address?.boroughs?.takeIf { it.isNotBlank() }
-
-//            "${get.property.price}".also { binding.propertyValue.text = it }
-
             // Use coroutine scope to collect the value of getMoneyRateSelected
             CoroutineScope(Dispatchers.Main).launch {
                 sharedUtilsViewModel.getMoneyRateSelected.observe(lifecycleOwner) { isEuroSelected ->

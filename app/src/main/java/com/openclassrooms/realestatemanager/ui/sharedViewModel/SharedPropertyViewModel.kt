@@ -27,9 +27,9 @@ class SharedPropertyViewModel(
     private val photoRepository: PhotoRepository
 ) : ViewModel() {
     // Get and Set selected property
-    private val _selectedProperty = MutableLiveData<PropertyWithDetails>()
-    val getSelectedProperty: LiveData<PropertyWithDetails> get() = _selectedProperty
-    fun setSelectProperty(property: PropertyWithDetails) {
+    private val _selectedProperty = MutableLiveData<PropertyWithDetails?>()
+    val getSelectedProperty: MutableLiveData<PropertyWithDetails?> get() = _selectedProperty
+    fun setSelectProperty(property: PropertyWithDetails? = null) {
         _selectedProperty.value = property
     }
 

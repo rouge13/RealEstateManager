@@ -3,66 +3,52 @@ package com.openclassrooms.realestatemanager.ui.addAndModification
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.ContentValues
-import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
-import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
-import com.openclassrooms.realestatemanager.data.model.PhotoEntity
-import com.openclassrooms.realestatemanager.databinding.FragmentAddAndModifyPropertyBinding
-import com.openclassrooms.realestatemanager.ui.MainApplication
-import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
-import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
-import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.model.LatLng
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.converter.Converters
+import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
+import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.AddressEntity
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
+import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
+import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
+import com.openclassrooms.realestatemanager.databinding.FragmentAddAndModifyPropertyBinding
+import com.openclassrooms.realestatemanager.ui.MainApplication
+import com.openclassrooms.realestatemanager.ui.alertDialog.PhotoOptionsAndSaveAlertDialog
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
+import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.TimeZone
-import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
-import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
-import com.openclassrooms.realestatemanager.ui.utils.Utils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.IOException
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class AddAndModificationFragment : Fragment() {
-    private var currentDescription: String? = null
+    private lateinit var photoOptionsAndSaveAlertDialog: PhotoOptionsAndSaveAlertDialog
     private lateinit var adapter: AddAndModificationAdapter
     private lateinit var binding: FragmentAddAndModifyPropertyBinding
     private lateinit var notificationHelper: NotificationHelper
@@ -117,6 +103,16 @@ class AddAndModificationFragment : Fragment() {
                 initCancelButton()
             }
         }
+    }
+
+    private fun initPhotoOptionsAndSaveAlertDialog() {
+        photoOptionsAndSaveAlertDialog = PhotoOptionsAndSaveAlertDialog(
+            context = requireContext(),
+            fragment = this,
+            sharedPropertyViewModel = sharedPropertyViewModel,
+            binding = binding,
+            adapter = adapter
+        )
     }
 
     private fun initAllAutoCompleteTextView() {
@@ -224,44 +220,35 @@ class AddAndModificationFragment : Fragment() {
 
     private fun initZipCode(zipCode: List<String>) {
         val autoCompleteTextView = binding.addressZipCode
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, zipCode)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, zipCode)
         autoCompleteTextView.setAdapter(adapter)
         autoCompleteTextView.threshold = 1
     }
 
     private fun initCities(cities: List<String>) {
         val autoCompleteTextView = binding.addressCity
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, cities)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, cities)
         autoCompleteTextView.setAdapter(adapter)
         autoCompleteTextView.threshold = 1
     }
 
     private fun initBoroughs(boroughs: List<String>) {
         val autoCompleteTextView = binding.addressBoroughs
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, boroughs)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, boroughs)
         autoCompleteTextView.setAdapter(adapter)
         autoCompleteTextView.threshold = 1
     }
 
     private fun initTypesOfHouse(typesOfHouse: List<String>) {
         val autoCompleteTextView = binding.propertyType
-        val adapter =
-            ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                typesOfHouse
-            )
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, typesOfHouse)
         autoCompleteTextView.setAdapter(adapter)
         autoCompleteTextView.threshold = 1
     }
 
     private fun initAgentNames(agentsNames: List<String>) {
         val autoCompleteTextView = binding.agentName
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, agentsNames)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, agentsNames)
         autoCompleteTextView.setAdapter(adapter)
         autoCompleteTextView.threshold = 1
     }
@@ -293,6 +280,7 @@ class AddAndModificationFragment : Fragment() {
             lifecycleScope.launch {
                 sharedPropertyViewModel.deletePhotosWithNullPropertyId()
             }
+            sharedPropertyViewModel.setSelectProperty(null)
             findNavController().popBackStack()
         }
     }
@@ -470,8 +458,7 @@ class AddAndModificationFragment : Fragment() {
     }
 
     private suspend fun updatePhotosWithPropertyId(propertyId: Int?) {
-        val photosWithNullPropertyId =
-            sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(null)
+        val photosWithNullPropertyId = sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(null)
         photosWithNullPropertyId?.let { photos ->
             var isPrimaryPhotoSet = false
             var primaryPhotoUri: String? = null
@@ -483,8 +470,7 @@ class AddAndModificationFragment : Fragment() {
                 }
             }
 
-            val photosWithPropertyId =
-                sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(propertyId)
+            val photosWithPropertyId = sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(propertyId)
             photosWithPropertyId?.let { photosWithPropertyId ->
                 for (photo in photosWithPropertyId) {
                     if (photo.isPrimaryPhoto && photo.propertyId == propertyId) {
@@ -498,15 +484,10 @@ class AddAndModificationFragment : Fragment() {
             }
 
             // Update the primary photo URI for the property
-            if (isPrimaryPhotoSet && primaryPhotoUri != null) {
-                sharedPropertyViewModel.updatePrimaryPhoto(propertyId, primaryPhotoUri!!)
+            if (isPrimaryPhotoSet && primaryPhotoUri != null) { sharedPropertyViewModel.updatePrimaryPhoto(propertyId, primaryPhotoUri!!)
             } else {
                 // Display a message to ask the agent to select a primary photo
-                Toast.makeText(
-                    requireContext(),
-                    "Please select a primary photo",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(requireContext(), "Please select a primary photo", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -659,7 +640,8 @@ class AddAndModificationFragment : Fragment() {
         binding.addPhotos.setOnClickListener {
             // Open gallery or camera to select or capture photos
             // After obtaining the selected or captured photo, add it to the adapter
-            showPhotoOptionsDialog()
+            photoOptionsAndSaveAlertDialog.showPhotoOptionsDialog()
+
         }
 
         // Convert the List<PhotoEntity> to List<Drawable?>
@@ -669,6 +651,8 @@ class AddAndModificationFragment : Fragment() {
 
         // Update the adapter with the drawableList
         adapter.updatePhotos(drawableList)
+
+        initPhotoOptionsAndSaveAlertDialog()
     }
 
     private fun updatePrimaryPhotoIcons(selectedPosition: Int) {
@@ -678,14 +662,12 @@ class AddAndModificationFragment : Fragment() {
     private suspend fun setPrimaryPhoto(photoList: MutableList<PhotoEntity>, position: Int) {
         if (position >= 0 && position < photoList.size) {
             val photoEntity = photoList[position]
-
             // Remove isPrimaryPhoto flag from other photos
             for (photo in photoList) {
                 if (photo != photoEntity) {
                     sharedPropertyViewModel.updateIsPrimaryPhoto(false, photo.id ?: 0)
                 }
             }
-
             // Update the selected photo as the primary photo
             sharedPropertyViewModel.updateIsPrimaryPhoto(true, photoEntity.id ?: 0)
 
@@ -717,95 +699,18 @@ class AddAndModificationFragment : Fragment() {
 
     }
 
-    private suspend fun insertPhoto(photoEntity: PhotoEntity): Long? {
-        return sharedPropertyViewModel.insertPhoto(photoEntity)
-    }
-
-    private fun showPhotoOptionsDialog() {
-        val descriptionEditText = EditText(requireContext())
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-            .setTitle("Add Photo description")
-            .setView(descriptionEditText)
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
-        val descriptionDialog = alertDialogBuilder.create()
-        descriptionDialog.setOnShowListener {
-            val positiveButton = descriptionDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-            positiveButton.isEnabled = false
-            descriptionEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun onTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    before: Int,
-                    count: Int
-                ) {
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                    positiveButton.isEnabled = !s.isNullOrBlank()
-                }
-            })
-        }
-
-        descriptionDialog.setButton(
-            DialogInterface.BUTTON_POSITIVE, "Save"
-        ) { dialog, _ ->
-            val description = descriptionEditText.text.toString()
-            if (!description.isBlank()) {
-                savePhotoWithDescription(description)
-            }
-            dialog.dismiss()
-        }
-
-        descriptionDialog.show()
-    }
-
-    private fun savePhotoWithDescription(description: String) {
-        val options = arrayOf("Take Photo", "Choose from Gallery")
-        currentDescription = description
-        AlertDialog.Builder(requireContext())
-            .setTitle("Add Photo")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> takePhotoFromCamera()
-                    1 -> choosePhotoFromGallery()
-                }
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
-    }
-
-    private fun takePhotoFromCamera() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-    }
-
-    private fun choosePhotoFromGallery() {
-        val galleryIntent =
-            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, REQUEST_IMAGE_PICK)
-    }
 
     private fun initAllEditText(propertyWithDetails: PropertyWithDetails) {
         sharedUtilsViewModel.getMoneyRateSelected.observe(viewLifecycleOwner) { isEuroSelected ->
             if (isEuroSelected == true) {
+                binding.propertyPriceText.setText(R.string.price_in_euros)
                 binding.propertyPrice.setText(
                     propertyWithDetails.property.price?.let { it1 ->
                         Utils.convertDollarsToEuros(it1).toString()
                     }
                 )
             } else {
+                binding.propertyPriceText.setText(R.string.price_in_dollars)
                 propertyWithDetails.property.price?.let { binding.propertyPrice.setText(it.toString()) }
             }
         }
@@ -883,113 +788,8 @@ class AddAndModificationFragment : Fragment() {
                 return false
             }
         }
-
         // If all inputs are filled, return true
         return true
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_IMAGE_CAPTURE -> {
-                    // Photo captured from the camera
-                    initImageCapture(data)
-                }
-
-                REQUEST_IMAGE_PICK -> {
-                    // Photo selected from the gallery
-                    initImagePick(data)
-                }
-            }
-        }
-    }
-
-    private fun initImageCapture(data: Intent?) {
-        val description = currentDescription ?: ""
-        if (description.isNotBlank()) {
-            val photoBitmap = data?.extras?.get("data") as? Bitmap
-            photoBitmap?.let { bitmap ->
-                val uriString = saveImageToGallery(bitmap.toDrawable(resources))
-                uriString?.let { saveUriToDatabase(it, description) }
-            }
-            currentDescription = null
-        }
-    }
-
-    private fun initImagePick(data: Intent?) {
-        val description = currentDescription ?: ""
-        if (description.isNotBlank()) {
-            val uri = data?.data
-            uri?.let { it ->
-                val drawable = Drawable.createFromStream(
-                    requireContext().contentResolver.openInputStream(it),
-                    it.toString()
-                )
-                val uriString = drawable?.let { it1 -> saveImageToGallery(it1) }
-                uriString?.let { saveUriToDatabase(it, description) }
-            }
-            currentDescription = null
-        }
-    }
-
-    private fun saveImageToGallery(drawable: Drawable): String? {
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, "image_${System.currentTimeMillis()}.jpg")
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-        }
-
-        val resolver = requireContext().contentResolver
-        var imageUri: String? = null
-
-        try {
-            resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-                ?.let { uri ->
-                    resolver.openOutputStream(uri)?.use { outputStream ->
-                        drawable.toBitmap()
-                            .compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                        imageUri = uri.toString()
-                    }
-                }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        return imageUri
-    }
-
-    private fun saveUriToDatabase(uri: String, description: String) {
-        lifecycleScope.launch {
-            val drawable = getDrawableFromUri(uri)
-            val photoEntity = PhotoEntity(photoURI = uri, description = description)
-            val insertedId = insertPhoto(photoEntity)?.toInt()
-            if (insertedId != null) {
-                photoEntity.id = insertedId
-                // Update the adapter with the new photo entity and drawable
-                drawable?.let {
-                    adapter.addPhoto(photoEntity, it)
-                }
-                // Scroll to the newly added photo
-                binding.fragmentPropertySelectedPhotosRecyclerView.smoothScrollToPosition(
-                    adapter.itemCount - 1
-                )
-            } else {
-                // Handle the case where photo insertion fails
-                Toast.makeText(requireContext(), "Failed to insert photo", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-    }
-
-    private suspend fun getDrawableFromUri(uri: String): Drawable? {
-        return withContext(Dispatchers.Main) {
-            val context = requireContext()
-            val inputStream = context.contentResolver.openInputStream(Uri.parse(uri))
-            inputStream?.use {
-                val bitmap = BitmapFactory.decodeStream(it)
-                BitmapDrawable(context.resources, bitmap)
-            }
-        }
     }
 
     private suspend fun isPrimaryPhotoSelected(propertyId: Int?): Boolean {
@@ -1001,8 +801,29 @@ class AddAndModificationFragment : Fragment() {
         return photos?.any { it.isPrimaryPhoto } ?: false
     }
 
-    companion object {
-        private const val REQUEST_IMAGE_CAPTURE = 1
-        private const val REQUEST_IMAGE_PICK = 2
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_IMAGE_CAPTURE -> {
+                    // Photo captured from the camera
+                    photoOptionsAndSaveAlertDialog.initImageCapture(data)
+                }
+                REQUEST_IMAGE_PICK -> {
+                    // Photo selected from the gallery
+                    photoOptionsAndSaveAlertDialog.initImagePick(data)
+                }
+            }
+        }
     }
+
+    private fun isDualPanel(): Boolean {
+        return activity?.resources?.getBoolean(R.bool.isTwoPanel) == true
+    }
+
+    companion object {
+        const val REQUEST_IMAGE_CAPTURE = 1
+        const val REQUEST_IMAGE_PICK = 2
+    }
+
 }

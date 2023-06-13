@@ -165,6 +165,8 @@
     <string name="loan_amount_in_dollar">Loan amount in dollar :</string>
     <string name="price_start_euro">Price in € between</string>
     <string name="price_start_dollar">Price in $ between</string>
+    <string name="price_in_euros">Price in euros</string>
+    <string name="price_in_dollars">Price in dollars</string>
 
 
 </resources>

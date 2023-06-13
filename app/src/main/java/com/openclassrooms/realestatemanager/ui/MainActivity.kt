@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -34,7 +35,7 @@ import com.openclassrooms.realestatemanager.data.di.ViewModelFactory
 import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.databinding.ActivityMainNavHeaderBinding
-import com.openclassrooms.realestatemanager.ui.alterDialog.SettingsCurrencyDateAlertDialog
+import com.openclassrooms.realestatemanager.ui.alertDialog.SettingsCurrencyDateAlertDialog
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
@@ -80,9 +81,26 @@ class MainActivity : AppCompatActivity() {
         // Set up the NavController and connect it to the NavigationView
         setupNavigationController()
         checkHasInternet()
+        checkHasPermissionToSendNotifications()
+        checkIfWriteExternalStoragePermissionIsGranted()
         initAddOnClickListeners()
         initModifyOnClickListeners()
         initSearchOnClickListeners()
+    }
+
+    private fun checkIfWriteExternalStoragePermissionIsGranted() {
+        // Request the WRITE_EXTERNAL_STORAGE permission if not granted
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_CODE
+            )
+        }
     }
 
     private fun initModifyOnClickListeners() {
@@ -217,7 +235,6 @@ class MainActivity : AppCompatActivity() {
                 alert.show()
             } else {
                 agentLocationUpdates()
-                checkHasPermissionToSendNotifications()
             }
             setupBottomNavigation()
             activityMainBinding.viewPager.currentItem = 0 // Switch to the PropertyListFragment

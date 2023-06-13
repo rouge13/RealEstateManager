@@ -1,16 +1,13 @@
-package com.openclassrooms.realestatemanager.ui.alterDialog
+package com.openclassrooms.realestatemanager.ui.alertDialog
 
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.DialogSettingsUtilsBinding
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.utils.Utils
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 /**

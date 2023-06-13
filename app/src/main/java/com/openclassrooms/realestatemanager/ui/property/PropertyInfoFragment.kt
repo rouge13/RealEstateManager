@@ -22,7 +22,7 @@ import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
 import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.databinding.FragmentInfoPropertyBinding
 import com.openclassrooms.realestatemanager.ui.MainApplication
-import com.openclassrooms.realestatemanager.ui.alterDialog.LoanSimulatorAlertDialog
+import com.openclassrooms.realestatemanager.ui.alertDialog.LoanSimulatorAlertDialog
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
