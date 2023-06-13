@@ -5,17 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
+import com.openclassrooms.realestatemanager.data.model.AddressEntity
+import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
+import com.openclassrooms.realestatemanager.data.model.SearchCriteria
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
-import com.openclassrooms.realestatemanager.data.model.AddressEntity
-import com.openclassrooms.realestatemanager.data.model.PhotoEntity
-import com.openclassrooms.realestatemanager.data.model.SearchCriteria
 import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
 
@@ -143,26 +142,22 @@ class SharedPropertyViewModel(
     }
 
     // Convert property price
-
-    fun convertPropertyPrice(property: PropertyEntity, isEuroSelected: Boolean? = false): Int? {
+    fun convertPropertyPrice(price: Int, isEuroSelected: Boolean? = false): Int? {
         val convertedPrice = if (isEuroSelected == true) {
-            property.price?.let {
-                convertDollarsToEuros(it)
-            }
+            convertDollarsToEuros(price)
         } else {
-            property.price?.let {
-                convertEurosToDollars(it)
-            }
+            convertEurosToDollars(price)
         }
         return convertedPrice
     }
 
-
+    // Convert to Euros
     private fun convertDollarsToEuros(dollars: Int): Int {
         // Perform the conversion logic here
         return Utils.convertDollarsToEuros(dollars)
     }
 
+    // Convert to Dollars
     private fun convertEurosToDollars(euros: Int): Int {
         // Perform the conversion logic here
         return Utils.convertEurosToDollars(euros)

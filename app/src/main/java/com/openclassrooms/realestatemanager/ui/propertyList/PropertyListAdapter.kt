@@ -37,7 +37,10 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
             // Use coroutine scope to collect the value of getMoneyRateSelected
             CoroutineScope(Dispatchers.Main).launch {
                 sharedUtilsViewModel.getMoneyRateSelected.observe(lifecycleOwner) { isEuroSelected ->
-                    val convertedPrice = sharedPropertyViewModel.convertPropertyPrice(get.property, isEuroSelected)
+                    val convertedPrice = get.property.price?.let {
+                        sharedPropertyViewModel.convertPropertyPrice(
+                            it, isEuroSelected)
+                    }
                     binding.propertyValue.text = when (convertedPrice) {
                         is Int -> {
                             if (isEuroSelected) {

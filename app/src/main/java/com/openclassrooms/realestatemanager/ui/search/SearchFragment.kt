@@ -189,23 +189,50 @@ class SearchFragment : Fragment() {
     }
 
     private fun endPriceValue() {
-        binding.propertyPriceEndValue.onFocusChangeListener =
-            View.OnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus && binding.propertyPriceEndValue.text!!.isNotEmpty()) {
-                    searchCriteria.selectedMaxPriceForQuery =
-                        binding.propertyPriceEndValue.text.toString().toInt()
+        sharedUtilsViewModel.getMoneyRateSelected.observe(viewLifecycleOwner) { isEuroSelected ->
+            val convertToDollar: Boolean = !isEuroSelected
+            binding.propertyPriceEndValue.onFocusChangeListener =
+                View.OnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus && binding.propertyPriceEndValue.text!!.isNotEmpty()) {
+                        if (isEuroSelected) {
+                            searchCriteria.selectedMaxPriceForQuery =
+                                sharedPropertyViewModel.convertPropertyPrice(
+                                    binding.propertyPriceEndValue.text.toString().toInt(),
+                                    convertToDollar
+                                )
+                        } else {
+                            searchCriteria.selectedMaxPriceForQuery =
+                                binding.propertyPriceEndValue.text.toString().toInt()
+                        }
+                    }
                 }
-            }
+        }
     }
 
     private fun startPriceValue() {
-        binding.propertyPriceStartValue.onFocusChangeListener =
-            View.OnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus && binding.propertyPriceStartValue.text!!.isNotEmpty()) {
-                    searchCriteria.selectedMinPriceForQuery =
-                        binding.propertyPriceStartValue.text.toString().toInt()
-                }
+        sharedUtilsViewModel.getMoneyRateSelected.observe(viewLifecycleOwner) { isEuroSelected ->
+            val convertToDollar: Boolean = !isEuroSelected
+            if (isEuroSelected) {
+                binding.propertyPriceStartText.setText(R.string.price_start_euro)
+            } else {
+                binding.propertyPriceStartText.setText(R.string.price_start_dollar)
             }
+            binding.propertyPriceStartValue.onFocusChangeListener =
+                View.OnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus && binding.propertyPriceStartValue.text!!.isNotEmpty()) {
+                        if (isEuroSelected) {
+                            searchCriteria.selectedMinPriceForQuery =
+                                sharedPropertyViewModel.convertPropertyPrice(
+                                    binding.propertyPriceStartValue.text.toString().toInt(),
+                                    convertToDollar
+                                )
+                        } else {
+                            searchCriteria.selectedMinPriceForQuery =
+                                binding.propertyPriceStartValue.text.toString().toInt()
+                        }
+                    }
+                }
+        }
     }
 
     private fun initAllSwitches() {
@@ -273,7 +300,7 @@ class SearchFragment : Fragment() {
 
     private fun initAgentsNames() {
         sharedAgentViewModel.allAgents.observe(viewLifecycleOwner) { agents ->
-            val agentsNames = agents.map { it.name}.distinct()
+            val agentsNames = agents.map { it.name }.distinct()
             initAgentsNames(agentsNames)
         }
     }
@@ -296,9 +323,10 @@ class SearchFragment : Fragment() {
     }
 
     private fun initTypeOfHouseBoroughsAndCities() {
-        viewLifecycleOwner.lifecycleScope.launch{
+        viewLifecycleOwner.lifecycleScope.launch {
             sharedPropertyViewModel.getPropertiesWithDetails.collect { propertiesWithDetails ->
-                val typesOfHouse = propertiesWithDetails.mapNotNull { it.property.typeOfHouse }.distinct()
+                val typesOfHouse =
+                    propertiesWithDetails.mapNotNull { it.property.typeOfHouse }.distinct()
                 val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
                 val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
                 initTypesOfHouse(typesOfHouse)
@@ -367,7 +395,7 @@ class SearchFragment : Fragment() {
         }
         binding.searchProperty.setOnClickListener {
             sharedPropertyViewModel.setSearchCriteria(searchCriteria)
-            if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!){
+            if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!) {
 //                val action = SearchFragmentDirections.actionSearchFragmentToPropertyListFragment()
                 binding.root.findNavController().navigate(R.id.propertyListFragment)
             } else {
@@ -397,7 +425,7 @@ class SearchFragment : Fragment() {
                     // When a date is selected, update the EditText with the selected date
                     val selectedMonth = month + 1 // Add 1 to the month value
                     val selectedDate = "$selectedMonth/$dayOfMonth/$year"
-                    sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner){
+                    sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) {
                         binding.propertyDateEndText.text = it.format(selectedDate)
                     }
                 },
@@ -430,7 +458,7 @@ class SearchFragment : Fragment() {
                     val selectedMonth = month + 1 // Add 1 to the month value
                     val selectedDate = "$selectedMonth/$dayOfMonth/$year"
                     // When a date is selected, update the EditText with the selected date
-                    sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner){
+                    sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) {
                         binding.propertyDateStartText.text = it.format(selectedDate)
                     }
                 },

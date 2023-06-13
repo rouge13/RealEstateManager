@@ -53,6 +53,7 @@ import java.util.Calendar
 import java.util.TimeZone
 import com.openclassrooms.realestatemanager.data.notification.NotificationHelper
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
+import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -135,7 +136,8 @@ class AddAndModificationFragment : Fragment() {
             propertyWithDetails?.let {
                 sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
                     dateFormat?.let {
-                        binding.dateSale.text = it.format(propertyWithDetails.property.dateStartSelling)
+                        binding.dateSale.text =
+                            it.format(propertyWithDetails.property.dateStartSelling)
                         initDate(propertyWithDetails, it)
                     }
                 }
@@ -167,7 +169,11 @@ class AddAndModificationFragment : Fragment() {
                             continuation.resume(generatedId?.toInt()) {}
                         }
                     } else {
-                        Toast.makeText(requireContext(), getString(R.string.agent_name_empty), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.agent_name_empty),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         continuation.resume(null) {}
                     }
                 }
@@ -336,9 +342,14 @@ class AddAndModificationFragment : Fragment() {
                         updatePropertyEntity(propertyWithDetails)
                         updateAddressEntity(propertyWithDetails)
                         findNavController().navigate(R.id.propertyListFragment)
-                        Toast.makeText(requireContext(), "Property updated.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Property updated.", Toast.LENGTH_SHORT)
+                            .show()
                     } else {
-                        Toast.makeText(requireContext(), "Please select a primary photo.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Please select a primary photo.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -358,7 +369,11 @@ class AddAndModificationFragment : Fragment() {
                     addressEntity?.longitude = location.longitude
                     addressEntity?.let { sharedPropertyViewModel.updateAddress(it) }
                 } else {
-                    Toast.makeText(requireContext(), "Address not found, please check the address if correct !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Address not found, please check the address if correct !",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
                 addressEntity?.let { sharedPropertyViewModel.updateAddress(it) }
@@ -379,7 +394,11 @@ class AddAndModificationFragment : Fragment() {
                     addressEntity.longitude = location.longitude
                     addressEntity.let { sharedPropertyViewModel.insertAddress(it) }
                 } else {
-                    Toast.makeText(requireContext(), "Address not found, please check the address if correct !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Address not found, please check the address if correct !",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
                 addressEntity.let { sharedPropertyViewModel.insertAddress(it) }
@@ -405,7 +424,8 @@ class AddAndModificationFragment : Fragment() {
                 sharedPropertyViewModel.updateProperty(propertyEntity)
             } else {
                 // Agent creation was canceled, perform cancel actions here
-                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
+                    .show()
                 // Cancel any other actions related to property update
                 return
             }
@@ -438,7 +458,8 @@ class AddAndModificationFragment : Fragment() {
                     insertAddressEntity(insertedPropertyId)
                 } else {
                     // Agent creation was canceled, perform cancel actions here
-                    Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
+                        .show()
                     // Cancel any other actions related to property update
                     return null
                 }
@@ -496,7 +517,8 @@ class AddAndModificationFragment : Fragment() {
         id = propertyWithDetails.property.id
         if (binding.propertySwitchSold.isChecked) {
             sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
-                dateSold = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+                dateSold =
+                    converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
             }
 
         } else if (!binding.propertySwitchSold.isChecked && propertyWithDetails.property.dateSold != null) {
@@ -509,13 +531,22 @@ class AddAndModificationFragment : Fragment() {
     private fun PropertyEntity.propertyToInsert() {
         id = null
         sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
-            dateStartSelling = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+            dateStartSelling =
+                converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
         }
         primaryPropertyElement()
     }
 
     private fun PropertyEntity.primaryPropertyElement() {
-        price = binding.propertyPrice.text.toString().toInt()
+        sharedUtilsViewModel.getMoneyRateSelected.observe(viewLifecycleOwner) { isEuroSelected ->
+            price = if (isEuroSelected) {
+                sharedPropertyViewModel.convertPropertyPrice(
+                    binding.propertyPrice.text.toString().toInt(), !isEuroSelected
+                )
+            } else {
+                binding.propertyPrice.text.toString().toInt()
+            }
+        }
         squareFeet = binding.propertySquareFeet.text.toString().toInt()
         roomsCount = binding.propertyRoomsCount.text.toString().toInt()
         bedroomsCount = binding.propertyBedroomsCount.text.toString().toInt()
@@ -528,6 +559,7 @@ class AddAndModificationFragment : Fragment() {
         restaurantProximity = binding.propertySwitchRestaurant.isChecked
         publicTransportProximity = binding.propertySwitchPublicTransport.isChecked
         lastUpdate = System.currentTimeMillis()
+
     }
 
     private fun AddressEntity.addressToUpdate(
@@ -554,7 +586,10 @@ class AddAndModificationFragment : Fragment() {
         addressString = "$streetNumber $streetName $city $zipCode $country"
     }
 
-    private fun initDate(propertyWithDetails: PropertyWithDetails, dateFormat: SimpleDateFormat) {
+    private fun initDate(
+        propertyWithDetails: PropertyWithDetails,
+        dateFormat: SimpleDateFormat
+    ) {
         if (propertyWithDetails.property.isSold == true) {
             val dateSold = propertyWithDetails.property.dateSold?.let { Date(it) }
             if (propertyWithDetails.property.dateSold == null) {
@@ -611,7 +646,11 @@ class AddAndModificationFragment : Fragment() {
                 // Set primary photo
                 lifecycleScope.launch {
                     setPrimaryPhoto(mutablePhotoList, position)
-                    Toast.makeText(requireContext(), R.string.primary_photo_set, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.primary_photo_set,
+                        Toast.LENGTH_SHORT
+                    ).show()
                     updatePrimaryPhotoIcons(position)
                 }
             }
@@ -652,7 +691,11 @@ class AddAndModificationFragment : Fragment() {
 
             // Update the adapter with the updated list
             val drawableList = photoList.mapIndexed { index, photoEntity ->
-                adapter.getDrawableFromPhotoEntity(requireContext(), photoEntity, index == position)
+                adapter.getDrawableFromPhotoEntity(
+                    requireContext(),
+                    photoEntity,
+                    index == position
+                )
             }
             adapter.updatePhotos(drawableList)
         } else {
@@ -699,7 +742,14 @@ class AddAndModificationFragment : Fragment() {
                 ) {
                 }
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                }
+
                 override fun afterTextChanged(s: Editable?) {
                     positiveButton.isEnabled = !s.isNullOrBlank()
                 }
@@ -742,25 +792,42 @@ class AddAndModificationFragment : Fragment() {
     }
 
     private fun choosePhotoFromGallery() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val galleryIntent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, REQUEST_IMAGE_PICK)
     }
 
     private fun initAllEditText(propertyWithDetails: PropertyWithDetails) {
-        propertyWithDetails.property.price?.let { binding.propertyPrice.setText(it.toString()) }
+        sharedUtilsViewModel.getMoneyRateSelected.observe(viewLifecycleOwner) { isEuroSelected ->
+            if (isEuroSelected == true) {
+                binding.propertyPrice.setText(
+                    propertyWithDetails.property.price?.let { it1 ->
+                        Utils.convertDollarsToEuros(it1).toString()
+                    }
+                )
+            } else {
+                propertyWithDetails.property.price?.let { binding.propertyPrice.setText(it.toString()) }
+            }
+        }
+        propertyWithDetails.property.agentId?.let {
+            sharedAgentViewModel.getAgentData(it).observe(viewLifecycleOwner) { agent ->
+                agent?.let { binding.agentName.setText(agent.name) }
+            }
+        }
+        initAllOtherPropertyEditText(propertyWithDetails)
+        initAllAddressEditText(propertyWithDetails)
+    }
+
+    private fun initAllOtherPropertyEditText(propertyWithDetails: PropertyWithDetails) {
         propertyWithDetails.property.squareFeet?.let { binding.propertySquareFeet.setText(it.toString()) }
         propertyWithDetails.property.roomsCount?.let { binding.propertyRoomsCount.setText(it.toString()) }
         propertyWithDetails.property.bedroomsCount?.let { binding.propertyBedroomsCount.setText(it.toString()) }
         propertyWithDetails.property.bathroomsCount?.let { binding.propertyBathroomsCount.setText(it.toString()) }
         binding.propertyDescription.setText(propertyWithDetails.property.description)
-        propertyWithDetails.property.agentId?.let {
-            sharedAgentViewModel.getAgentData(it).observe(viewLifecycleOwner) { agent ->
-                agent?.let {
-                    binding.agentName.setText(agent.name)
-                }
-            }
-        }
         propertyWithDetails.property.typeOfHouse.let { binding.propertyType.setText(it) }
+    }
+
+    private fun initAllAddressEditText(propertyWithDetails: PropertyWithDetails) {
         propertyWithDetails.address?.streetNumber.let { binding.addressStreetNumber.setText(it) }
         propertyWithDetails.address?.streetName.let { binding.addressStreetName.setText(it) }
         propertyWithDetails.address?.city.let { binding.addressCity.setText(it) }
@@ -784,99 +851,43 @@ class AddAndModificationFragment : Fragment() {
     }
 
     private fun requiredAllValidateInputsOk(): Boolean {
-        return isAllInputsAdded(
-            typeOfHouse = binding.propertyType.text.toString(),
-            price = binding.propertyPrice.text.toString(),
-            squareFeet = binding.propertySquareFeet.text.toString(),
-            roomsCount = binding.propertyRoomsCount.text.toString(),
-            description = binding.propertyDescription.text.toString(),
-            streetNumber = binding.addressStreetNumber.text.toString(),
-            streetName = binding.addressStreetName.text.toString(),
-            city = binding.addressCity.text.toString(),
-            zipCode = binding.addressZipCode.text.toString(),
-            country = binding.addressCountry.text.toString(),
-            agentName = binding.agentName.text.toString(),
-            date = binding.propertyDateText.text.toString(),
-            dateSellingIfSold = binding.dateSale.text.toString()
+        // Define a list of input field names and corresponding input values
+        val inputsRequiredToValidate = listOf(
+            "type of house" to binding.propertyType.text.toString(),
+            "price" to binding.propertyPrice.text.toString(),
+            "square feet" to binding.propertySquareFeet.text.toString(),
+            "number of rooms" to binding.propertyRoomsCount.text.toString(),
+            "description" to binding.propertyDescription.text.toString(),
+            "street number" to binding.addressStreetNumber.text.toString(),
+            "street name" to binding.addressStreetName.text.toString(),
+            "city" to binding.addressCity.text.toString(),
+            "zip code" to binding.addressZipCode.text.toString(),
+            "country" to binding.addressCountry.text.toString(),
+            "agent name" to binding.agentName.text.toString(),
+            "sold date" to binding.propertyDateText.text.toString(),
+            "date selling if sold" to binding.dateSale.text.toString()
         )
-    }
 
-    private fun isAllInputsAdded(
-        typeOfHouse: String,
-        price: String,
-        squareFeet: String,
-        roomsCount: String,
-        description: String,
-        streetNumber: String,
-        streetName: String,
-        city: String,
-        zipCode: String,
-        country: String,
-        agentName: String,
-        date: String,
-        dateSellingIfSold: String
-    ): Boolean {
-        if (typeOfHouse.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the type of house", Toast.LENGTH_SHORT)
-                .show(); return false
+        // Iterate over the list of inputs
+        for (input in inputsRequiredToValidate) {
+            // Check if the input value is blank
+            if (input.second.isBlank()) {
+                // Display a toast message indicating the missing input field
+                Toast.makeText(
+                    requireContext(),
+                    "Please enter the ${input.first}",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Return false as at least one input is missing
+                return false
+            }
         }
-        if (price.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the price", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (squareFeet.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the square feet", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (roomsCount.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the number of rooms", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (description.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the description", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (streetNumber.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the street number", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (streetName.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the street name", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (city.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the city", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (zipCode.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the zip code", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (country.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the country", Toast.LENGTH_SHORT)
-                .show(); return false
-        }
-        if (date.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the sold date", Toast.LENGTH_SHORT)
-                .show()
-            return false
-        }
-        if (agentName.isBlank()) {
-            Toast.makeText(requireContext(), "Please enter the agent name", Toast.LENGTH_SHORT)
-                .show()
-            return false
-        }
-        if (dateSellingIfSold.isBlank()) {
-            Toast.makeText(
-                requireContext(),
-                "Please enter the date selling if sold",
-                Toast.LENGTH_SHORT
-            )
-                .show()
-            return false
-        }
+
+        // If all inputs are filled, return true
         return true
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
@@ -935,7 +946,8 @@ class AddAndModificationFragment : Fragment() {
             resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
                 ?.let { uri ->
                     resolver.openOutputStream(uri)?.use { outputStream ->
-                        drawable.toBitmap().compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                        drawable.toBitmap()
+                            .compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                         imageUri = uri.toString()
                     }
                 }
@@ -958,10 +970,13 @@ class AddAndModificationFragment : Fragment() {
                     adapter.addPhoto(photoEntity, it)
                 }
                 // Scroll to the newly added photo
-                binding.fragmentPropertySelectedPhotosRecyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+                binding.fragmentPropertySelectedPhotosRecyclerView.smoothScrollToPosition(
+                    adapter.itemCount - 1
+                )
             } else {
                 // Handle the case where photo insertion fails
-                Toast.makeText(requireContext(), "Failed to insert photo", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to insert photo", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }

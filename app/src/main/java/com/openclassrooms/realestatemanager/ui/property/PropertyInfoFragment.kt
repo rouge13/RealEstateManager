@@ -297,10 +297,12 @@ class PropertyInfoFragment : Fragment() {
                 // Check if the price is in euro or dollar and then return the correct price
 
                 if (isEuroSelected) {
-                    val convertedPrice = sharedPropertyViewModel.convertPropertyPrice(
-                        propertyWithDetails.property,
-                        isEuroSelected
-                    )
+                    val convertedPrice = propertyWithDetails.property.price?.let { it1 ->
+                        sharedPropertyViewModel.convertPropertyPrice(
+                            it1,
+                            isEuroSelected
+                        )
+                    }
                     if (convertedPrice != null) {
                         loanSimulatorAlertDialog.showLoanSimulator(
                             convertedPrice, isEuroSelected

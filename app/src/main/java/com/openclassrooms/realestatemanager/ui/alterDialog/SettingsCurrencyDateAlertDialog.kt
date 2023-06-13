@@ -63,7 +63,7 @@ class SettingsCurrencyDateAlertDialog(
     }
 
     private fun setSimpleDateFormat() {
-        val dateFormatSelected = if (binding.usDateFormatButton.isSelected) {
+        val dateFormatSelected = if (binding.usDateFormatButton.isChecked) {
             Utils.todayDateUsaFormat
         } else {
             Utils.todayDateFranceFormat
@@ -100,7 +100,7 @@ class SettingsCurrencyDateAlertDialog(
     }
 
     private fun setConvertMoneyValidate() {
-        val isEurosSelected = binding.radioButtonEuros.isSelected
+        val isEurosSelected = binding.radioButtonEuros.isChecked
         sharedUtilsViewModel.setActiveSelectionMoneyRate(isEurosSelected)
     }
 
