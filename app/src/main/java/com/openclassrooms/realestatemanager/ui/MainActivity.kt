@@ -89,24 +89,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkIfWriteExternalStoragePermissionIsGranted() {
-        // Request the WRITE_EXTERNAL_STORAGE permission if not granted
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                PERMISSION_REQUEST_CODE
-            )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            // Check if the current Android version is Marshmallow (6.0) or higher, but below Android Q (10.0)
+            // Request the WRITE_EXTERNAL_STORAGE permission if not granted
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    PERMISSION_REQUEST_CODE
+                )
+            }
         }
     }
 
+
+
     private fun initModifyOnClickListeners() {
-        activityMainBinding.btnModify.setOnClickListener {
+        sharedPropertyViewModel.getSelectedProperty.observe(this) { property ->
+            activityMainBinding.btnModify.setOnClickListener {
             // Check if a property is selected for showing the AddOrModifyPropertyFragment
-            sharedPropertyViewModel.getSelectedProperty.observe(this) { property ->
                 if (property != null) {
                     if (navController.currentDestination?.id != R.id.addAndModifyPropertyFragment) {
                         navController.navigate(R.id.addAndModifyPropertyFragment)
@@ -116,6 +121,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+        activityMainBinding.btnModify.setOnClickListener {
             if (sharedPropertyViewModel.getSelectedProperty.value == null) {
                 Toast.makeText(
                     this,

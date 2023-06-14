@@ -78,8 +78,7 @@ class AddAndModificationAdapter(
 
             val primaryPhotoIcon = when {
                 isItemSelected -> {
-                    if (isPrimary) R.drawable.ic_primary_photo_added_true
-                    else R.drawable.ic_primary_photo_added_false
+                    R.drawable.ic_primary_photo_to_add
                 }
                 isPrimary -> R.drawable.ic_primary_photo_added_true
                 else -> R.drawable.ic_primary_photo_added_false

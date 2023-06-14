@@ -24,7 +24,7 @@ class LoanSimulatorAlertDialog(private val context: Context) {
         binding = DialogRealEstateLoanSimulatorBinding.inflate(inflater)
         builder.setView(binding.root)
         // Add the cancel button
-        builder.setNegativeButton(R.string.cancel) { _, _ ->
+        builder.setNegativeButton(R.string.exit) { _, _ ->
             alertDialog?.dismiss()
         }
         alertDialog = builder.create()
@@ -55,6 +55,7 @@ class LoanSimulatorAlertDialog(private val context: Context) {
                 } else {
                     binding.monthlyPaymentTextView.text = "Monthly payment: $$formattedMonthlyPayment" // Loan amount: $
                 }
+                binding.monthlyPaymentTextView.setTextColor(context.getColor(R.color.red))
             } else {
                 Toast.makeText(context, "Make sure all values entered are valid!", Toast.LENGTH_SHORT).show()
             }

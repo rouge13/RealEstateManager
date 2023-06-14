@@ -280,7 +280,6 @@ class AddAndModificationFragment : Fragment() {
             lifecycleScope.launch {
                 sharedPropertyViewModel.deletePhotosWithNullPropertyId()
             }
-            sharedPropertyViewModel.setSelectProperty(null)
             findNavController().popBackStack()
         }
     }
