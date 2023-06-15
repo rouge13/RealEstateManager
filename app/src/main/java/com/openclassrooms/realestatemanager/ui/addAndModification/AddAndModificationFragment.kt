@@ -99,8 +99,19 @@ class AddAndModificationFragment : Fragment() {
                 }
                 initAllAutoCompleteTextView()
                 initSelectDate()
+                val photoList = mutableListOf<PhotoEntity>()
+                setupRecyclerView(photoList)
                 initInsertButton()
                 initCancelButton()
+            }
+        }
+        sharedUtilsViewModel.getMoneyRateSelected.observe(viewLifecycleOwner) { isEuro ->
+            isEuro?.let {
+                if (it) {
+                    binding.propertyPriceText.setText(R.string.price_in_euros)
+                } else {
+                    binding.propertyPriceText.setText(R.string.price_in_dollars)
+                }
             }
         }
     }
@@ -452,7 +463,7 @@ class AddAndModificationFragment : Fragment() {
                 }
             }
         }
-        updatePhotosWithPropertyId(propertyId = propertyEntity.id!!)
+        updatePhotosWithPropertyId(propertyId = insertedPropertyId?.toInt())
         return insertedPropertyId
     }
 

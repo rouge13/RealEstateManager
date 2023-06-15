@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.customImage
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -9,8 +10,10 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.openclassrooms.realestatemanager.R
 
 
@@ -19,7 +22,6 @@ class CustomImageView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-
 
     private var description: String = ""
     private var soldOut: Boolean = false
@@ -60,7 +62,9 @@ class CustomImageView @JvmOverloads constructor(
     }
 
     private fun ImageView.paramOfImageView() {
-        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+            gravity = Gravity.CENTER
+        }
         adjustViewBounds = true
         scaleType = ImageView.ScaleType.CENTER_CROP
     }
@@ -73,7 +77,7 @@ class CustomImageView @JvmOverloads constructor(
         setTextColor(ContextCompat.getColor(context, R.color.black))
         setBackgroundColor(ContextCompat.getColor(context, R.color.white))
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-        visibility = GONE
+        visibility = View.GONE
     }
 
     private fun TextView.paramOfSoldTextView(context: Context) {
@@ -85,7 +89,7 @@ class CustomImageView @JvmOverloads constructor(
         setBackgroundColor(ContextCompat.getColor(context, R.color.red))
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
         text = context.getString(R.string.sold_property)
-        visibility = GONE
+        visibility = View.GONE
     }
 
     private fun setDescription(description: String) {
@@ -106,12 +110,26 @@ class CustomImageView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun setImageDrawable(drawable: Drawable?) {
-        imageView.setImageDrawable(drawable)
-    }
-
     fun setImageResource(resourceId: Int) {
         imageView.setImageResource(resourceId)
+    }
+
+    // DisCacheStrategy.ALL is used to cache the original image
+    fun loadImage(url: String, aspectRatio: Float = 1f) {
+        Glide.with(context)
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .apply(RequestOptions().override(calculateImageWidth(aspectRatio), calculateImageHeight(aspectRatio)))
+            .into(imageView)
+    }
+
+    private fun calculateImageWidth(aspectRatio: Float): Int {
+        return Resources.getSystem().displayMetrics.widthPixels
+    }
+
+    private fun calculateImageHeight(aspectRatio: Float): Int {
+        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+        return (screenWidth / aspectRatio).toInt()
     }
 }
 

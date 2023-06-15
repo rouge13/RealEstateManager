@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var activityMainNavHeaderBinding: ActivityMainNavHeaderBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-    private val REQUEST_IMAGE_CAPTURE = 1
     private lateinit var sharedAgentViewModel: SharedAgentViewModel
     private lateinit var initializationViewModel: InitializationViewModel
     private lateinit var sharedNavigationViewModel: SharedNavigationViewModel
@@ -105,8 +104,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-
 
     private fun initModifyOnClickListeners() {
         sharedPropertyViewModel.getSelectedProperty.observe(this) { property ->

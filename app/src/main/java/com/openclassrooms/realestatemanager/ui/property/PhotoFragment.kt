@@ -39,9 +39,9 @@ class PhotoFragment : Fragment() {
         soldOut = args.getBoolean("soldOut")
 
         // Set the photo and description in the CustomImageView
-        val photoDrawable = getPhotoDrawable(photoEntity.photoURI)
-        if (photoDrawable != null) {
-            binding.customImageView.setImageDrawable(photoDrawable)
+        val photoUrl = getPhotoUrl(photoEntity.photoURI)
+        if (photoUrl != null) {
+            binding.customImageView.loadImage(photoUrl, calculateImageAspectRatio())
         } else {
             binding.customImageView.setImageResource(DEFAULT_PHOTO_RESOURCE_ID)
         }
@@ -53,29 +53,36 @@ class PhotoFragment : Fragment() {
 
     }
 
-    private fun getPhotoDrawable(photo: String?): Drawable? {
+    private fun getPhotoUrl(photo: String?): String? {
         if (!photo.isNullOrEmpty()) {
             val context = requireContext()
             val resourceId = context.resources.getIdentifier(photo, "drawable", context.packageName)
             if (resourceId != 0) {
-                return ContextCompat.getDrawable(context, resourceId)
-            }
-
-            try {
-                val uri = Uri.parse(photo)
-                val inputStream = requireContext().contentResolver.openInputStream(uri)
-                if (inputStream != null) {
-                    val drawable = Drawable.createFromStream(inputStream, uri.toString())
-                    inputStream.close()
-                    return drawable
-                }
-            } catch (e: Exception) {
-                // Handle any exceptions that may occur while loading the drawable from URI
+                // Return the resource identifier as a string
+                return "android.resource://${context.packageName}/$resourceId"
+            } else {
+                // Return the URI for other photo types
+                return photo
             }
         }
-
         return null
     }
+
+    private fun calculateImageAspectRatio(): Float {
+        // Calculate the aspect ratio based on your logic
+        // For example, you can return a fixed aspect ratio or calculate it dynamically
+        return 1f // Default aspect ratio is 1:1
+    }
+//    private fun getPhotoDrawable(photo: String?): Drawable? {
+//        if (!photo.isNullOrEmpty()) {
+//            val context = requireContext()
+//            val resourceId = context.resources.getIdentifier(photo, "drawable", context.packageName)
+//            if (resourceId != 0) {
+//                return ContextCompat.getDrawable(context, resourceId)
+//            }
+//        }
+//        return null
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

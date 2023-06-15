@@ -53,7 +53,6 @@ class AddAndModificationAdapter(
 
     inner class PhotoViewHolder(private val binding: ItemPhotoBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
         init {
             binding.deleteButton.setOnClickListener {
                 val position = adapterPosition
@@ -75,7 +74,6 @@ class AddAndModificationAdapter(
 
         fun bind(drawable: Drawable?, isPrimary: Boolean = false, isItemSelected: Boolean = false) {
             binding.imageView.setImageDrawable(drawable)
-
             val primaryPhotoIcon = when {
                 isItemSelected -> {
                     R.drawable.ic_primary_photo_to_add

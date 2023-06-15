@@ -8,13 +8,12 @@ plugins {
 }
 
 android {
-    namespace "com.openclassrooms.realestatemanager"
     compileSdk 33
+    namespace 'com.openclassrooms.realestatemanager'
     defaultConfig {
         applicationId "com.openclassrooms.realestatemanager"
         minSdk 24
         targetSdk 33
-        compileSdkVersion 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -24,12 +23,6 @@ android {
     def mapsAPIKey = properties.getProperty('MAPS_API_KEY')
 
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-        }
-
         debug {
             resValue "string", "google_map_key", mapsAPIKey
             minifyEnabled false
@@ -59,17 +52,18 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core:1.10.1'
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'androidx.test.ext:junit-ktx:1.1.5'
+    implementation 'com.google.ar:core:1.37.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation("androidx.cardview:cardview:1.0.0")
+    implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.drawerlayout:drawerlayout:1.2.0"
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.0'
@@ -88,21 +82,35 @@ dependencies {
 
     // Navigation components
     implementation "androidx.activity:activity-ktx:1.7.2"
-    implementation "androidx.fragment:fragment-ktx:1.5.7"
+    implementation "androidx.fragment:fragment-ktx:1.6.0"
 
     // Use Navigation elements in the app
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.3"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.6.0"
+    implementation "androidx.navigation:navigation-ui-ktx:2.6.0"
 
     // Maps
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
 
     // Navigation
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.3"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.6.0"
+    implementation "androidx.navigation:navigation-ui-ktx:2.6.0"
 
     // GLide
     implementation 'com.github.bumptech.glide:glide:4.15.1'
     kapt 'com.github.bumptech.glide:compiler:4.13.0'
 
+    testImplementation 'org.mockito:mockito-core:4.0.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
+    testImplementation 'org.mockito:mockito-inline:3.12.4'
+    androidTestImplementation 'org.mockito:mockito-android:4.0.0'
+    testImplementation 'androidx.test:core:1.5.0'
+    testImplementation 'androidx.test.ext:junit:1.1.5'
+
+    testImplementation 'org.robolectric:robolectric:4.9'
+    testImplementation 'androidx.test:runner:1.5.2'
+    testImplementation 'androidx.test:rules:1.5.0'
+    testImplementation 'org.mockito:mockito-core:4.1.0'
+    testImplementation 'org.mockito:mockito-inline:4.1.0'
 }

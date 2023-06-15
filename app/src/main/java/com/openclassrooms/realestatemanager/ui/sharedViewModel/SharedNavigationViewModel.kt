@@ -8,14 +8,9 @@ import androidx.lifecycle.ViewModel
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class SharedNavigationViewModel : ViewModel() {
-
     // Navigation to Search Fragment from any other fragment
     private val _searchClicked = MutableLiveData<Boolean>()
     val searchClicked: LiveData<Boolean> get() = _searchClicked
-
-    fun navigateToSearch() {
-        _searchClicked.value = true
-    }
 
     fun doneNavigatingToSearch() {
         _searchClicked.value = false
