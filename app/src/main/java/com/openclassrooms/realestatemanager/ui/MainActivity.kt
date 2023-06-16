@@ -91,16 +91,8 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             // Check if the current Android version is Marshmallow (6.0) or higher, but below Android Q (10.0)
             // Request the WRITE_EXTERNAL_STORAGE permission if not granted
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    PERMISSION_REQUEST_CODE
-                )
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_REQUEST_CODE)
             }
         }
     }

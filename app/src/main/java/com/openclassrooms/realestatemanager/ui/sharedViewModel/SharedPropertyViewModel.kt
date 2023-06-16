@@ -14,6 +14,8 @@ import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -34,8 +36,8 @@ class SharedPropertyViewModel(
     }
 
     // Search criteria and null by default
-    private val _searchCriteria = MutableLiveData<SearchCriteria?>(null)
-    val searchCriteria: LiveData<SearchCriteria?> get() = _searchCriteria
+    private val _searchCriteria = MutableStateFlow<SearchCriteria?>(null)
+    private val searchCriteria: StateFlow<SearchCriteria?> get() = _searchCriteria
     fun setSearchCriteria(criteria: SearchCriteria?) {
         _previousSearchCriteria.value = _searchCriteria.value
         _searchCriteria.value = criteria
@@ -45,7 +47,7 @@ class SharedPropertyViewModel(
     val previousSearchCriteria: LiveData<SearchCriteria?> get() = _previousSearchCriteria
 
     val getPropertiesWithDetails: Flow<List<PropertyWithDetails>> = combine(
-        searchCriteria.asFlow(),
+        searchCriteria,
         propertyRepository.getAllProperties,
         addressRepository.getAllAddresses,
         photoRepository.getAllPhotos

@@ -79,7 +79,6 @@ class PropertyListFragment : Fragment() {
             propertyListViewModel.getPropertiesWithDetails.collect { propertiesWithDetails ->
                 adapter.submitList(propertiesWithDetails)
             }
-
         }
     }
     private fun navigateToInfoPropertyFragment(propertyWithDetails: PropertyWithDetails) {

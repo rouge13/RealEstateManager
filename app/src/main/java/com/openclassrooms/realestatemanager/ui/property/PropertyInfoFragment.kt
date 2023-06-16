@@ -26,6 +26,8 @@ import com.openclassrooms.realestatemanager.ui.alertDialog.LoanSimulatorAlertDia
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -63,7 +65,7 @@ class PropertyInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initSharedNavigationViewModelSearchAction()
-        displayPropertyDetails(view)
+        displayPropertyDetails(this, view)
     }
 
     private fun initSharedNavigationViewModelSearchAction() {
@@ -77,46 +79,33 @@ class PropertyInfoFragment : Fragment() {
         }
     }
 
-    private fun displayPropertyDetails(view: View) {
-        sharedPropertyViewModel.getSelectedProperty.observe(viewLifecycleOwner) { propertyWithDetails ->
-            propertyWithDetails?.let {
-                binding.fragmentInfoProperty.visibility = View.VISIBLE
-                initIsSoldOrNot(propertyWithDetails)
-                val photoViewPager = binding.photoPropertyViewPager
-                val photoList = propertyWithDetails.photos
-                if (photoList.isNullOrEmpty()) {
-                    val defaultPhoto = PhotoEntity(
-                        id = -1,
-                        photoURI = null,
-                        description = getString(R.string.no_photo_description)
-                    )
-                    val adapter = PropertyInfoAdapter(
-                        this,
-                        listOf(defaultPhoto),
-                        propertyWithDetails.property.isSold ?: false
-                    )
-                    photoViewPager.adapter = adapter
-                } else {
-                    val adapter = PropertyInfoAdapter(
-                        this,
-                        photoList,
-                        propertyWithDetails.property.isSold ?: false
-                    )
-                    photoViewPager.adapter = adapter
+    private fun displayPropertyDetails(fragment: Fragment, view: View) {
+
+            sharedPropertyViewModel.getSelectedProperty.observe(viewLifecycleOwner) { propertyWithDetails ->
+                propertyWithDetails?.let {
+                    binding.fragmentInfoProperty.visibility = View.VISIBLE
+                    initIsSoldOrNot(propertyWithDetails)
+                    val photoViewPager = binding.photoPropertyViewPager
+                    val photoList = propertyWithDetails.photos
+                    if (photoList.isNullOrEmpty()) {
+                        val defaultPhoto = PhotoEntity(id = -1, photoURI = null, description = getString(R.string.no_photo_description))
+                        val adapter = PropertyInfoAdapter(fragment, listOf(defaultPhoto), propertyWithDetails.property.isSold ?: false)
+                        photoViewPager.adapter = adapter
+                    } else {
+                        val adapter = PropertyInfoAdapter(fragment, photoList, propertyWithDetails.property.isSold ?: false)
+                        photoViewPager.adapter = adapter
+                    }
+                    lifecycleScope.launch {
+                        initStaticMapImageView(propertyWithDetails, view)
+                    }
+                    initAllTextView(propertyWithDetails)
+                    initAllButtons(photoViewPager, propertyWithDetails)
                 }
-                lifecycleScope.launch {
-                    initStaticMapImageView(propertyWithDetails, view)
-                }
-                initAllTextView(propertyWithDetails)
-                initAllButtons(photoViewPager, propertyWithDetails)
             }
-        }
+
     }
 
-    private suspend fun initStaticMapImageView(
-        propertyWithDetails: PropertyWithDetails,
-        view: View
-    ) {
+    private suspend fun initStaticMapImageView(propertyWithDetails: PropertyWithDetails, view: View) {
         val staticMapImageView: ImageView = view.findViewById(R.id.static_map_image_view)
         // Check if has location already set else get location from address
         val staticMapUrl: String =
@@ -125,48 +114,34 @@ class PropertyInfoFragment : Fragment() {
                     propertyWithDetails.address.latitude!!,
                     propertyWithDetails.address.longitude!!
                 )
-                val marker =
-                    "&markers=color:red%7Alabel:S%7C" + location.latitude + "," + location.longitude
-                "https://maps.googleapis.com/maps/api/staticmap?center=" + location.latitude + "," + location.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(
-                    R.string.google_map_key
-                )
+                val marker = "&markers=color:red%7Alabel:S%7C" + location.latitude + "," + location.longitude
+                "https://maps.googleapis.com/maps/api/staticmap?center=" + location.latitude + "," + location.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(R.string.google_map_key)
             } else {
-                val addressString =
-                    (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
+                val addressString = (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
                 // Check if address return a location else send a toast to user to tell him that address is not valid
-                if (Geocoder(view.context).getFromLocationName(addressString, 1)
-                        ?.isEmpty() == true
-                ) {
-                    Toast.makeText(
-                        view.context,
-                        getString(R.string.address_not_valid),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                if (Geocoder(view.context).getFromLocationName(addressString, 1)?.isEmpty() == true) {
+                    Toast.makeText(view.context, getString(R.string.address_not_valid), Toast.LENGTH_SHORT).show()
                     ""
                 } else {
                     val address = Geocoder(view.context).getFromLocationName(addressString, 1)
-                    val location = address?.get(0)?.latitude?.let { it1 ->
-                        address[0]?.longitude?.let { it2 ->
-                            LatLng(
-                                it1,
-                                it2
-                            )
-                        }
-                    }
+                    val location = address?.get(0)?.latitude?.let { it1 -> address[0]?.longitude?.let { it2 -> LatLng(it1, it2) } }
                     propertyWithDetails.address?.let {
-                        sharedPropertyViewModel.updateAddressWithLocation(
-                            it, latitude = location?.latitude, longitude = location?.longitude
-                        )
+                        sharedPropertyViewModel.updateAddressWithLocation(it, latitude = location?.latitude, longitude = location?.longitude)
                     }
-                    val marker =
-                        "&markers=color:red%7Alabel:S%7C" + location?.latitude + "," + location?.longitude
+                    val marker = "&markers=color:red%7Alabel:S%7C" + location?.latitude + "," + location?.longitude
                     "https://maps.googleapis.com/maps/api/staticmap?center=" + location?.latitude + "," + location?.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(
                         R.string.google_map_key
                     )
                 }
             }
+        checkForShowingStaticMap(staticMapUrl, staticMapImageView, view)
+    }
+
+    private fun checkForShowingStaticMap(staticMapUrl: String, staticMapImageView: ImageView, view: View) {
         if (staticMapUrl == "") {
             staticMapImageView.visibility = View.GONE
+            Toast.makeText(view.context, getString(R.string.address_not_valid), Toast.LENGTH_SHORT)
+                .show()
         } else {
             staticMapImageView.visibility = View.VISIBLE
             Glide.with(view)
@@ -195,26 +170,10 @@ class PropertyInfoFragment : Fragment() {
 
     private fun initTheProximitiesForThisProperty(propertyWithDetails: PropertyWithDetails) {
         val proximities = mutableListOf<String>()
-        propertyWithDetails.property.schoolProximity?.let {
-            if (it) {
-                proximities.add(getString(R.string.school_proximity))
-            }
-        }
-        propertyWithDetails.property.parkProximity?.let {
-            if (it) {
-                proximities.add(getString(R.string.park_proximity))
-            }
-        }
-        propertyWithDetails.property.shoppingProximity?.let {
-            if (it) {
-                proximities.add(getString(R.string.shopping_proximity))
-            }
-        }
-        propertyWithDetails.property.restaurantProximity?.let {
-            if (it) {
-                proximities.add(getString(R.string.restaurant_proximity))
-            }
-        }
+        propertyWithDetails.property.schoolProximity?.let { if (it) { proximities.add(getString(R.string.school_proximity)) } }
+        propertyWithDetails.property.parkProximity?.let { if (it) { proximities.add(getString(R.string.park_proximity)) } }
+        propertyWithDetails.property.shoppingProximity?.let { if (it) { proximities.add(getString(R.string.shopping_proximity)) } }
+        propertyWithDetails.property.restaurantProximity?.let { if (it) { proximities.add(getString(R.string.restaurant_proximity)) } }
         propertyWithDetails.property.publicTransportProximity?.let {
             if (it) {
                 proximities.add(getString(R.string.public_transport_proximity))
@@ -224,14 +183,7 @@ class PropertyInfoFragment : Fragment() {
             val formattedProximitiesString = proximities.joinToString(", ")
             val lastIndex = proximities.size - 1
             val dotFormattedProximitiesString = if (proximities.size > 1) {
-                formattedProximitiesString.substring(
-                    0,
-                    formattedProximitiesString.lastIndexOf(", ")
-                ) +
-                        ", and " + proximities[lastIndex] + "."
-            } else {
-                "$formattedProximitiesString."
-            }
+                formattedProximitiesString.substring(0, formattedProximitiesString.lastIndexOf(", ")) + ", and " + proximities[lastIndex] + "." } else { "$formattedProximitiesString." }
             binding.propertyProximityText.text = dotFormattedProximitiesString
         } else {
             binding.propertyProximityText.text = getString(R.string.no_proximities)
@@ -281,7 +233,6 @@ class PropertyInfoFragment : Fragment() {
         propertyWithDetails: PropertyWithDetails
     ) {
         Log.d("PropertyInfoFragment", "initAllButtons: $photoViewPager")
-
         binding.imageMoveAfterButton.setOnClickListener {
             photoViewPager.currentItem = photoViewPager.currentItem + 1
         }
@@ -295,24 +246,16 @@ class PropertyInfoFragment : Fragment() {
             binding.loanSimulatorButton.setOnClickListener {
                 val loanSimulatorAlertDialog = LoanSimulatorAlertDialog(requireContext())
                 // Check if the price is in euro or dollar and then return the correct price
-
                 if (isEuroSelected) {
                     val convertedPrice = propertyWithDetails.property.price?.let { it1 ->
-                        sharedPropertyViewModel.convertPropertyPrice(
-                            it1,
-                            isEuroSelected
-                        )
+                        sharedPropertyViewModel.convertPropertyPrice(it1, isEuroSelected)
                     }
                     if (convertedPrice != null) {
-                        loanSimulatorAlertDialog.showLoanSimulator(
-                            convertedPrice, isEuroSelected
-                        )
+                        loanSimulatorAlertDialog.showLoanSimulator(convertedPrice, isEuroSelected)
                     }
                 } else {
                     propertyWithDetails.property.price?.let { it1 ->
-                        loanSimulatorAlertDialog.showLoanSimulator(
-                            it1, isEuroSelected
-                        )
+                        loanSimulatorAlertDialog.showLoanSimulator(it1, isEuroSelected)
                     }
                 }
             }

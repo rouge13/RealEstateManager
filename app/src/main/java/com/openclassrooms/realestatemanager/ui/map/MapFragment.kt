@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui.map
 
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,10 @@ import com.openclassrooms.realestatemanager.ui.property.PropertyInfoFragment
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedAgentViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class MapFragment : Fragment() {
     private val agentViewModel: SharedAgentViewModel by activityViewModels { ViewModelFactory(requireActivity().application as MainApplication) }
@@ -50,16 +54,14 @@ class MapFragment : Fragment() {
         val mapFragment = if(!isDualPanel()) {childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?} else {childFragmentManager.findFragmentById(R.id.map_600sp) as SupportMapFragment?}
         mapFragment?.getMapAsync { map ->
             googleMap = map
+            viewLifecycleOwner.lifecycleScope.launch {
+                propertyViewModel.getPropertiesWithDetails.collect {
+                    setMarkers(it, view)
+                }
+            }
             agentViewModel.getLocationLiveData().observe(viewLifecycleOwner) {
                 if (it != null) {
                     updateMapWithAgentLocation(it)
-                }
-            }
-            viewLifecycleOwner.lifecycleScope.launch {
-                propertyViewModel.getPropertiesWithDetails.collect {
-                    if (it != null) {
-                        setMarkers(it, view)
-                    }
                 }
             }
         }
@@ -81,16 +83,36 @@ class MapFragment : Fragment() {
     }
 
     private fun setMarkers(propertiesWithDetails: List<PropertyWithDetails>, view: View) {
-        propertiesWithDetails.forEach { propertyWithDetails ->
-            val addressString =
-                (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
-            val address = Geocoder(view.context).getFromLocationName(addressString, 1)
-            val location = address?.get(0)?.latitude?.let { it1 -> address[0]?.longitude?.let { it2 -> LatLng(it1, it2) } }
-            val marker = googleMap.addMarker(
-                MarkerOptions().position(location!!).title(propertyWithDetails.property.typeOfHouse)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-            )
-            marker?.let { propertyMarkers[it] = propertyWithDetails }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val propertyWithCoordinates = propertiesWithDetails.map { propertyWithDetails ->
+                val addressString = (propertyWithDetails.address?.streetNumber + " " +
+                        propertyWithDetails.address?.streetName + " " +
+                        propertyWithDetails.address?.city + " " +
+                        propertyWithDetails.address?.zipCode + " " +
+                        propertyWithDetails.address?.country)
+
+                val location = withContext(Dispatchers.IO) {
+                    geocodeAddress(addressString)
+                }
+
+                propertyWithDetails to location
+            }
+
+            // Clear existing markers
+            clearMarkers()
+
+            propertyWithCoordinates.forEach { (propertyWithDetails, location) ->
+                val marker = location?.let {
+                    MarkerOptions().position(it)
+                        .title(propertyWithDetails.property.typeOfHouse + "" + propertyWithDetails.property.id.toString())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                }?.let {
+                    googleMap.addMarker(
+                        it
+                    )
+                }
+                marker?.let { propertyMarkers[it] = propertyWithDetails }
+            }
         }
         googleMap.setOnMarkerClickListener { marker ->
             propertyMarkers[marker]?.let { propertyWithDetails ->
@@ -122,6 +144,35 @@ class MapFragment : Fragment() {
             }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 10f))
         }
+    }
+
+    private suspend fun geocodeAddress(addressString: String): LatLng? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val geocoder = Geocoder(requireContext())
+                val addresses = geocoder.getFromLocationName(addressString, 1)
+                if (addresses != null) {
+                    if (addresses.isNotEmpty()) {
+                        val location = addresses[0]
+                        val latitude = location.latitude
+                        val longitude = location.longitude
+                        Log.d("Geocoding", "Address: $addressString, Latitude: $latitude, Longitude: $longitude")
+                        return@withContext LatLng(latitude, longitude)
+                    }
+                }
+            } catch (e: IOException) {
+                // Handle geocoding error
+                e.printStackTrace()
+            }
+            return@withContext null
+        }
+    }
+
+    private fun clearMarkers() {
+        for (marker in propertyMarkers.keys) {
+            marker.remove()
+        }
+        propertyMarkers.clear()
     }
 
     override fun onResume() {

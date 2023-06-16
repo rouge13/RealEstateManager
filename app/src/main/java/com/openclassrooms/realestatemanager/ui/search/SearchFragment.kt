@@ -62,16 +62,7 @@ class SearchFragment : Fragment() {
         initTypeOfHouseBoroughsAndCities()
         initAgentsNames()
         initAllSwitches()
-//        initSearchButton()
     }
-
-//    private fun initSearchButton() {
-//        binding.searchProperty.setOnClickListener {
-//            sharedPropertyViewModel.setSearchCriteria(searchCriteria)
-//            view?.findNavController()
-//                ?.navigate(SearchFragmentDirections.actionSearchFragmentToPropertyListFragment())
-//        }
-//    }
 
     private fun getAllValuesEdited() {
         startPriceValue()
@@ -406,6 +397,7 @@ class SearchFragment : Fragment() {
             // Reset your search criteria
             searchCriteria.clear()
             // Request all properties from the ViewModel
+            sharedPropertyViewModel.setSelectProperty(null)
             sharedPropertyViewModel.setSearchCriteria(null)
             findNavController().popBackStack()
         }

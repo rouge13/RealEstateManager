@@ -7,7 +7,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class InitializationViewModel : ViewModel() {
-
     fun startInitialization(application: MainApplication) {
         viewModelScope.launch {
             application.waitForInitialization()

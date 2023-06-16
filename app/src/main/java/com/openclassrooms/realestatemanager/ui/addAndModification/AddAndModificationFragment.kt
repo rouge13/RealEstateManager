@@ -36,6 +36,7 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationV
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.utils.Utils
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -511,6 +512,7 @@ class AddAndModificationFragment : Fragment() {
                 dateSold =
                     converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
             }
+
 
         } else if (!binding.propertySwitchSold.isChecked && propertyWithDetails.property.dateSold != null) {
             dateSold = null
