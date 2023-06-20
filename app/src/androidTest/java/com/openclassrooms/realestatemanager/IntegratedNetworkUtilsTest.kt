@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.ui.utils.Utils.isInternetAvailable
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -23,7 +24,7 @@ class IntegratedNetworkUtilsTest {
 
     @Before
     fun setup() {
-        context = getApplicationContext()
+        context = InstrumentationRegistry.getInstrumentation().targetContext
     }
 
     @Test

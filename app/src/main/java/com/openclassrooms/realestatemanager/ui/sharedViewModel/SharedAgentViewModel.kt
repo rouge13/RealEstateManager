@@ -13,12 +13,12 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class SharedAgentViewModel(private val repository: AgentRepository, application: MainApplication) : AndroidViewModel(
+open class SharedAgentViewModel(private val repository: AgentRepository, application: MainApplication) : AndroidViewModel(
     application) {
     // Init location
     private val locationLiveData = application.applicationContext.let { LocationLiveData(it) }
     // Get agent location
-    fun getLocationLiveData() = locationLiveData
+    open fun getLocationLiveData() = locationLiveData
     // Start location update
     fun startLocationUpdates() {
         locationLiveData.startLocationUpdates()
