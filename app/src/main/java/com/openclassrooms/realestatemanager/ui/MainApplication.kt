@@ -6,6 +6,7 @@ import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
+import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,6 +22,7 @@ class MainApplication : Application() {
     private val mutex = Mutex()
     var initialized = false
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val context = this
 
     suspend fun waitForInitialization() {
         if (!initialized) {
@@ -39,7 +41,7 @@ class MainApplication : Application() {
     val propertyRepository: PropertyRepository?
         get() = database?.propertyDao()?.let { PropertyRepository(it) }
     val agentRepository: AgentRepository?
-        get() = database?.agentDao()?.let { AgentRepository(it) }
+        get() = database?.agentDao()?.let { AgentRepository(it, context) }
     val addressRepository: AddressRepository?
         get() = database?.addressDao()?.let { AddressRepository(it) }
     val photoRepository: PhotoRepository?

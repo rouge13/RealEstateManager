@@ -102,7 +102,6 @@ class PropertyInfoFragment : Fragment() {
                     initAllButtons(photoViewPager, propertyWithDetails)
                 }
             }
-
     }
 
     private suspend fun initStaticMapImageView(propertyWithDetails: PropertyWithDetails, view: View) {
@@ -110,10 +109,7 @@ class PropertyInfoFragment : Fragment() {
         // Check if has location already set else get location from address
         val staticMapUrl: String =
             if ((propertyWithDetails.address?.latitude != null) && (propertyWithDetails.address.longitude != null)) {
-                val location = LatLng(
-                    propertyWithDetails.address.latitude!!,
-                    propertyWithDetails.address.longitude!!
-                )
+                val location = LatLng(propertyWithDetails.address.latitude!!, propertyWithDetails.address.longitude!!)
                 val marker = "&markers=color:red%7Alabel:S%7C" + location.latitude + "," + location.longitude
                 "https://maps.googleapis.com/maps/api/staticmap?center=" + location.latitude + "," + location.longitude + "&zoom=15&size=400x400&markers=$marker&key=" + getString(R.string.google_map_key)
             } else {
@@ -140,8 +136,7 @@ class PropertyInfoFragment : Fragment() {
     private fun checkForShowingStaticMap(staticMapUrl: String, staticMapImageView: ImageView, view: View) {
         if (staticMapUrl == "") {
             staticMapImageView.visibility = View.GONE
-            Toast.makeText(view.context, getString(R.string.address_not_valid), Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(view.context, getString(R.string.address_not_valid), Toast.LENGTH_SHORT).show()
         } else {
             staticMapImageView.visibility = View.VISIBLE
             Glide.with(view)

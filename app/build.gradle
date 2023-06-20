@@ -115,5 +115,16 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.1.0'
     testImplementation 'org.mockito:mockito-inline:4.1.0'
     androidTestImplementation("androidx.work:work-testing:2.8.1")
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
 
+    testImplementation "io.mockk:mockk:1.12.7"
+    testImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.25'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
+
+
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes true
 }

@@ -70,13 +70,7 @@ class IntegratedNetworkUtilsTest {
                 // Network is available, check if internet is available
                 val isInternetAvailable = isInternetAvailable(context)
                 // Check if the network is not null
-                if (network != null) {
-                    // Assert that internet is available
-                    assertTrue(isInternetAvailable)
-                } else {
-                    // Assert that internet is not available
-                    assertFalse(isInternetAvailable)
-                }
+                assertTrue(isInternetAvailable)
                 // Unregister the network callback
                 connectivityManager.unregisterNetworkCallback(this)
 
@@ -84,3 +78,6 @@ class IntegratedNetworkUtilsTest {
         })
     }
 }
+
+
+

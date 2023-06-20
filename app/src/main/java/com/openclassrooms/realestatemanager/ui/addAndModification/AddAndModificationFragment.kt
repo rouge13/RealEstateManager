@@ -177,11 +177,7 @@ class AddAndModificationFragment : Fragment() {
                             continuation.resume(generatedId?.toInt()) {}
                         }
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.agent_name_empty),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), getString(R.string.agent_name_empty), Toast.LENGTH_SHORT).show()
                         continuation.resume(null) {}
                     }
                 }
@@ -273,15 +269,10 @@ class AddAndModificationFragment : Fragment() {
                     if (insertedPropertyId != null) {
                         notificationHelper.showPropertyInsertedNotification()
                         findNavController().navigate(R.id.propertyListFragment)
-                        Toast.makeText(requireContext(), "Property inserted", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(requireContext(), "Property inserted", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Please fill all required fields. And check if you have a photo and primary one selected.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Please fill all required fields. And check if you have a photo and primary one selected.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -341,14 +332,9 @@ class AddAndModificationFragment : Fragment() {
                         updatePropertyEntity(propertyWithDetails)
                         updateAddressEntity(propertyWithDetails)
                         findNavController().navigate(R.id.propertyListFragment)
-                        Toast.makeText(requireContext(), "Property updated.", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(requireContext(), "Property updated.", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Please select a primary photo.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), "Please select a primary photo.", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -368,11 +354,7 @@ class AddAndModificationFragment : Fragment() {
                     addressEntity?.longitude = location.longitude
                     addressEntity?.let { sharedPropertyViewModel.updateAddress(it) }
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Address not found, please check the address if correct !",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Address not found, please check the address if correct !", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 addressEntity?.let { sharedPropertyViewModel.updateAddress(it) }
@@ -393,11 +375,7 @@ class AddAndModificationFragment : Fragment() {
                     addressEntity.longitude = location.longitude
                     addressEntity.let { sharedPropertyViewModel.insertAddress(it) }
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Address not found, please check the address if correct !",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Address not found, please check the address if correct !", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 addressEntity.let { sharedPropertyViewModel.insertAddress(it) }
@@ -423,8 +401,7 @@ class AddAndModificationFragment : Fragment() {
                 sharedPropertyViewModel.updateProperty(propertyEntity)
             } else {
                 // Agent creation was canceled, perform cancel actions here
-                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
                 // Cancel any other actions related to property update
                 return
             }
@@ -457,8 +434,7 @@ class AddAndModificationFragment : Fragment() {
                     insertAddressEntity(insertedPropertyId)
                 } else {
                     // Agent creation was canceled, perform cancel actions here
-                    Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
                     // Cancel any other actions related to property update
                     return null
                 }
@@ -509,8 +485,7 @@ class AddAndModificationFragment : Fragment() {
         id = propertyWithDetails.property.id
         if (binding.propertySwitchSold.isChecked) {
             sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
-                dateSold =
-                    converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+                dateSold = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
             }
 
 
@@ -524,8 +499,7 @@ class AddAndModificationFragment : Fragment() {
     private fun PropertyEntity.propertyToInsert() {
         id = null
         sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
-            dateStartSelling =
-                converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
+            dateStartSelling = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
         }
         primaryPropertyElement()
     }
@@ -624,10 +598,7 @@ class AddAndModificationFragment : Fragment() {
     private fun setupRecyclerView(photoList: List<PhotoEntity>?) {
         val layoutManager = LinearLayoutManager(requireContext())
         binding.fragmentPropertySelectedPhotosRecyclerView.layoutManager = layoutManager
-
-        val mutablePhotoList: MutableList<PhotoEntity> =
-            photoList?.toMutableList() ?: mutableListOf()
-
+        val mutablePhotoList: MutableList<PhotoEntity> = photoList?.toMutableList() ?: mutableListOf()
         adapter = AddAndModificationAdapter(mutablePhotoList,
             onDeletePhoto = { position ->
                 // Delete photo
@@ -639,11 +610,7 @@ class AddAndModificationFragment : Fragment() {
                 // Set primary photo
                 lifecycleScope.launch {
                     setPrimaryPhoto(mutablePhotoList, position)
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.primary_photo_set,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), R.string.primary_photo_set, Toast.LENGTH_SHORT).show()
                     updatePrimaryPhotoIcons(position)
                 }
             }
@@ -655,15 +622,12 @@ class AddAndModificationFragment : Fragment() {
             photoOptionsAndSaveAlertDialog.showPhotoOptionsDialog()
 
         }
-
         // Convert the List<PhotoEntity> to List<Drawable?>
         val drawableList: MutableList<Drawable?> = mutablePhotoList.map { photoEntity ->
             adapter.getDrawableFromPhotoEntity(requireContext(), photoEntity, isPrimary = false)
         }.toMutableList()
-
         // Update the adapter with the drawableList
         adapter.updatePhotos(drawableList)
-
         initPhotoOptionsAndSaveAlertDialog()
     }
 
@@ -682,14 +646,9 @@ class AddAndModificationFragment : Fragment() {
             }
             // Update the selected photo as the primary photo
             sharedPropertyViewModel.updateIsPrimaryPhoto(true, photoEntity.id ?: 0)
-
             // Update the adapter with the updated list
             val drawableList = photoList.mapIndexed { index, photoEntity ->
-                adapter.getDrawableFromPhotoEntity(
-                    requireContext(),
-                    photoEntity,
-                    index == position
-                )
+                adapter.getDrawableFromPhotoEntity(requireContext(), photoEntity, index == position)
             }
             adapter.updatePhotos(drawableList)
         } else {
@@ -708,9 +667,7 @@ class AddAndModificationFragment : Fragment() {
         adapter.updatePhotos(photoList.map {
             adapter.getDrawableFromPhotoEntity(requireContext(), it, isPrimary = false)
         })
-
     }
-
 
     private fun initAllEditText(propertyWithDetails: PropertyWithDetails) {
         sharedUtilsViewModel.getMoneyRateSelected.observe(viewLifecycleOwner) { isEuroSelected ->
@@ -790,12 +747,7 @@ class AddAndModificationFragment : Fragment() {
             // Check if the input value is blank
             if (input.second.isBlank()) {
                 // Display a toast message indicating the missing input field
-                Toast.makeText(
-                    requireContext(),
-                    "Please enter the ${input.first}",
-                    Toast.LENGTH_SHORT
-                ).show()
-
+                Toast.makeText(requireContext(), "Please enter the ${input.first}", Toast.LENGTH_SHORT).show()
                 // Return false as at least one input is missing
                 return false
             }
@@ -827,10 +779,6 @@ class AddAndModificationFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun isDualPanel(): Boolean {
-        return activity?.resources?.getBoolean(R.bool.isTwoPanel) == true
     }
 
     companion object {

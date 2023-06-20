@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.sharedViewModel
 
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
@@ -34,5 +35,12 @@ class SharedAgentViewModel(private val repository: AgentRepository, application:
 
     fun getAgentByName(agentName: String): Flow<AgentEntity?> {
         return repository.getAgentByName(agentName)
+    }
+
+    fun agentHasInternet() = repository.getAgentHasInternet()
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.cleanup()
     }
 }
