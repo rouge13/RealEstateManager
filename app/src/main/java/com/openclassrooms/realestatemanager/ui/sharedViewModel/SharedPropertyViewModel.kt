@@ -37,7 +37,7 @@ class SharedPropertyViewModel(
 
     // Search criteria and null by default
     private val _searchCriteria = MutableStateFlow<SearchCriteria?>(null)
-    private val searchCriteria: StateFlow<SearchCriteria?> get() = _searchCriteria
+    val searchCriteria: StateFlow<SearchCriteria?> get() = _searchCriteria
     fun setSearchCriteria(criteria: SearchCriteria?) {
         _previousSearchCriteria.value = _searchCriteria.value
         _searchCriteria.value = criteria

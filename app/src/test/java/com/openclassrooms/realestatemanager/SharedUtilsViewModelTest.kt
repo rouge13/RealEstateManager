@@ -33,8 +33,6 @@ class SharedUtilsViewModelTest {
     fun setUp() {
         viewModel = SharedUtilsViewModel()
         clearMocks(booleanObserver, dateFormatObserver)
-//        booleanObserver = mockk(relaxed = true)
-//        dateFormatObserver = mockk(relaxed = true)
     }
 
     @Test

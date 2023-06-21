@@ -4,11 +4,9 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.ui.utils.Utils.isInternetAvailable
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -69,9 +67,9 @@ class IntegratedNetworkUtilsTest {
             ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 // Network is available, check if internet is available
-                val isInternetAvailable = isInternetAvailable(context)
+                val available = isInternetAvailable(context)
                 // Check if the network is not null
-                assertTrue(isInternetAvailable)
+                assertTrue(available)
                 // Unregister the network callback
                 connectivityManager.unregisterNetworkCallback(this)
 

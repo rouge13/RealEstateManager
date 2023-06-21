@@ -85,16 +85,8 @@ class MapFragment : Fragment() {
     private fun setMarkers(propertiesWithDetails: List<PropertyWithDetails>, view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
             val propertyWithCoordinates = propertiesWithDetails.map { propertyWithDetails ->
-                val addressString = (propertyWithDetails.address?.streetNumber + " " +
-                        propertyWithDetails.address?.streetName + " " +
-                        propertyWithDetails.address?.city + " " +
-                        propertyWithDetails.address?.zipCode + " " +
-                        propertyWithDetails.address?.country)
-
-                val location = withContext(Dispatchers.IO) {
-                    geocodeAddress(addressString)
-                }
-
+                val addressString = (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
+                val location = withContext(Dispatchers.IO) { geocodeAddress(addressString) }
                 propertyWithDetails to location
             }
 
@@ -102,16 +94,7 @@ class MapFragment : Fragment() {
             clearMarkers()
 
             propertyWithCoordinates.forEach { (propertyWithDetails, location) ->
-                val marker = location?.let {
-                    MarkerOptions().position(it)
-                        .title(propertyWithDetails.property.typeOfHouse + "" + propertyWithDetails.property.id.toString())
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                }?.let {
-                    googleMap.addMarker(
-                        it
-                    )
-                }
-                marker?.let { propertyMarkers[it] = propertyWithDetails }
+                initMarker(location, propertyWithDetails)
             }
         }
         googleMap.setOnMarkerClickListener { marker ->
@@ -127,6 +110,22 @@ class MapFragment : Fragment() {
                 true
             } ?: false
         }
+    }
+
+    private fun initMarker(
+        location: LatLng?,
+        propertyWithDetails: PropertyWithDetails
+    ) {
+        val marker = location?.let {
+            MarkerOptions().position(it)
+                .title(propertyWithDetails.property.typeOfHouse + "" + propertyWithDetails.property.id.toString())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+        }?.let {
+            googleMap.addMarker(
+                it
+            )
+        }
+        marker?.let { propertyMarkers[it] = propertyWithDetails }
     }
 
     private fun updateMapWithAgentLocation(location: LocationDetails?) {
