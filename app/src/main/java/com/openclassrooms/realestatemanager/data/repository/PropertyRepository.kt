@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class PropertyRepository(private val propertyDao: PropertyDao) {
+
     // Get all the properties from the database
     val getAllProperties: Flow<List<PropertyEntity>> = propertyDao.getAllProperties()
 
@@ -23,6 +24,7 @@ class PropertyRepository(private val propertyDao: PropertyDao) {
     private val _insertedProperty = MutableLiveData<PropertyEntity>()
     val insertedProperty: LiveData<PropertyEntity> get() = _insertedProperty
 
+    // Insert a new property using the DAO with suspend function
     suspend fun insert(property: PropertyEntity): Long? {
         property.isSold = false
         val id = propertyDao.insert(property)
@@ -63,7 +65,7 @@ class PropertyRepository(private val propertyDao: PropertyDao) {
             boroughsCount = searchCriteria.selectedBoroughsForQuery.size
         )
     }
-    // Update the property
+    // Update the property using the DAO with suspend function
     suspend fun update(property: PropertyEntity) {
         property.id?.let {
             property.agentId?.let { it1 ->

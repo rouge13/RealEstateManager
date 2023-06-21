@@ -11,9 +11,7 @@ import java.util.Locale
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-class FixturesDatas {
-
-
+class FixturesData {
     companion object {
         private val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
         private val converters = Converters()

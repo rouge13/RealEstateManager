@@ -6,9 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.util.*
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.openclassrooms.realestatemanager.data.dao.AgentDao
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
-import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -26,6 +25,7 @@ class AgentRepository(private val agentDao: AgentDao, private val context: Conte
             isInternetAvailable.postValue(false)
         }
     }
+    // register the callback when you're done to avoid memory leaks
     init {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val request = NetworkRequest.Builder()
@@ -44,21 +44,24 @@ class AgentRepository(private val agentDao: AgentDao, private val context: Conte
 
     // get all the agents from the database
     val allAgents: Flow<List<AgentEntity>> = agentDao.getAllAgents()
-    // insert an agent in the database
 
+    // insert an agent in the database
     suspend fun insert(agent: AgentEntity): Long? {
         val id = agentDao.insert(agent)
         return if (id != -1L) id else null
     }
+
     // get agent by id
     fun getAgentData(agentId: Int): Flow<AgentEntity> {
         return agentDao.getAgentData(agentId)
     }
+
     // get agent by name
     fun getAgentByName(agentName: String): Flow<AgentEntity?> {
         return agentDao.getAgentByName(agentName)
     }
 
+    // get agent has internet then online sync
     fun getAgentHasInternet(): LiveData<Boolean> {
         return isInternetAvailable
     }

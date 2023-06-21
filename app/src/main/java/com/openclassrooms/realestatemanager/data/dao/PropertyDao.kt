@@ -20,10 +20,11 @@ interface PropertyDao {
     @Query("SELECT * FROM property WHERE id = :propertyId")
     fun getPropertyById(propertyId: Long): PropertyEntity
 
+    // Insert property and return id of inserted property and must convert later the Long type into Int
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(property: PropertyEntity): Long
 
-    // Get all properties filtered
+    // Get all properties filtered with search criteria
     @Query(
         """
     SELECT property.* FROM property
@@ -154,6 +155,7 @@ interface PropertyDao {
         boroughsCount: Int?
     ): Flow<List<PropertyEntity>>
 
+    // Update property
     @Query(
         """
     UPDATE property

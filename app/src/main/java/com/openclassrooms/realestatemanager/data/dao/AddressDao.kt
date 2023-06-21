@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.data.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -23,6 +22,7 @@ interface AddressDao {
     @Query("SELECT * FROM address WHERE propertyId = :propertyId")
     fun getAddressRelatedToASpecificProperty(propertyId: Int): Flow<AddressEntity?>
 
+    // Update Address
     @Query(
         """
     UPDATE address

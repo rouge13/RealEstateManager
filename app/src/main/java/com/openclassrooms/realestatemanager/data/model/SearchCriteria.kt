@@ -1,7 +1,5 @@
 package com.openclassrooms.realestatemanager.data.model
 
-import java.util.Date
-
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */

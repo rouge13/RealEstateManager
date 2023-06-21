@@ -13,6 +13,7 @@ import com.openclassrooms.realestatemanager.ui.viewmodel.InitializationViewModel
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class ViewModelFactory(private val mainApplication: MainApplication) : ViewModelProvider.Factory {
+    // Create ViewModel with repository as parameter if needed that comes from MainApplication class (dependency injection)
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SharedAgentViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

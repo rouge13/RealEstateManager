@@ -21,7 +21,7 @@ interface AgentDao {
     // Get agent data to connect
     @Query("SELECT * FROM agent WHERE id = :agentId")
     fun getAgentData(agentId: Int): Flow<AgentEntity>
-
+    // Get agent by name
     @Query("SELECT * FROM agent WHERE name = :agentName LIMIT 1")
     fun getAgentByName(agentName: String): Flow<AgentEntity?>
 

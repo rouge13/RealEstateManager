@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.data.dao
 
-import androidx.annotation.NonNull
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

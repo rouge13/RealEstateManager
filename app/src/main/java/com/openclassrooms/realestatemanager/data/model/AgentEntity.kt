@@ -8,8 +8,10 @@ import androidx.room.PrimaryKey
  */
 // Make the AgentEntity a Room entity
 @Entity(tableName = "agent")
-data class AgentEntity(@PrimaryKey(autoGenerate = true)
-                       val id: Int?,
-                       val name: String) {
+data class AgentEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int?,
+    val name: String
+) {
 
 }

@@ -65,19 +65,19 @@ abstract class PropertyDatabase : RoomDatabase() {
             photoDao: PhotoDao
         ) {
             // Add agents
-            FixturesDatas.AGENT_LIST.forEach { agent ->
+            FixturesData.AGENT_LIST.forEach { agent ->
                 agentDao.insert(agent)
             }
             // Add properties
-            FixturesDatas.PROPERTY_LIST.forEach { property ->
+            FixturesData.PROPERTY_LIST.forEach { property ->
                 propertyDao.insert(property)
             }
             // Add addresses
-            FixturesDatas.PROPERTY_ADDRESS_LIST.forEach { address ->
+            FixturesData.PROPERTY_ADDRESS_LIST.forEach { address ->
                 addressDao.insert(address)
             }
             // Add photos
-            FixturesDatas.PROPERTY_PHOTO_LIST.forEach { photo ->
+            FixturesData.PROPERTY_PHOTO_LIST.forEach { photo ->
                 photoDao.insert(photo)
             }
         }

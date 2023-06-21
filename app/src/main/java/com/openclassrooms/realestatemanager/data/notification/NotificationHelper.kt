@@ -21,12 +21,15 @@ import com.openclassrooms.realestatemanager.ui.MainActivity.Companion.PERMISSION
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 class NotificationHelper(private val context: Context) {
+
     private val channelId = "property_inserted_channel"
 
+    // Init the notification channel
     init {
         createNotificationChannel()
     }
 
+    // Create the notification channel with all the parameters needed
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelName = "Property Inserted"
@@ -42,6 +45,7 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
+    // Show the notification when a property is inserted in the database
     fun showPropertyInsertedNotification() {
         val notificationId = 1
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
