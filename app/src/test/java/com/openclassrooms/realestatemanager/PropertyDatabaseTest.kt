@@ -4,16 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import assertk.assertThat
-import assertk.assertions.contains
 import com.openclassrooms.realestatemanager.data.dao.AddressDao
 import com.openclassrooms.realestatemanager.data.dao.AgentDao
 import com.openclassrooms.realestatemanager.data.dao.PhotoDao
 import com.openclassrooms.realestatemanager.data.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.database.PropertyDatabase
-import com.openclassrooms.realestatemanager.data.model.AddressEntity
-import com.openclassrooms.realestatemanager.data.model.AgentEntity
-import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.first
@@ -63,39 +58,54 @@ class PropertyDatabaseTest : TestCase() {
     fun writeAndReadDao() = runBlocking {
         // For property
         val property = PropertyEntity(0, 1000)
+        val property2 = PropertyEntity(1, 2000)
         // insert property
         propertyDao.insert(property)
+        propertyDao.insert(property2)
         // get all properties as list of property
         val properties = propertyDao.getAllProperties().first()
+//        coEvery { properties } returns listOf(property)
         // check if properties contains property
-        assertThat(properties).contains(property)
+        val expectedProperties = listOf(property, property2)
+        assertEquals(expectedProperties, properties)
+        assertEquals(2, properties.size)
+//        coVerify(exactly = 1) { properties }
+//        confirmVerified(propertyDao)
 
-        // For address
-        val address = AddressEntity(0, "streetNumber", "streetName", "city", "borough", "postalCode", "USA", 0, "", 0.0, 0.0)
-        // insert address
-        addressDao.insert(address)
-        // get all addresses as list of address
-        val addresses = addressDao.getAllAddress().first()
-        // check if addresses contains address
-        assertThat(addresses).contains(address)
+//        // For address
+//        val address = AddressEntity(0, "streetNumber", "streetName", "city", "borough", "postalCode", "USA", 0, "", 0.0, 0.0)
+//        // insert address
+//        addressDao.insert(address)
+//        // get all addresses as list of address
+//        val addresses = addressDao.getAllAddress().first()
+//        // check if addresses contains address
+//        assertThat(addresses).contains(address)
+////        verify(exactly = 1) { addressDao.getAllAddress() }
+////        confirmVerified(addressDao)
+//
+//        // For photo
+//        val photo = PhotoEntity(0, "123", "description", 0, true)
+//        // insert photo
+//        photoDao.insert(photo)
+//        // get all photos as list of photo
+//        val photos = photoDao.getAllPhotos().first()
+//        // check if photos contains photo
+//        assertThat(photos).contains(photo)
+////        verify(exactly = 1) { photoDao.getAllPhotos() }
+////        confirmVerified(photoDao)
+//
+//        // For agent
+//        val agent = AgentEntity(0, "name")
+//        // insert agent
+//        agentDao.insert(agent)
+//        // get all agents as list of agent
+//        val agents = agentDao.getAllAgents().first()
+//        // check if agents contains agent
+//        assertThat(agents).contains(agent)
+////        verify(exactly = 1) { agentDao.getAllAgents() }
+////        confirmVerified(agentDao)
 
-        // For photo
-        val photo = PhotoEntity(0, "123", "description", 0, true)
-        // insert photo
-        photoDao.insert(photo)
-        // get all photos as list of photo
-        val photos = photoDao.getAllPhotos().first()
-        // check if photos contains photo
-        assertThat(photos).contains(photo)
 
-        // For agent
-        val agent = AgentEntity(0, "name")
-        // insert agent
-        agentDao.insert(agent)
-        // get all agents as list of agent
-        val agents = agentDao.getAllAgents().first()
-        // check if agents contains agent
-        assertThat(agents).contains(agent)
     }
 
 

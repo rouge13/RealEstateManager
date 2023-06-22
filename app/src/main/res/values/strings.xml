@@ -168,6 +168,7 @@
     <string name="price_in_euros">Price in euros</string>
     <string name="price_in_dollars">Price in dollars</string>
     <string name="exit">Exit</string>
+    <string name="no_internet_connection">No connection available</string>
 
 
 </resources>

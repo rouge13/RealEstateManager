@@ -242,6 +242,7 @@ class MainActivity : AppCompatActivity() {
                 setupBottomNavigation()
                 activityMainBinding.viewPager.currentItem = 0 // Switch to the PropertyListFragment
             } else {
+                Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
                 activityMainBinding.bottomNavigationView.visibility = View.GONE
             }
         })

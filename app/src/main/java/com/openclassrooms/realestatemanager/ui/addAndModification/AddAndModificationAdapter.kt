@@ -97,7 +97,7 @@ class AddAndModificationAdapter(
     // Get drawable from photo entity (from URI or from resources) and return it as a drawable object into the adapter
     fun getDrawableFromPhotoEntity(context: Context, photoEntity: PhotoEntity, isPrimary: Boolean): Drawable? {
         return if (photoEntity.photoURI?.startsWith("ic_") == true) {
-            // Photo from resources
+            // Photo from resources and try to get the drawable from the resources else return null
             val resourceId = context.resources.getIdentifier(
                 photoEntity.photoURI,
                 "drawable",
@@ -110,7 +110,7 @@ class AddAndModificationAdapter(
                 null
             }
         } else {
-            // Photo from URI
+            // Photo from URI and try to get the drawable from the URI else return null
             val uri = Uri.parse(photoEntity.photoURI)
             try {
                 val inputStream = context.contentResolver.openInputStream(uri)
