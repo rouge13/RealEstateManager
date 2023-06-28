@@ -30,5 +30,4 @@ data class PhotoEntity(
     var propertyId: Int? = null,
     var isPrimaryPhoto: Boolean = false
 ) : Parcelable {
-
 }
