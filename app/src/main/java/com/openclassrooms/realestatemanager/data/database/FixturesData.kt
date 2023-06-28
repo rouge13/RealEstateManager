@@ -16,22 +16,22 @@ class FixturesData {
         private val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
         private val converters = Converters()
         val PROPERTY_PHOTO_LIST = listOf(
-            PhotoEntity(1, "ic_panel_pict_1", "Panel",1),
-            PhotoEntity(2, "ic_bathroom_2","Bathroom", 2),
-            PhotoEntity(3, "ic_bathroom_3", "Bathroom",3),
-            PhotoEntity(4, "ic_bathroom_1", "Bathroom",4),
+            PhotoEntity(1, "ic_billard_room", "Billiard Room",1),
+            PhotoEntity(2, "ic_bathroom_3_house_1","Bathroom", 2),
+            PhotoEntity(3, "ic_duplex_bathroom_1", "Bathroom",3),
+            PhotoEntity(4, "ic_bathroom_4_house_1", "Bathroom",4),
             PhotoEntity(5, "ic_bedroom_1", "Bedroom",5),
             PhotoEntity(6, "ic_bedroom_2", "Bedroom",1),
-            PhotoEntity(7, "ic_bedroom_1", "Bedroom",2),
-            PhotoEntity(8, "ic_bedroom_2", "Bedroom",3),
+            PhotoEntity(7, "ic_bedroom_3_house_1", "Bedroom",2),
+            PhotoEntity(8, "ic_bedroom_4_house_1", "Bedroom",3),
             PhotoEntity(9, "ic_bedroom_1", "Bedroom",4),
             PhotoEntity(10, "ic_bedroom_2", "Bedroom",6),
-            PhotoEntity(11, "ic_living_room_1", "Living room",5),
-            PhotoEntity(12, "ic_living_room_2","Living room", 5),
-            PhotoEntity(13, "ic_living_room_1","Living room", 6),
-            PhotoEntity(14, "ic_living_room_2","Living room", 6),
-            PhotoEntity(15, "ic_living_room_3", "Living room",2),
-            PhotoEntity(16, "ic_living_room_1", "Living room",6)
+            PhotoEntity(11, "ic_duplex_salon_1", "Living room",5),
+            PhotoEntity(12, "ic_duplex_salon_1","Living room", 6),
+            PhotoEntity(13, "ic_duplex_kitchen_1","Kitchen", 5),
+            PhotoEntity(14, "ic_kitchen_1","Kitchen", 6),
+            PhotoEntity(15, "ic_kitchen_3_house_1", "Kitchen",2),
+            PhotoEntity(16, "ic_billard_room", "Billiard room",6)
         )
 
         val AGENT_LIST = listOf(
