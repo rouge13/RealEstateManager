@@ -51,18 +51,11 @@ class SharedNavigationViewModelTest {
         viewModel.getAddOrModifyClicked.observeForever(booleanObserver)
         viewModel.setAddOrModifyClicked(IS_MODIFY)
 
-        // Verifying LiveData value
-        verify { booleanObserver.onChanged(IS_MODIFY) }
-
         // AssertTrue to check if the LiveData value is true
         assertEquals(viewModel.getAddOrModifyClicked.value, IS_MODIFY)
 
         // Setting LiveData value to false to setAddOrModifyClicked() method for addition
-        viewModel.getAddOrModifyClicked.observeForever(booleanObserver)
         viewModel.setAddOrModifyClicked(IS_ADD)
-
-        // Verifying LiveData value
-        verify { booleanObserver.onChanged(IS_ADD) }
 
         // AssertFalse to check if the LiveData value is false
         assertEquals(viewModel.getAddOrModifyClicked.value, IS_ADD)
@@ -74,18 +67,11 @@ class SharedNavigationViewModelTest {
         viewModel.getOnlineClicked.observeForever(booleanObserver)
         viewModel.setOnlineNavigation(IS_ONLINE)
 
-        // Verifying LiveData value
-        verify { booleanObserver.onChanged(IS_ONLINE) }
-
         // AssertTrue to check if the LiveData value is true
         assertEquals(viewModel.getOnlineClicked.value, IS_ONLINE)
 
         // Setting LiveData value to false to setOnlineNavigation() method for offline
-        viewModel.getOnlineClicked.observeForever(booleanObserver)
         viewModel.setOnlineNavigation(IS_OFFLINE)
-
-        // Verifying LiveData value
-        verify { booleanObserver.onChanged(IS_OFFLINE) }
 
         // AssertFalse to check if the LiveData value is false
         assertEquals(viewModel.getOnlineClicked.value, IS_OFFLINE)

@@ -12,7 +12,9 @@ import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.PhotoRepository
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
+import com.openclassrooms.realestatemanager.ui.utils.Utils
 import io.mockk.MockKAnnotations
+import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -20,10 +22,13 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -54,6 +59,73 @@ class SharedPropertyViewModelTest {
     private lateinit var viewModel: SharedPropertyViewModel
     private lateinit var propertyObserver: Observer<PropertyWithDetails?>
 
+    private val property = PropertyEntity(
+        id = PROPERTY_ID,
+        price = PROPERTY_PRICE,
+        squareFeet = PROPERTY_SQUARE_FEET,
+        roomsCount = PROPERTY_NUMBER_OF_ROOMS,
+        bedroomsCount = PROPERTY_NUMBER_OF_BEDROOMS,
+        bathroomsCount = PROPERTY_NUMBER_OF_BATHROOMS,
+        description = PROPERTY_DESCRIPTION,
+        typeOfHouse = PROPERTY_TYPE,
+        isSold = PROPERTY_IS_SOLD,
+        dateStartSelling = PROPERTY_SALE_DATE,
+        dateSold = PROPERTY_SOLD_DATE,
+        agentId = PROPERTY_AGENT_ID,
+        primaryPhoto = PROPERTY_PRIMARY_PHOTO_VALUE,
+        schoolProximity = PROPERTY_SCHOOL_PROXIMITY,
+        parkProximity = PROPERTY_PARK_PROXIMITY,
+        shoppingProximity = PROPERTY_SHOP_PROXIMITY,
+        restaurantProximity = PROPERTY_RESTAURANT_PROXIMITY,
+        publicTransportProximity = PROPERTY_PUBLIC_TRANSPORT_PROXIMITY,
+        lastUpdate = PROPERTY_LAST_UPDATE,
+    )
+
+    private val address = AddressEntity(
+        id = ADDRESS_ID,
+        streetNumber = PROPERTY_STREET_NUMBER,
+        streetName = PROPERTY_STREET_NAME,
+        city = PROPERTY_CITY,
+        boroughs = PROPERTY_BOROUGH,
+        zipCode = PROPERTY_POSTAL_CODE,
+        country = PROPERTY_COUNTRY,
+        latitude = PROPERTY_LATITUDE,
+        longitude = PROPERTY_LONGITUDE,
+        propertyId = PROPERTY_ID
+    )
+    private val photo1 = PhotoEntity(
+        id = PHOTO_ID_1,
+        description = PHOTO_DESCRIPTION_1,
+        propertyId = PHOTO_PROPERTY_ID_1,
+        photoURI = PHOTO_URI_1,
+        isPrimaryPhoto = IS_PRIMARY_PHOTO_1
+    )
+
+    private val photo2 = PhotoEntity(
+        id = PHOTO_ID_2,
+        description = PHOTO_DESCRIPTION_2,
+        propertyId = PHOTO_PROPERTY_ID_1,
+        photoURI = PHOTO_URI_2,
+        isPrimaryPhoto = IS_PRIMARY_PHOTO_2
+    )
+
+    private val expectedAddress = AddressEntity(
+        id = ADDRESS_ID,
+        streetNumber = PROPERTY_STREET_NUMBER,
+        streetName = PROPERTY_STREET_NAME,
+        city = PROPERTY_CITY,
+        boroughs = PROPERTY_BOROUGH,
+        zipCode = PROPERTY_POSTAL_CODE,
+        country = PROPERTY_COUNTRY,
+        latitude = EXPECTED_PROPERTY_LATITUDE,
+        longitude = EXPECTED_PROPERTY_LONGITUDE,
+        propertyId = PROPERTY_ID
+    )
+
+    private val listOfPhotos = listOf(photo1, photo2)
+    private val listOfProperties = listOf(property)
+    private val listOfAddress = listOf(address)
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
@@ -62,9 +134,7 @@ class SharedPropertyViewModelTest {
         propertyObserver = mockk(relaxed = true)
     }
 
-    // @Test
-    // fun `Given a property id, when get property, then return property`()
-
+    // @Test to check if the LiveData is updated with the correct value when on selectProperty is set
     @Test
     fun testSetSelectProperty() {
         val property = PropertyWithDetails(
@@ -75,9 +145,6 @@ class SharedPropertyViewModelTest {
         viewModel.getSelectedProperty.observeForever(propertyObserver)
         viewModel.setSelectProperty(property)
 
-        // Verify that LiveData is updated with the correct value
-        verify { propertyObserver.onChanged(property) }
-
         // Verify that LiveData is updated with the correct value only once
         verify(exactly = 1) { propertyObserver.onChanged(property) }
 
@@ -85,6 +152,7 @@ class SharedPropertyViewModelTest {
         assertEquals(viewModel.getSelectedProperty.value?.property?.id, PROPERTY_ID)
     }
 
+    // Test if search criteria are set correctly and the value of the LiveData is updated and equals to the search criteria
     @Test
     fun testSetSearchCriteria() = runTest {
         val searchCriteria = SearchCriteria(
@@ -159,68 +227,255 @@ class SharedPropertyViewModelTest {
         )
     }
 
+    // Test if the updateProperty function works correctly
     @Test
     fun testUpdateProperty() = runTest {
-        val property = PropertyEntity(
-            id = PROPERTY_ID,
-            price = PROPERTY_PRICE,
-            squareFeet = PROPERTY_SQUARE_FEET,
-            roomsCount = PROPERTY_NUMBER_OF_ROOMS,
-            bedroomsCount = PROPERTY_NUMBER_OF_BEDROOMS,
-            bathroomsCount = PROPERTY_NUMBER_OF_BATHROOMS,
-            description = PROPERTY_DESCRIPTION,
-            typeOfHouse = PROPERTY_TYPE,
-            isSold = PROPERTY_IS_SOLD,
-            dateStartSelling = PROPERTY_SALE_DATE,
-            dateSold = PROPERTY_SOLD_DATE,
-            agentId = PROPERTY_AGENT_ID,
-            primaryPhoto = PROPERTY_PRIMARY_PHOTO_VALUE,
-            schoolProximity = PROPERTY_SCHOOL_PROXIMITY,
-            parkProximity = PROPERTY_PARK_PROXIMITY,
-            shoppingProximity = PROPERTY_SHOP_PROXIMITY,
-            restaurantProximity = PROPERTY_RESTAURANT_PROXIMITY,
-            publicTransportProximity = PROPERTY_PUBLIC_TRANSPORT_PROXIMITY,
-            lastUpdate = PROPERTY_LAST_UPDATE,
-        )
+        // Create a propertySlot
+        val propertySlot = slot<PropertyEntity>()
+        // Mock the repository to return a property
         coEvery { propertyRepository.update(property) } just runs
 
+        // Update the property
         viewModel.updateProperty(property)
 
         // Verify that the property is updated exactly one time
         coVerify(exactly = 1) { propertyRepository.update(property) }
 
-//        // Verify if the property expected is the same as the one that was updated
-//        assertEquals(property, viewModel.getPropertiesWithDetails  .value)
+        // Verify that the property is updated with the correct value
+        coVerify { propertyRepository.update(property = capture(propertySlot)) }
 
     }
 
+    // Test if the address is correctly updated
     @Test
     fun testUpdateAddress() = runTest {
-        val address = AddressEntity(
-            id = PROPERTY_ID,
-            streetNumber = PROPERTY_STREET_NUMBER,
-            streetName = PROPERTY_STREET_NAME,
-            city = PROPERTY_CITY,
-            boroughs = PROPERTY_BOROUGH,
-            zipCode = PROPERTY_POSTAL_CODE,
-            country = PROPERTY_COUNTRY,
-            latitude = PROPERTY_LATITUDE,
-            longitude = PROPERTY_LONGITUDE,
-            propertyId = PROPERTY_ID
-        )
+        // Mock the repository to return an address
         coEvery { addressRepository.updateAddress(address) } just runs
 
+        // Update the address
         viewModel.updateAddress(address)
 
         // Verify that the address is updated exactly one time
         coVerify(exactly = 1) { addressRepository.updateAddress(address) }
 
-//        // Verify if the address expected is the same as the one that was updated
-//        assertEquals(address, viewModel.getAddressWithDetails.value)
+        // Verify that the address is updated with the correct value
+        coVerify { addressRepository.updateAddress(address = address) }
     }
 
+    // Test if the propertiesWithDetails is correctly combined
+    @Test
+    fun testCombinePropertiesWithDetails() = runTest {
+        // Mock the repository to return properties, address, and photos
+        coEvery { propertyRepository.getAllProperties } returns flowOf(listOfProperties)
+        coEvery { addressRepository.getAllAddresses } returns flowOf(listOfAddress)
+        coEvery { photoRepository.getAllPhotos } returns flowOf(listOfPhotos)
+
+        // Create an expected propertyWithDetails object with the property, address, and photos
+        val expectedPropertyWithDetails = PropertyWithDetails(
+            property = property,
+            address = address,
+            photos = listOfPhotos
+        )
+
+        // Create an expected propertiesWithDetails list
+        val expectedPropertiesWithDetails = listOf(expectedPropertyWithDetails)
+
+        // Call the function to combine the propertiesWithDetails
+        val result =
+            viewModel.combinePropertiesWithDetails(listOfProperties, listOfAddress, listOfPhotos)
+
+        // Verify that the propertiesWithDetails is correctly combined
+        assertEquals(expectedPropertiesWithDetails, result)
+
+        // Verify that the repository functions were called
+        coVerify(exactly = 1) { propertyRepository.getAllProperties }
+        coVerify(exactly = 1) { addressRepository.getAllAddresses }
+        coVerify(exactly = 1) { photoRepository.getAllPhotos }
+    }
+
+    // Test if the addressWithLocation is properly set
+    @Test
+    fun testSetAddressWithLocation() = runTest {
+        // Mock the repository to return the address
+        coEvery { addressRepository.updateAddress(expectedAddress) } just Runs
+
+        // Call the function to update the address with the new location
+        viewModel.updateAddressWithLocation(
+            address,
+            EXPECTED_PROPERTY_LATITUDE,
+            EXPECTED_PROPERTY_LONGITUDE
+        )
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { addressRepository.updateAddress(expectedAddress) }
+    }
+
+    // Test if the property is correctly inserted
+    @Test
+    fun testInsertProperty() = runTest {
+        // Define the property to insert and the expected propertyid after insertion returned
+        val expectedId = PROPERTY_ID.toLong()
+        val notExpectedId = 12L
+
+        // Mock the repository to return the property
+        coEvery { propertyRepository.insert(property) } returns expectedId
+
+        // Call the function to insert the property and get the returned id
+        val propertyIdInserted = viewModel.insertProperty(property)
+
+        assertEquals(expectedId, propertyIdInserted)
+        assertNotEquals(notExpectedId, propertyIdInserted)
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { propertyRepository.insert(property) }
+    }
+
+    // Test if the address is correctly inserted
+    @Test
+    fun testInsertAddress() = runTest {
+        // Mock the repository to return the address
+        coEvery { addressRepository.insert(address) } just runs
+
+        // Call the function to insert the address
+        viewModel.insertAddress(address)
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { addressRepository.insert(address) }
+    }
+
+    // Test if the photo is correctly inserted and return the id of the photo inserted
+    @Test
+    fun testInsertPhoto() = runTest {
+        // Define the photo to insert and the expected photoid after insertion returned
+        val expectedId = PHOTO_ID_1.toLong()
+        val notExpectedId = PHOTO_ID_2.toLong()
+
+        // Mock the repository to return the photo
+        coEvery { photoRepository.insert(photo1) } returns expectedId
+
+        // Call the function to insert the photo and get the returned id
+        val photoIdInserted = viewModel.insertPhoto(photo1)
+
+        assertEquals(expectedId, photoIdInserted)
+        assertNotEquals(notExpectedId, photoIdInserted)
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { photoRepository.insert(photo1) }
+    }
+
+    // Test if the photos with property id is correctly updated
+    @Test
+    fun testUpdatePhotosWithPropertyId() = runTest {
+        // Mock the repository to return the photo
+        coEvery { photoRepository.updatePhotoWithPropertyId(PROPERTY_ID, photo1.id!!) } just runs
+
+        // Call the function to update the photos with property id
+        viewModel.updatePhotosWithPropertyId(PROPERTY_ID, photo1.id!!)
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { photoRepository.updatePhotoWithPropertyId(PROPERTY_ID, photo1.id!!) }
+    }
+
+    // Test if the PrimaryPhoto is correctly updated in the photo
+    @Test
+    fun testUpdatePrimaryPhoto() = runTest {
+        // Mock the repository to return the photo
+        coEvery { photoRepository.updateIsPrimaryPhoto(IS_TRUE, photo1.id!!) } just runs
+
+        // Call the function to update the primary photo
+        viewModel.updateIsPrimaryPhoto(IS_TRUE, photo1.id!!)
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { photoRepository.updateIsPrimaryPhoto(IS_TRUE, photo1.id!!) }
+    }
+
+    // Test if the photo is correctly deleted
+    @Test
+    fun testDeletePhoto() = runTest {
+        // Mock the repository to return the photo
+        coEvery { photoRepository.deletePhoto(photo1.id!!) } just runs
+
+        // Call the function to delete the photo
+        viewModel.deletePhoto(photo1.id!!)
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { photoRepository.deletePhoto(photo1.id!!) }
+    }
+
+    // Test if getting all photos related to the property are correctly returned
+    @Test
+    fun testGetAllPhotosRelatedToProperty() = runTest {
+        // Mock the repository to return the photo
+        coEvery { photoRepository.getAllPhotosRelatedToASpecificProperty(PROPERTY_ID) } returns listOfPhotos
+
+        // Call the function to get all photos related to the property
+        val result = viewModel.getAllPhotosRelatedToSetThePropertyId(PROPERTY_ID)
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { photoRepository.getAllPhotosRelatedToASpecificProperty(PROPERTY_ID) }
+
+        // Verify that the result is the expected one
+        assertEquals(listOfPhotos, result)
+    }
+
+    // Test if the photo with null value as property id is correctly deleted
+    @Test
+    fun testDeletePhotoWithNullPropertyId() = runTest {
+        // Mock the repository to return the photo
+        coEvery { photoRepository.deletePhotosWithNullPropertyId() } just runs
+
+        // Call the function to delete the photo with null value as property id
+        viewModel.deletePhotosWithNullPropertyId()
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { photoRepository.deletePhotosWithNullPropertyId() }
+    }
+
+    // Test if property primary photo is correctly updated in the property
+    @Test
+    fun testUpdatePropertyPrimaryPhoto() = runTest {
+        // Mock the repository to return the property
+        coEvery { propertyRepository.updatePrimaryPhoto(property.id!!, photo1.photoURI!!) } just runs
+
+        // Call the function to update the property primary photo
+        viewModel.updatePrimaryPhoto(property.id!!, photo1.photoURI!!)
+
+        // Verify that the repository function was called with the expected parameters
+        coVerify(exactly = 1) { propertyRepository.updatePrimaryPhoto(property.id!!, photo1.photoURI!!) }
+    }
+
+    // Test for convert property price based of the boolean value of the selected currency in the settings by the agent
+    @Test
+    fun testConvertPropertyPriceBasedOnSelectedCurrency() {
+        // Define the expected price converted
+        val expectedPriceInDollars = PROPERTY_PRICE
+        val expectedPriceInEuros = Utils.convertDollarsToEuros(expectedPriceInDollars)
+        val mustBeConverted = IS_TRUE
+        val mustNotBeConverted = IS_FALSE
+
+        if (mustBeConverted) {
+            // Call the function to convert the property price based of the boolean value of the selected currency in the settings by the agent
+            val priceConverted = Utils.convertDollarsToEuros(PROPERTY_PRICE)
+
+            // Verify that the result is the expected one
+            assertEquals(expectedPriceInEuros, priceConverted)
+
+            // Verify that the result is not the expected one
+            assertNotEquals(expectedPriceInDollars, priceConverted)
+        } else if (mustNotBeConverted) {
+            // Call the function to convert the property price based of the boolean value of the selected currency in the settings by the agent
+            val priceConverted = Utils.convertDollarsToEuros(expectedPriceInEuros)
+
+            // Verify that the result is the expected one
+            assertEquals(expectedPriceInDollars, priceConverted)
+
+            // Verify that the result is not the expected one
+            assertNotEquals(expectedPriceInEuros, priceConverted)
+        }
+    }
 
     companion object {
+
         // Convert date to Long
         private val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
         private val converters = Converters()
@@ -256,7 +511,9 @@ class SharedPropertyViewModelTest {
         private const val PROPERTY_POSTAL_CODE = "12345"
         private const val PROPERTY_COUNTRY = "USA"
         private const val PROPERTY_LATITUDE = 40.7128
+        private const val EXPECTED_PROPERTY_LATITUDE = 40.71286
         private const val PROPERTY_LONGITUDE = 74.0060
+        private const val EXPECTED_PROPERTY_LONGITUDE = 74.00606
 
 
         // SearchCriteriaValues
@@ -282,8 +539,31 @@ class SharedPropertyViewModelTest {
         private const val RESTAURANT_PROXIMITY = false
         private const val PUBLIC_TRANSPORT_PROXIMITY = false
         private const val IS_SOLD = false
-        private const val AGENT_ID = 0
         private const val BOROUGHS = "Queens"
+
+        // Address values
+        private const val ADDRESS_ID = 1
+
+        // Agent values
+        private const val AGENT_ID = 0
+
+        // Photos values
+        private const val PHOTO_ID_1 = 0
+        private const val PHOTO_URI_1 = "https://www.google.com"
+        private const val PHOTO_DESCRIPTION_1 = "Kitchen"
+        private const val PHOTO_PROPERTY_ID_1 = 1
+        private const val IS_PRIMARY_PHOTO_1 = true
+
+        private const val PHOTO_ID_2 = 1
+        private const val PHOTO_URI_2 = "https://www.google.com"
+        private const val PHOTO_DESCRIPTION_2 = "Bedroom"
+        private const val IS_PRIMARY_PHOTO_2 = false
+
+        // IS TRUE
+        private const val IS_TRUE = true
+
+        // IS FALSE
+        private const val IS_FALSE = false
 
 
     }

@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.openclassrooms.realestatemanager.data.dao.AgentDao
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
+import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -18,10 +19,16 @@ class AgentRepository(private val agentDao: AgentDao, private val context: Conte
     val isInternetAvailable: MutableLiveData<Boolean> = MutableLiveData()
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        // Called when network is available and connected
         override fun onAvailable(network: Network) {
             isInternetAvailable.postValue(true)
         }
+        // Called when network is lost or disconnected
         override fun onLost(network: Network) {
+            isInternetAvailable.postValue(false)
+        }
+        // Called when network is available but not connected
+        override fun onUnavailable() {
             isInternetAvailable.postValue(false)
         }
     }
@@ -65,7 +72,6 @@ class AgentRepository(private val agentDao: AgentDao, private val context: Conte
     fun getAgentHasInternet(): LiveData<Boolean> {
         return isInternetAvailable
     }
-
 
 }
 

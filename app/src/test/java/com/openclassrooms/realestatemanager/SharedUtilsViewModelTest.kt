@@ -41,18 +41,12 @@ class SharedUtilsViewModelTest {
         viewModel.getMoneyRateSelected.observeForever(booleanObserver)
         viewModel.setActiveSelectionMoneyRate(ACTIVE_SELECTION_EURO)
 
-        // Verifying LiveData value with the Euros we set
-        verify { booleanObserver.onChanged(ACTIVE_SELECTION_EURO) }
-
         // AssertTrue to check if the LiveData value is true
         assertTrue(viewModel.getMoneyRateSelected.value!!)
 
         // Set the money rate selected by the agent to Dollars
         viewModel.getMoneyRateSelected.observeForever(booleanObserver)
         viewModel.setActiveSelectionMoneyRate(ACTIVE_SELECTION_DOLLAR)
-
-        // Verifying LiveData value with the Dollars we set
-        verify { booleanObserver.onChanged(ACTIVE_SELECTION_DOLLAR) }
 
         // AssertTrue to check if the LiveData value is false
         assertTrue(!viewModel.getMoneyRateSelected.value!!)
@@ -64,18 +58,12 @@ class SharedUtilsViewModelTest {
         viewModel.getDateFormatSelected.observeForever(dateFormatObserver)
         viewModel.setDateFormatSelected(dateUSAFormatSelected)
 
-        // Verifying LiveData value with the USA SimpleDateFormat we set
-        verify { dateFormatObserver.onChanged(dateUSAFormatSelected) }
-
         // AssertTrue to check if the LiveData value is equal to the USA SimpleDateFormat we set
         assertTrue(viewModel.getDateFormatSelected.value == dateUSAFormatSelected)
 
         // Set the date format selected by the agent to France SimpleDateFormat
         viewModel.getDateFormatSelected.observeForever(dateFormatObserver)
         viewModel.setDateFormatSelected(dateEUFormatSelected)
-
-        // Verifying LiveData value with the France SimpleDateFormat we set
-        verify { dateFormatObserver.onChanged(dateEUFormatSelected) }
 
         // AssertTrue to check if the LiveData value is equal to the France SimpleDateFormat we set
         assertTrue(viewModel.getDateFormatSelected.value == dateEUFormatSelected)

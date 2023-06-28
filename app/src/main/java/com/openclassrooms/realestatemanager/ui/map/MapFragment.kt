@@ -40,21 +40,20 @@ class MapFragment : Fragment() {
     private lateinit var googleMap: GoogleMap
     private var agentMarker: Marker? = null
     private val propertyMarkers = mutableMapOf<Marker, PropertyWithDetails>()
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        // Inflate the layout for this fragment with view binding and return the view binding root view
         fragmentMapBinding = FragmentMapBinding.inflate(inflater, container, false)
         return fragmentMapBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Get the map fragment and get the map asynchronously to be able to use it in the fragment lifecycle and check if the map is ready to use before using it with one or dual panel
         val mapFragment = if(!isDualPanel()) {childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?} else {childFragmentManager.findFragmentById(R.id.map_600sp) as SupportMapFragment?}
         mapFragment?.getMapAsync { map ->
             googleMap = map
             viewLifecycleOwner.lifecycleScope.launch {
+                // Get the location of the agent and update the map with it
                 propertyViewModel.getPropertiesWithDetails.collect {
                     setMarkers(it, view)
                 }
@@ -84,21 +83,32 @@ class MapFragment : Fragment() {
 
     private fun setMarkers(propertiesWithDetails: List<PropertyWithDetails>, view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
+            // Get the location of the properties and update the map with it if the location is not null, if it is null, get the location with the address and update the map with it
             val propertyWithCoordinates = propertiesWithDetails.map { propertyWithDetails ->
-                val addressString = (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
-                val location = withContext(Dispatchers.IO) { geocodeAddress(addressString) }
-                propertyWithDetails to location
+                if (propertyWithDetails.address?.latitude == null || propertyWithDetails.address.longitude == null) {
+                    // Get the location with the address and update the map with it
+                    val addressString = (propertyWithDetails.address?.streetNumber + " " + propertyWithDetails.address?.streetName + " " + propertyWithDetails.address?.city + " " + propertyWithDetails.address?.zipCode + " " + propertyWithDetails.address?.country)
+                    // Dispatchers.IO because it is a blocking call
+                    val location = withContext(Dispatchers.IO) { geocodeAddress(addressString) }
+                    propertyWithDetails to location
+                } else {
+                    // Update the map with the location of the property if it is not null
+                    val location = LatLng(propertyWithDetails.address.latitude!!, propertyWithDetails.address.longitude!!)
+                    propertyWithDetails to location
+                }
             }
 
             // Clear existing markers
             clearMarkers()
-
+            // Add all the marker to the map with the location of the properties and the location of the agent based of the properties and the agent location
             propertyWithCoordinates.forEach { (propertyWithDetails, location) ->
                 initMarker(location, propertyWithDetails)
             }
         }
+        // Adding setOnMarkerClickListener after the markers are set to avoid the click listener to be called before the markers are set and the propertyMarkers map is empty
         googleMap.setOnMarkerClickListener { marker ->
             propertyMarkers[marker]?.let { propertyWithDetails ->
+                // Set the selected property to the propertyViewModel to be able to use it in the PropertyInfoFragment
                 propertyViewModel.setSelectProperty(propertyWithDetails)
                 if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!){
                     findNavController().navigate(R.id.infoPropertyFragment)
@@ -112,25 +122,25 @@ class MapFragment : Fragment() {
         }
     }
 
-    private fun initMarker(
-        location: LatLng?,
-        propertyWithDetails: PropertyWithDetails
-    ) {
+    // Init Marker
+    private fun initMarker(location: LatLng?, propertyWithDetails: PropertyWithDetails) {
         val marker = location?.let {
+            // Add the marker to the map with the location of the property
             MarkerOptions().position(it)
                 .title(propertyWithDetails.property.typeOfHouse + "" + propertyWithDetails.property.id.toString())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
         }?.let {
-            googleMap.addMarker(
-                it
-            )
+            googleMap.addMarker(it)
         }
+        // Add the marker to the map with the location of the property
         marker?.let { propertyMarkers[it] = propertyWithDetails }
     }
 
     private fun updateMapWithAgentLocation(location: LocationDetails?) {
         location?.let {
+            // Update the map with the location of the agent
             val newLocation = LatLng(it.latitude, it.longitude)
+            // Add the marker to the map with the location of the agent if it is null, if it is not null, update the marker with the new location
             if (agentMarker == null) {
                 agentMarker = googleMap.addMarker(
                     MarkerOptions()
@@ -146,8 +156,10 @@ class MapFragment : Fragment() {
     }
 
     private suspend fun geocodeAddress(addressString: String): LatLng? {
+        // Dispatchers.IO because it is a blocking call and it is called in a coroutine scope and try catch because it can throw an IOException if the address is not found
         return withContext(Dispatchers.IO) {
             try {
+                // Get the location with the address and update the map with it if the property location was null
                 val geocoder = Geocoder(requireContext())
                 val addresses = geocoder.getFromLocationName(addressString, 1)
                 if (addresses != null) {
@@ -168,6 +180,7 @@ class MapFragment : Fragment() {
     }
 
     private fun clearMarkers() {
+        // Clear existing markers from the map
         for (marker in propertyMarkers.keys) {
             marker.remove()
         }
@@ -175,6 +188,7 @@ class MapFragment : Fragment() {
     }
 
     override fun onResume() {
+        // Update the map with the location of the agent when the fragment is resumed
         super.onResume()
         if (isDualPanel()) {
             childFragmentManager.beginTransaction()
@@ -183,6 +197,7 @@ class MapFragment : Fragment() {
         }
     }
 
+    // Check if the device is a tablet or a phone
     private fun isDualPanel(): Boolean {
         return resources.getBoolean(R.bool.isTwoPanel)
     }

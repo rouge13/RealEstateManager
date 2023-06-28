@@ -1,14 +1,12 @@
 package com.openclassrooms.realestatemanager.ui.utils
 
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.wifi.WifiManager
-import android.util.Log
-import java.text.DateFormat
+import android.os.Build
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
+
 
 /**
  * Created by Philippe on 21/02/2018.
@@ -69,23 +67,30 @@ object Utils {
 //        return wifi.isWifiEnabled
 //    }
 
-    fun isInternetAvailable(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val capabilities =
-            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (capabilities != null) {
-            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-                return true
-            }
+    fun isInternetAvailable(connectivityManager: ConnectivityManager): Boolean {
+
+        val network = connectivityManager.activeNetwork
+        if (network != null) {
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+            return networkCapabilities!!.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
         }
+
         return false
+
+//        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+//            Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+//            return true
+//        }
+//        else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+//            Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+//            return true
+//        }
+//        else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+//            Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+//            return true
+//        }
+//        return false
     }
 }

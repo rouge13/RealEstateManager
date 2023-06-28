@@ -36,7 +36,6 @@ import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationV
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
 import com.openclassrooms.realestatemanager.ui.utils.Utils
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -274,7 +273,7 @@ class AddAndModificationFragment : Fragment() {
         // Init the insert button to insert a property in the database and navigate to the property list fragment if the insertion is successful or display a toast if not
         binding.btnValidate.setOnClickListener {
             lifecycleScope.launch {
-                if (requiredAllValidateInputsOk() && isPrimaryPhotoSelected(null)) {
+                if (requiredAllValidateInputsOk(collectPropertyInputsFromBinding()) && isPrimaryPhotoSelected(null)) {
                     val insertedPropertyId = insertPropertyEntity()
                     if (insertedPropertyId != null) {
                         // If the property is inserted show a notification and navigate to the property list fragment
@@ -342,7 +341,7 @@ class AddAndModificationFragment : Fragment() {
             sharedPropertyViewModel.getSelectedProperty.value?.let { propertyWithDetails ->
                 lifecycleScope.launch {
                     // Check if the required fields are filled and if a primary photo is selected
-                    if (requiredAllValidateInputsOk() && isPrimaryPhotoSelected(propertyWithDetails.property.id)) {
+                    if (requiredAllValidateInputsOk(collectPropertyInputsFromBinding()) && isPrimaryPhotoSelected(propertyWithDetails.property.id)) {
                         // Update the property in the database and navigate to the property list fragment if the update is successful and show a toast message to confirm or else display a toast if not
                         updatePhotosWithPropertyId(propertyWithDetails.property.id)
                         updatePropertyEntity(propertyWithDetails)
@@ -758,24 +757,26 @@ class AddAndModificationFragment : Fragment() {
         return null
     }
 
-    private fun requiredAllValidateInputsOk(): Boolean {
-        // Define a list of input field names and corresponding input values to check if they are empty
-        val inputsRequiredToValidate = listOf(
-            "type of house" to binding.propertyType.text.toString(),
+    // Collect all binding values and return them as a PropertyInputs object to check if all required inputs are ok in the function requiredAllValidateInputsOk()
+    fun collectPropertyInputsFromBinding(): List<Pair<String, String>> {
+        return listOf(
+            "houseType" to binding.propertyType.text.toString(),
             "price" to binding.propertyPrice.text.toString(),
-            "square feet" to binding.propertySquareFeet.text.toString(),
-            "number of rooms" to binding.propertyRoomsCount.text.toString(),
+            "squareFeet" to binding.propertySquareFeet.text.toString(),
+            "roomsCount" to binding.propertyRoomsCount.text.toString(),
             "description" to binding.propertyDescription.text.toString(),
-            "street number" to binding.addressStreetNumber.text.toString(),
-            "street name" to binding.addressStreetName.text.toString(),
+            "streetNumber" to binding.addressStreetNumber.text.toString(),
+            "streetName" to binding.addressStreetName.text.toString(),
             "city" to binding.addressCity.text.toString(),
-            "zip code" to binding.addressZipCode.text.toString(),
+            "zipCode" to binding.addressZipCode.text.toString(),
             "country" to binding.addressCountry.text.toString(),
-            "agent name" to binding.agentName.text.toString(),
-            "sold date" to binding.propertyDateText.text.toString(),
-            "date selling if sold" to binding.dateSale.text.toString()
+            "agentName" to binding.agentName.text.toString(),
+            "soldDate" to binding.propertyDateText.text.toString(),
+            "dateSale" to binding.dateSale.text.toString()
         )
+    }
 
+    fun requiredAllValidateInputsOk(inputsRequiredToValidate: List<Pair<String, String>>): Boolean {
         // Iterate over the list of inputs
         for (input in inputsRequiredToValidate) {
             // Check if the input value is blank
@@ -790,7 +791,7 @@ class AddAndModificationFragment : Fragment() {
         return true
     }
 
-    private suspend fun isPrimaryPhotoSelected(propertyId: Int?): Boolean {
+    suspend fun isPrimaryPhotoSelected(propertyId: Int?): Boolean {
         val photos: List<PhotoEntity>? = if (propertyId == null) {
             sharedPropertyViewModel.getAllPhotosRelatedToSetThePropertyId(null)
         } else {

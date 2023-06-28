@@ -27,29 +27,28 @@ class SettingsCurrencyDateAlertDialog(
         val inflater = LayoutInflater.from(context)
         binding = DialogSettingsUtilsBinding.inflate(inflater)
         builder.setView(binding.root)
-        sharedUtilsViewModel.getDateFormatSelected.observe(context as MainActivity) {
-            initDateFormatSelected(it)
-        }
+        // Get the date format selected by the agent in the settings and init the radio button selected with it (us or fr)
+        sharedUtilsViewModel.getDateFormatSelected.observe(context as MainActivity) { initDateFormatSelected(it) }
+        // Init the radio button selected with the money rate selected by the agent in the settings too
         initMoneyRateSelected()
-
+        // Setup the listener for the button to save the new currency or date format selected by the agent in the settings
         builder.setPositiveButton("Save") { dialog, _ ->
             setConvertMoneyValidate()
             setSimpleDateFormat()
             dialog.dismiss()
         }
-
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-
+        // Cancel the dialog
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+        // Create and show the alert dialog to the agent
         alertDialog = builder.create()
         alertDialog?.show()
-
+        // Setup the listeners for the radio buttons
         setupListeners()
     }
 
 
     private fun initMoneyRateSelected() {
+        // Init the radio button selected with the money rate selected by the agent in the settings
         if (sharedUtilsViewModel.getMoneyRateSelected.value == true) {
             binding.radioButtonDollars.isChecked = false
             binding.radioButtonEuros.isChecked = true
@@ -60,6 +59,7 @@ class SettingsCurrencyDateAlertDialog(
     }
 
     private fun setSimpleDateFormat() {
+        // Set the date format selected by the agent in the settings when the agent click on the button to save the new date format selected
         val dateFormatSelected = if (binding.usDateFormatButton.isChecked) {
             Utils.todayDateUsaFormat
         } else {
@@ -68,8 +68,8 @@ class SettingsCurrencyDateAlertDialog(
         sharedUtilsViewModel.setDateFormatSelected(dateFormatSelected)
     }
 
-
     private fun initDateFormatSelected(dateFormat: SimpleDateFormat?) {
+        // Init the radio button selected with the date format selected by the agent in the settings
         val dateFormatSelected = dateFormat?.toPattern()
         if (dateFormatSelected == "yyyy/MM/dd") {
             binding.usDateFormatButton.isChecked = true
@@ -79,13 +79,14 @@ class SettingsCurrencyDateAlertDialog(
     }
 
     private fun setupListeners() {
-        // Setup the listener for the button to save the new currency
+        // Setup the listener for the button to save the new currency selected by the agent in the settings
+        setConvertMoney()
         // Update the date format selected by the agent in the settings
         setDateFormat()
-        setConvertMoney()
     }
 
     private fun setConvertMoney() {
+        // Set the currency selected by the agent in the settings (dollars or euros)
         binding.radioButtonDollars.setOnClickListener {
             binding.radioButtonEuros.isSelected = false
             binding.radioButtonDollars.isSelected = true
@@ -97,11 +98,13 @@ class SettingsCurrencyDateAlertDialog(
     }
 
     private fun setConvertMoneyValidate() {
+        // Set the currency selected by the agent in the settings (dollars or euros) when the agent click on the save button
         val isEurosSelected = binding.radioButtonEuros.isChecked
         sharedUtilsViewModel.setActiveSelectionMoneyRate(isEurosSelected)
     }
 
     private fun setDateFormat() {
+        // Set the date format selected by the agent in the settings (us or fr)
         binding.usDateFormatButton.setOnClickListener {
             binding.usDateFormatButton.isSelected = true
             binding.euDateFormatButton.isSelected = false

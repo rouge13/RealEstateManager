@@ -60,7 +60,7 @@ class SharedPropertyViewModel(
         }
     }
 
-    private fun combinePropertiesWithDetails(
+    fun combinePropertiesWithDetails(
         properties: List<PropertyEntity>?,
         addresses: List<AddressEntity>,
         photos: List<PhotoEntity>
@@ -129,10 +129,12 @@ class SharedPropertyViewModel(
         photoRepository.deletePhoto(photoId)
     }
 
+    // Get all photos related to the property id
     suspend fun getAllPhotosRelatedToSetThePropertyId(propertyId: Int? = null): List<PhotoEntity>? {
         return photoRepository.getAllPhotosRelatedToASpecificProperty(propertyId)
     }
 
+    // Delete all photos with null property id
     suspend fun deletePhotosWithNullPropertyId() {
         photoRepository.deletePhotosWithNullPropertyId()
     }

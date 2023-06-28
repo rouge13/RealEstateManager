@@ -2,7 +2,6 @@ package com.openclassrooms.realestatemanager.ui.customImage
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -17,11 +16,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.openclassrooms.realestatemanager.R
 
 
-class CustomImageView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+class CustomImageView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
 
     private var description: String = ""
     private var soldOut: Boolean = false
@@ -56,12 +51,13 @@ class CustomImageView @JvmOverloads constructor(
         addView(descriptionTextView)
         addView(soldOutTextView)
 
-        // Apply the initial attribute value
+        // Apply the initial attribute value for description and soldOut
         setDescription(description)
         setSoldOut(soldOut)
     }
 
     private fun ImageView.paramOfImageView() {
+        // Set the layout params of the ImageView to match the parent width and wrap the content height and center it in the parent view
         layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
             gravity = Gravity.CENTER
         }
@@ -70,6 +66,7 @@ class CustomImageView @JvmOverloads constructor(
     }
 
     private fun TextView.paramOfDescriptionTextView(context: Context) {
+        // Set the layout params of the TextView of the description to wrap the content width and wrap the content height and center to the bottom in the parent view with setting color, background color and text size
         layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             setMargins(0, 0, 0, 16)
@@ -81,6 +78,7 @@ class CustomImageView @JvmOverloads constructor(
     }
 
     private fun TextView.paramOfSoldTextView(context: Context) {
+        // Set the layout params of the TextView of the soldText to match the parent width and wrap the content height and center it in the parent view with setting color, background color and text size
         layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
             gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
             textAlignment = View.TEXT_ALIGNMENT_CENTER
@@ -93,6 +91,7 @@ class CustomImageView @JvmOverloads constructor(
     }
 
     private fun setDescription(description: String) {
+        // Set the description value and set the visibility of the description TextView to visible if the description is not empty
         this.description = description
         descriptionTextView.text = description
         descriptionTextView.visibility = if (description.isNotEmpty()) View.VISIBLE else View.GONE
@@ -100,10 +99,12 @@ class CustomImageView @JvmOverloads constructor(
     }
 
     fun setDescriptionValue(value: String) {
+        // Set the description value
         setDescription(value)
     }
 
     fun setSoldOut(soldOut: Boolean) {
+        // Set the soldOut value and set the visibility of the soldOut TextView to visible if the soldOut is true with setting the alpha of the CustomImageView to 0.3f if the soldOut is true
         this.soldOut = soldOut
         soldOutTextView.visibility = if (soldOut) View.VISIBLE else View.GONE
         alpha = if (soldOut) 0.3f else 1f
@@ -111,10 +112,11 @@ class CustomImageView @JvmOverloads constructor(
     }
 
     fun setImageResource(resourceId: Int) {
+        // Set the image resource of the ImageView
         imageView.setImageResource(resourceId)
     }
 
-    // DisCacheStrategy.ALL is used to cache the original image
+    // DisCacheStrategy.ALL is used to cache the original image and the resized image based of the aspect ratio of the image with a specific width and height based of width of the screen
     fun loadImage(url: String, aspectRatio: Float = 1f) {
         Glide.with(context)
             .load(url)
@@ -124,10 +126,12 @@ class CustomImageView @JvmOverloads constructor(
     }
 
     private fun calculateImageWidth(aspectRatio: Float): Int {
+        // Calculate the width of the image based of the aspect ratio of the image
         return Resources.getSystem().displayMetrics.widthPixels
     }
 
     private fun calculateImageHeight(aspectRatio: Float): Int {
+        // Calculate the height of the image based of the aspect ratio of the image
         val screenWidth = Resources.getSystem().displayMetrics.widthPixels
         return (screenWidth / aspectRatio).toInt()
     }
