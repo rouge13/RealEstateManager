@@ -16,8 +16,10 @@ class PropertyInfoAdapter(fragment: Fragment, private val photoList: List<PhotoE
         description = "No photo!" // Replace with the default description
     )
 
+    // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int = photoList?.size!!
 
+    // Create the fragments to display for each item in the photo list. If the photo list is empty, display the default photo.
     override fun createFragment(position: Int): Fragment {
         return if (photoList.isNullOrEmpty() || position >= photoList.size) {
             PhotoFragment.newInstance(defaultPhoto, soldOut)

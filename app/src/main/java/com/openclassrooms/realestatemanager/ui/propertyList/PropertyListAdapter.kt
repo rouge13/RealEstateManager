@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.ui.propertyList
 
-import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
@@ -26,7 +25,7 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
     : ListAdapter<PropertyWithDetails, PropertyListAdapter.PropertyViewHolder>(diffCallback) {
 
     inner class PropertyViewHolder(private val binding: ItemPropertyBinding) : RecyclerView.ViewHolder(binding.root) {
-
+        // Bind the view to the data and set the onClickListener to open the property details
         fun bind(get: PropertyWithDetails) {
             // Set the data to the view
             binding.propertyType.text = get.property.typeOfHouse
@@ -34,26 +33,18 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
             // Use coroutine scope to collect the value of getMoneyRateSelected
             CoroutineScope(Dispatchers.Main).launch {
                 sharedUtilsViewModel.getMoneyRateSelected.observe(lifecycleOwner) { isEuroSelected ->
-                    val convertedPrice = get.property.price?.let {
-                        sharedPropertyViewModel.convertPropertyPrice(
-                            it, isEuroSelected)
-                    }
+                    // Convert the price to the selected currency and set it to the view
+                    val convertedPrice = get.property.price?.let { sharedPropertyViewModel.convertPropertyPrice(it, isEuroSelected) }
                     binding.propertyValue.text = when (convertedPrice) {
-                        is Int -> {
-                            if (isEuroSelected) {
-                                "$convertedPrice€"
-                            } else {
-                                "$${get.property.price}"
-                            }
-                        }
-                        else -> "$${get.property.price}" // Handle the case when price or conversion is null
+                        is Int -> { if (isEuroSelected) { "$convertedPrice€" } else { "$${get.property.price}" } }
+                        // When price or conversion is null
+                        else -> "$${get.property.price}"
                     }
                 }
             }
-
             // Set the image to the view
             setImageInRecyclerView(get.property)
-
+            // Set the sold text and alpha to the view if the property is sold or not
             val propertyLayout = binding.propertyLayout
             if (get.property.isSold == true) {
                 propertyLayout.alpha = 0.3f
@@ -63,7 +54,7 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
                 binding.soldText.visibility = android.view.View.GONE
             }
 
-            // Set the onClickListener
+            // Set the onClickListener to the view to open the property details
             itemView.setOnClickListener {
                 val position = this.bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
@@ -90,6 +81,7 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
                         val uri = Uri.parse(get.primaryPhoto)
                         val inputStream = context.contentResolver.openInputStream(uri)
                         if (inputStream != null) {
+                            // Load the image from URI and set it to the view if it's not null
                             val bitmap = BitmapFactory.decodeStream(inputStream)
                             binding.propertyImage.setImageBitmap(bitmap)
                         } else {
@@ -108,12 +100,14 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyViewHolder {
+        // Inflate the view binding and return the view holder with the binding view as parameter
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemPropertyBinding.inflate(inflater, parent, false)
         return PropertyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: PropertyViewHolder, position: Int) {
+        // Bind the view holder with the data at the position
         val propertyWithDetails = getItem(position)
         holder.bind(propertyWithDetails)
     }

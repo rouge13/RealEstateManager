@@ -142,6 +142,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Init all the ViewModels used in the MainActivity and the fragments attached to it (SharedViewModels) using the ViewModelFactory class (dependency injection) and the MainApplication class
     private fun initViewModels() {
         initializationViewModel = ViewModelProvider(
             this,
@@ -165,10 +166,12 @@ class MainActivity : AppCompatActivity() {
         )[SharedUtilsViewModel::class.java]
     }
 
+    // Set default format of date to USA format (yyyy/MM/dd)
     private fun setDefaultValueOfDateFormat() {
         sharedUtilsViewModel.setDateFormatSelected(Utils.todayDateUsaFormat)
     }
 
+    // Init the search button onClickListener to navigate to the SearchFragment or go back to the previous fragment if the user is already on the SearchFragment
     private fun initSearchOnClickListeners() {
         activityMainBinding.btnSearch.setOnClickListener {
             if (navController.currentDestination?.id != R.id.searchFragment) {
@@ -179,6 +182,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Setup the navigation controller and connect it to the NavigationView
     private fun setupNavigationController() {
         // Init the NavController
         val navHostFragment =
@@ -190,17 +194,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleNavigationItemSelected(
-        item: MenuItem,
-        navController: NavController
-    ): Boolean {
+    // Handle the navigation item selected in the NavigationView (drawer) and navigate to the corresponding fragment or show the corresponding dialog
+    private fun handleNavigationItemSelected(item: MenuItem, navController: NavController): Boolean {
         when (item.itemId) {
             R.id.nav_settings_utils -> {
                 lifecycleScope.launch {
-                    SettingsCurrencyDateAlertDialog(
-                        context = this@MainActivity,
-                        sharedUtilsViewModel = sharedUtilsViewModel
-                    ).showSettings() // Show the dialog
+                    // Show the Currency and date dialog settings
+                    SettingsCurrencyDateAlertDialog(context = this@MainActivity, sharedUtilsViewModel = sharedUtilsViewModel).showSettings()
                     drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer
                 }
                 return true
@@ -208,10 +208,10 @@ class MainActivity : AppCompatActivity() {
 
             else -> {
                 // Let the NavController handle the other menu items
-                val handled =
-                    item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
+                val handled = item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
                 if (handled) {
-                    drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer if an item is handled
+                    // Close the drawer if an item is handled
+                    drawerLayout.closeDrawer(GravityCompat.START)
                 }
                 return handled
             }
@@ -230,47 +230,43 @@ class MainActivity : AppCompatActivity() {
                     val builder = AlertDialog.Builder(this)
                     builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
                         .setCancelable(false)
-                        .setPositiveButton("Yes") { _, _ ->
-                            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                        }
+                        .setPositiveButton("Yes") { _, _ -> startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }
                         .setNegativeButton("No") { dialog, _ -> dialog.cancel() }
                     val alert = builder.create()
                     alert.show()
                 } else {
+                    // If the agent has internet access and the GPS is enabled, start the agent location updates to show on the map the agent's location
                     agentLocationUpdates()
                 }
+                // Setup the bottom navigation view and set the current item to the PropertyListFragment (first fragment) if the agent has internet access
                 setupBottomNavigation()
                 activityMainBinding.viewPager.currentItem = 0 // Switch to the PropertyListFragment
             } else {
+                // Navigation has no internet access show a toast and hide the bottom navigation view if the agent has no internet access
                 Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
                 activityMainBinding.bottomNavigationView.visibility = View.GONE
             }
         })
     }
 
+    // Check permission to send notifications
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkHasPermissionToSendNotifications() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestSinglePermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
+    // Check permission to access the user's location for the agent location updates
     private fun agentLocationUpdates() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             requestLocationUpdates()
         } else {
             requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
+    // Request permission to access the user's location for the agent location updates
     private val requestSinglePermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -280,10 +276,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    // Start the agent location updates to show on the map the agent's location using the sharedAgentViewModel
     private fun requestLocationUpdates() {
         sharedAgentViewModel.startLocationUpdates()
     }
 
+    // Setup the bottom navigation view and set the current item to the PropertyListFragment (first fragment) if the agent has internet access
     private fun setupBottomNavigation() {
         activityMainBinding.bottomNavigationView.visibility = View.VISIBLE
         activityMainBinding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
@@ -305,11 +303,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Override the create options menu to inflate the menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_main_agent_info_menu, menu)
         return true
     }
 
+    // Override the on options item selected to handle the menu item selected
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
@@ -325,18 +325,14 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    // Setup the drawer button to open and close the drawer layout and sync the state of the drawer layout with the drawer button
     private fun setupDrawerButton() {
-        val actionBarDrawerToggle = ActionBarDrawerToggle(
-            this,
-            drawerLayout,
-            activityMainBinding.activityMainToolbar,
-            R.string.drawer_open,
-            R.string.drawer_close
-        )
+        val actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, activityMainBinding.activityMainToolbar, R.string.drawer_open, R.string.drawer_close)
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
     }
 
+    // Override the on back pressed to close the drawer layout if it is open
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(navigationView)) {
             drawerLayout.closeDrawer(navigationView)
@@ -345,6 +341,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Override the dispatch touch event to hide the keyboard if it is open when the user touches outside the keyboard
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (currentFocus != null) {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -353,6 +350,7 @@ class MainActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(ev)
     }
 
+    // Override the on request permissions result to handle the permission result to send notifications
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

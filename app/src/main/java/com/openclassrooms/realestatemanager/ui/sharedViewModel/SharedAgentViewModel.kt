@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.ui.sharedViewModel
 
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData

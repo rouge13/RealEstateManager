@@ -26,8 +26,6 @@ import com.openclassrooms.realestatemanager.ui.alertDialog.LoanSimulatorAlertDia
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedNavigationViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedPropertyViewModel
 import com.openclassrooms.realestatemanager.ui.sharedViewModel.SharedUtilsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,16 +51,14 @@ class PropertyInfoFragment : Fragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        // Inflate the layout for this fragment with the ViewBinding and return the binding's root view
         binding = FragmentInfoPropertyBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Call the displayPropertyDetails method to display the property details in the fragment and display the property photos in the ViewPager2 in the xml layout
         super.onViewCreated(view, savedInstanceState)
         initSharedNavigationViewModelSearchAction()
         displayPropertyDetails(this, view)
@@ -71,8 +67,8 @@ class PropertyInfoFragment : Fragment() {
     private fun initSharedNavigationViewModelSearchAction() {
         sharedNavigationViewModel.searchClicked.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
-                val action =
-                    PropertyInfoFragmentDirections.actionInfoPropertyFragmentToSearchFragment()
+                // Navigate to search fragment when user click on search button in the toolbar
+                val action = PropertyInfoFragmentDirections.actionInfoPropertyFragmentToSearchFragment()
                 findNavController().navigate(action)
                 sharedNavigationViewModel.doneNavigatingToSearch()
             }
@@ -80,13 +76,14 @@ class PropertyInfoFragment : Fragment() {
     }
 
     private fun displayPropertyDetails(fragment: Fragment, view: View) {
-
             sharedPropertyViewModel.getSelectedProperty.observe(viewLifecycleOwner) { propertyWithDetails ->
+                // Show the property details in the fragment and display the property photos in the ViewPager2 in the xml layout and show if sold or not
                 propertyWithDetails?.let {
                     binding.fragmentInfoProperty.visibility = View.VISIBLE
                     initIsSoldOrNot(propertyWithDetails)
                     val photoViewPager = binding.photoPropertyViewPager
                     val photoList = propertyWithDetails.photos
+                    // Check if photoList is null or empty and if it is the case, display a default photo with a description
                     if (photoList.isNullOrEmpty()) {
                         val defaultPhoto = PhotoEntity(id = -1, photoURI = null, description = getString(R.string.no_photo_description))
                         val adapter = PropertyInfoAdapter(fragment, listOf(defaultPhoto), propertyWithDetails.property.isSold ?: false)
@@ -130,14 +127,17 @@ class PropertyInfoFragment : Fragment() {
                     )
                 }
             }
+        // Check if staticMapUrl is empty or not and if it is the case, display a toast to user to tell him that address is not valid else display the static map in the ImageView
         checkForShowingStaticMap(staticMapUrl, staticMapImageView, view)
     }
 
     private fun checkForShowingStaticMap(staticMapUrl: String, staticMapImageView: ImageView, view: View) {
         if (staticMapUrl == "") {
+            // If staticMapUrl is empty, display a toast to user to tell him that address is not valid and must be modified and hide the static map ImageView to avoid displaying a previous static map
             staticMapImageView.visibility = View.GONE
             Toast.makeText(view.context, getString(R.string.address_not_valid), Toast.LENGTH_SHORT).show()
         } else {
+            // If staticMapUrl is not empty, display the static map in the ImageView and show the ImageView
             staticMapImageView.visibility = View.VISIBLE
             Glide.with(view)
                 .load(staticMapUrl)
@@ -148,6 +148,7 @@ class PropertyInfoFragment : Fragment() {
 
     private fun initAllTextView(propertyWithDetails: PropertyWithDetails) {
         Log.d("PropertyInfoFragment", "initAllTextView: $propertyWithDetails")
+        // Display all the property details in the TextView in the fragment layout and if there is no description, display a default description in the TextView
         binding.squareFeetValue.text = propertyWithDetails.property.squareFeet.toString()
         binding.roomsValue.text = propertyWithDetails.property.roomsCount.toString()
         binding.bedroomsValue.text = propertyWithDetails.property.bedroomsCount.toString()
@@ -164,6 +165,7 @@ class PropertyInfoFragment : Fragment() {
     }
 
     private fun initTheProximitiesForThisProperty(propertyWithDetails: PropertyWithDetails) {
+        // Create a list of string with all the proximities of the property with the switch elements and display it in the TextView
         val proximities = mutableListOf<String>()
         propertyWithDetails.property.schoolProximity?.let { if (it) { proximities.add(getString(R.string.school_proximity)) } }
         propertyWithDetails.property.parkProximity?.let { if (it) { proximities.add(getString(R.string.park_proximity)) } }
@@ -174,6 +176,7 @@ class PropertyInfoFragment : Fragment() {
                 proximities.add(getString(R.string.public_transport_proximity))
             }
         }
+        // Check if the list is empty or not and if it is the case, display a default text in the TextView else display the list of proximities in the TextView
         if (proximities.isNotEmpty()) {
             val formattedProximitiesString = proximities.joinToString(", ")
             val lastIndex = proximities.size - 1
@@ -186,6 +189,7 @@ class PropertyInfoFragment : Fragment() {
     }
 
     private fun initAddressDetails(propertyWithDetails: PropertyWithDetails) {
+        // Display all the address details in the TextView in the fragment layout
         Log.d("PropertyInfoFragment", "initAddressDetails: $propertyWithDetails")
         binding.locationLine1.text = (buildString {
             append(propertyWithDetails.address?.streetNumber)
@@ -212,6 +216,7 @@ class PropertyInfoFragment : Fragment() {
     }
 
     private fun updateDate(propertyWithDetails: PropertyWithDetails, dateFormat: SimpleDateFormat) {
+        // Display the date of the sale or the date of the start of the sale in the TextView in the fragment layout and change the color of the text depending on if the property is sold or not
         if (propertyWithDetails.property.isSold == true) {
             binding.date.setTextColor(resources.getColor(R.color.red))
             val dateSold = propertyWithDetails.property.dateSold?.let { Date(it) }
@@ -227,6 +232,7 @@ class PropertyInfoFragment : Fragment() {
         photoViewPager: ViewPager2,
         propertyWithDetails: PropertyWithDetails
     ) {
+        // Init all the buttons in the fragment layout and set the onClickListeners
         Log.d("PropertyInfoFragment", "initAllButtons: $photoViewPager")
         binding.imageMoveAfterButton.setOnClickListener {
             photoViewPager.currentItem = photoViewPager.currentItem + 1
@@ -237,6 +243,7 @@ class PropertyInfoFragment : Fragment() {
         binding.backwardProperty.setOnClickListener {
             findNavController().popBackStack()
         }
+        // Set the onClickListener on the button to display the loan simulator dialog fragment and pass the price of the property to the dialog fragment based on the currency selected by the agent
         sharedUtilsViewModel.getMoneyRateSelected.observe(viewLifecycleOwner) { isEuroSelected ->
             binding.loanSimulatorButton.setOnClickListener {
                 val loanSimulatorAlertDialog = LoanSimulatorAlertDialog(requireContext())
@@ -257,6 +264,7 @@ class PropertyInfoFragment : Fragment() {
         }
     }
 
+    // Check if the device is a tablet or not and if it is the case, hide the backward button in the fragment layout else display it
     override fun onResume() {
         super.onResume()
         if (isDualPanel()) {
@@ -266,6 +274,7 @@ class PropertyInfoFragment : Fragment() {
         }
     }
 
+    // Check if the device is a tablet or not
     private fun isDualPanel(): Boolean {
         return activity?.resources?.getBoolean(R.bool.isTwoPanel) == true
     }

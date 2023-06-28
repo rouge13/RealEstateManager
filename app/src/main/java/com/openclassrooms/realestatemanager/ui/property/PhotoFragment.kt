@@ -19,10 +19,8 @@ class PhotoFragment : Fragment() {
     private lateinit var photoEntity: PhotoEntity
     private var soldOut: Boolean = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        // Inflate the layout for this fragment with the FragmentPhotoBinding class to access the views and return the binding root
         _binding = FragmentPhotoBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -74,6 +72,7 @@ class PhotoFragment : Fragment() {
     }
 
     companion object {
+        // Default photo resource identifier for the default photo if the photo is null or empty or the resource identifier if it is a drawable resource with constructing the URI with the resource identifier
         private const val DEFAULT_PHOTO_RESOURCE_ID = R.drawable.ic_default_property
         private val defaultPhoto = PhotoEntity(
             id = -1,
@@ -82,6 +81,7 @@ class PhotoFragment : Fragment() {
         )
 
         fun newInstance(photoEntity: PhotoEntity?, soldOut: Boolean): PhotoFragment {
+            // Create a new instance of PhotoFragment and set the arguments for the photoEntity and soldOut values and return the fragment instance with the arguments set
             val args = Bundle().apply {
                 putParcelable("photoEntity", photoEntity)
                 putBoolean("soldOut", soldOut)

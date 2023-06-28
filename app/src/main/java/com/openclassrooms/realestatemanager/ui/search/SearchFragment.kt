@@ -46,11 +46,7 @@ class SearchFragment : Fragment() {
     }
     private val searchCriteria = SearchCriteria()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentSearchPropertyBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -187,13 +183,9 @@ class SearchFragment : Fragment() {
                     if (!hasFocus && binding.propertyPriceEndValue.text!!.isNotEmpty()) {
                         if (isEuroSelected) {
                             searchCriteria.selectedMaxPriceForQuery =
-                                sharedPropertyViewModel.convertPropertyPrice(
-                                    binding.propertyPriceEndValue.text.toString().toInt(),
-                                    convertToDollar
-                                )
+                                sharedPropertyViewModel.convertPropertyPrice(binding.propertyPriceEndValue.text.toString().toInt(), convertToDollar)
                         } else {
-                            searchCriteria.selectedMaxPriceForQuery =
-                                binding.propertyPriceEndValue.text.toString().toInt()
+                            searchCriteria.selectedMaxPriceForQuery = binding.propertyPriceEndValue.text.toString().toInt()
                         }
                     }
                 }
@@ -213,13 +205,9 @@ class SearchFragment : Fragment() {
                     if (!hasFocus && binding.propertyPriceStartValue.text!!.isNotEmpty()) {
                         if (isEuroSelected) {
                             searchCriteria.selectedMinPriceForQuery =
-                                sharedPropertyViewModel.convertPropertyPrice(
-                                    binding.propertyPriceStartValue.text.toString().toInt(),
-                                    convertToDollar
-                                )
+                                sharedPropertyViewModel.convertPropertyPrice(binding.propertyPriceStartValue.text.toString().toInt(), convertToDollar)
                         } else {
-                            searchCriteria.selectedMinPriceForQuery =
-                                binding.propertyPriceStartValue.text.toString().toInt()
+                            searchCriteria.selectedMinPriceForQuery = binding.propertyPriceStartValue.text.toString().toInt()
                         }
                     }
                 }
@@ -329,12 +317,9 @@ class SearchFragment : Fragment() {
     }
 
     private fun initCities(cities: List<String>) {
+        // Init cities autocomplete text view with the list of cities from the database and update the search criteria when the user selects a city from the list
         val multiAutoCompleteTextView = binding.propertyCityMultiAutoComplete
-        val adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_dropdown_item_1line,
-            cities
-        )
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, cities)
         multiAutoCompleteTextView.setAdapter(adapter)
         multiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
         multiAutoCompleteTextView.threshold = 2 // Start suggesting after typing one character
@@ -346,6 +331,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun initBoroughs(boroughs: List<String>) {
+        // Init boroughs autocomplete text view with the list of boroughs from the database and update the search criteria when the user selects a borough from the list
         val multiAutoCompleteTextView = binding.propertyBoroughsMultiAutoComplete
         val adapter = ArrayAdapter(
             requireContext(),
@@ -354,7 +340,8 @@ class SearchFragment : Fragment() {
         )
         multiAutoCompleteTextView.setAdapter(adapter)
         multiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
-        multiAutoCompleteTextView.threshold = 2 // Start suggesting after typing one character
+        // Start suggesting after typing one character
+        multiAutoCompleteTextView.threshold = 2
         multiAutoCompleteTextView.setOnItemClickListener { _, _, _, _ ->
             val selectedBoroughs = multiAutoCompleteTextView.text
                 .split(",").map { it.trim() }.filter { it.isNotEmpty() }
@@ -363,6 +350,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun initTypesOfHouse(typesOfHouse: List<String>) {
+        // Init types of house autocomplete text view with the list of types of house from the database and update the search criteria when the user selects a type of house from the list
         val multiAutoCompleteTextView = binding.propertyTypeOfHouseMultiAutoComplete
         val adapter = ArrayAdapter(
             requireContext(),
@@ -371,7 +359,8 @@ class SearchFragment : Fragment() {
         )
         multiAutoCompleteTextView.setAdapter(adapter)
         multiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
-        multiAutoCompleteTextView.threshold = 2 // Start suggesting after typing one character
+        // Start suggesting after typing one character
+        multiAutoCompleteTextView.threshold = 2
         multiAutoCompleteTextView.setOnItemClickListener { _, _, _, _ ->
             val selectedTypeOfHouse = multiAutoCompleteTextView.text
                 .split(",").map { it.trim() }.filter { it.isNotEmpty() }
@@ -380,14 +369,18 @@ class SearchFragment : Fragment() {
     }
 
     private fun initAllButtons() {
+        // Init all buttons and set their onClickListener
         binding.cancelButton.setOnClickListener {
-            sharedPropertyViewModel.setSearchCriteria(sharedPropertyViewModel.previousSearchCriteria.value)
+            // if the user cancels the search, we reset the search criteria to the previous search criteria (if there is one)
+            if (sharedPropertyViewModel.previousSearchCriteria.value != null) {
+                sharedPropertyViewModel.setSearchCriteria(sharedPropertyViewModel.previousSearchCriteria.value)
+            }
             findNavController().popBackStack()
         }
         binding.searchProperty.setOnClickListener {
+            // if the user searches for a property, we save the current search criteria as the previous search criteria
             sharedPropertyViewModel.setSearchCriteria(searchCriteria)
             if (!activity?.resources?.getBoolean(R.bool.isTwoPanel)!!) {
-//                val action = SearchFragmentDirections.actionSearchFragmentToPropertyListFragment()
                 binding.root.findNavController().navigate(R.id.propertyListFragment)
             } else {
                 findNavController().popBackStack()
@@ -425,6 +418,7 @@ class SearchFragment : Fragment() {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
+            // Set the value of the selected date to the search criteria when the user dismisses the dialog (clicks on OK)
             datePickerDialog.setOnDismissListener {
                 calendar.apply {
                     set(Calendar.YEAR, datePickerDialog.datePicker.year)
@@ -458,6 +452,7 @@ class SearchFragment : Fragment() {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
+            // Set the value of the selected date to the search criteria when the user dismisses the dialog (clicks on OK)
             datePickerDialog.setOnDismissListener {
                 calendar.apply {
                     set(Calendar.YEAR, datePickerDialog.datePicker.year)

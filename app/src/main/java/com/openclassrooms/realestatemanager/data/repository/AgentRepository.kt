@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.openclassrooms.realestatemanager.data.dao.AgentDao
 import com.openclassrooms.realestatemanager.data.model.AgentEntity
-import com.openclassrooms.realestatemanager.ui.utils.Utils
 import kotlinx.coroutines.flow.Flow
 
 /**
