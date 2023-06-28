@@ -1,6 +1,8 @@
 package com.openclassrooms.realestatemanager.ui
 
 import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
 import com.openclassrooms.realestatemanager.data.database.PropertyDatabase
 import com.openclassrooms.realestatemanager.data.repository.AddressRepository
 import com.openclassrooms.realestatemanager.data.repository.AgentRepository

@@ -1,7 +1,10 @@
 package com.openclassrooms.realestatemanager.ui.utils
 
+import android.content.Context
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.os.Build
 import java.text.SimpleDateFormat
 import java.util.*
@@ -67,30 +70,32 @@ object Utils {
 //        return wifi.isWifiEnabled
 //    }
 
-    fun isInternetAvailable(connectivityManager: ConnectivityManager): Boolean {
-
-        val network = connectivityManager.activeNetwork
-        if (network != null) {
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-            return networkCapabilities!!.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
-                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+    fun isInternetAvailable(context: Context): Boolean {
+        // register activity with the connectivity manager service
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        // Returns a Network object corresponding to the Transport specified or false if no transport is satisfied and no network.
+        // Keeping VERSION_CODES.M because it is the minimum version of android that the project supports and it is the version that has the NetworkCapabilities class correctly running for my integrated test
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            // Representation the capabilities of an active network.
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return when {
+                // Uses a Wi-Fi transport
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                // Uses a CELLULAR transport
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                // Uses ETHERNET transport or ETHERNET network
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                // else return false
+                else -> false
+            }
+        } else {
+            // if the android version is below M
+            @Suppress("DEPRECATION")
+            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
         }
 
-        return false
-
-//        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-//            Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-//            return true
-//        }
-//        else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-//            Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-//            return true
-//        }
-//        else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-//            Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-//            return true
-//        }
-//        return false
     }
 }
