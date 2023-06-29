@@ -52,7 +52,7 @@ class IntegratedNetworkUtilsTest {
     }
 
     @Test
-    fun `internet connection state`() {
+    fun checkHasInternet() {
         val shadowNetworkCapabilities = shadowOf(connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork))
         shadowNetworkCapabilities.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
         shadowNetworkCapabilities.addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
