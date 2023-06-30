@@ -86,10 +86,10 @@ class PropertyInfoFragment : Fragment() {
                     // Check if photoList is null or empty and if it is the case, display a default photo with a description
                     if (photoList.isNullOrEmpty()) {
                         val defaultPhoto = PhotoEntity(id = -1, photoURI = null, description = getString(R.string.no_photo_description))
-                        val adapter = PropertyInfoAdapter(fragment, listOf(defaultPhoto), propertyWithDetails.property.isSold ?: false)
+                        val adapter = PropertyInfoAdapter(fragment, listOf(defaultPhoto), propertyWithDetails.property?.isSold ?: false)
                         photoViewPager.adapter = adapter
                     } else {
-                        val adapter = PropertyInfoAdapter(fragment, photoList, propertyWithDetails.property.isSold ?: false)
+                        val adapter = PropertyInfoAdapter(fragment, photoList, propertyWithDetails.property?.isSold ?: false)
                         photoViewPager.adapter = adapter
                     }
                     lifecycleScope.launch {
@@ -149,11 +149,11 @@ class PropertyInfoFragment : Fragment() {
     private fun initAllTextView(propertyWithDetails: PropertyWithDetails) {
         Log.d("PropertyInfoFragment", "initAllTextView: $propertyWithDetails")
         // Display all the property details in the TextView in the fragment layout and if there is no description, display a default description in the TextView
-        binding.squareFeetValue.text = propertyWithDetails.property.squareFeet.toString()
-        binding.roomsValue.text = propertyWithDetails.property.roomsCount.toString()
-        binding.bedroomsValue.text = propertyWithDetails.property.bedroomsCount.toString()
-        binding.bathroomsValue.text = propertyWithDetails.property.bathroomsCount.toString()
-        val description = propertyWithDetails.property.description
+        binding.squareFeetValue.text = propertyWithDetails.property?.squareFeet.toString()
+        binding.roomsValue.text = propertyWithDetails.property?.roomsCount.toString()
+        binding.bedroomsValue.text = propertyWithDetails.property?.bedroomsCount.toString()
+        binding.bathroomsValue.text = propertyWithDetails.property?.bathroomsCount.toString()
+        val description = propertyWithDetails.property?.description
         if (description.isNullOrEmpty()) {
             binding.description.text = getString(R.string.no_description)
         } else {
@@ -167,11 +167,11 @@ class PropertyInfoFragment : Fragment() {
     private fun initTheProximitiesForThisProperty(propertyWithDetails: PropertyWithDetails) {
         // Create a list of string with all the proximities of the property with the switch elements and display it in the TextView
         val proximities = mutableListOf<String>()
-        propertyWithDetails.property.schoolProximity?.let { if (it) { proximities.add(getString(R.string.school_proximity)) } }
-        propertyWithDetails.property.parkProximity?.let { if (it) { proximities.add(getString(R.string.park_proximity)) } }
-        propertyWithDetails.property.shoppingProximity?.let { if (it) { proximities.add(getString(R.string.shopping_proximity)) } }
-        propertyWithDetails.property.restaurantProximity?.let { if (it) { proximities.add(getString(R.string.restaurant_proximity)) } }
-        propertyWithDetails.property.publicTransportProximity?.let {
+        propertyWithDetails.property?.schoolProximity?.let { if (it) { proximities.add(getString(R.string.school_proximity)) } }
+        propertyWithDetails.property?.parkProximity?.let { if (it) { proximities.add(getString(R.string.park_proximity)) } }
+        propertyWithDetails.property?.shoppingProximity?.let { if (it) { proximities.add(getString(R.string.shopping_proximity)) } }
+        propertyWithDetails.property?.restaurantProximity?.let { if (it) { proximities.add(getString(R.string.restaurant_proximity)) } }
+        propertyWithDetails.property?.publicTransportProximity?.let {
             if (it) {
                 proximities.add(getString(R.string.public_transport_proximity))
             }
@@ -217,13 +217,13 @@ class PropertyInfoFragment : Fragment() {
 
     private fun updateDate(propertyWithDetails: PropertyWithDetails, dateFormat: SimpleDateFormat) {
         // Display the date of the sale or the date of the start of the sale in the TextView in the fragment layout and change the color of the text depending on if the property is sold or not
-        if (propertyWithDetails.property.isSold == true) {
+        if (propertyWithDetails.property?.isSold == true) {
             binding.date.setTextColor(resources.getColor(R.color.red))
             val dateSold = propertyWithDetails.property.dateSold?.let { Date(it) }
             binding.date.text = "Sold on : ${dateSold?.let { dateFormat.format(it) }}"
         } else {
             binding.date.setTextColor(resources.getColor(R.color.green))
-            val dateStartSelling = propertyWithDetails.property.dateStartSelling?.let { Date(it) }
+            val dateStartSelling = propertyWithDetails.property?.dateStartSelling?.let { Date(it) }
             binding.date.text = "Sale date: ${dateStartSelling?.let { dateFormat.format(it) }}"
         }
     }
@@ -249,14 +249,14 @@ class PropertyInfoFragment : Fragment() {
                 val loanSimulatorAlertDialog = LoanSimulatorAlertDialog(requireContext())
                 // Check if the price is in euro or dollar and then return the correct price
                 if (isEuroSelected) {
-                    val convertedPrice = propertyWithDetails.property.price?.let { it1 ->
+                    val convertedPrice = propertyWithDetails.property?.price?.let { it1 ->
                         sharedPropertyViewModel.convertPropertyPrice(it1, isEuroSelected)
                     }
                     if (convertedPrice != null) {
                         loanSimulatorAlertDialog.showLoanSimulator(convertedPrice, isEuroSelected)
                     }
                 } else {
-                    propertyWithDetails.property.price?.let { it1 ->
+                    propertyWithDetails.property?.price?.let { it1 ->
                         loanSimulatorAlertDialog.showLoanSimulator(it1, isEuroSelected)
                     }
                 }

@@ -38,7 +38,7 @@ class PropertyListFragment : Fragment() {
         adapter = PropertyListAdapter(viewLifecycleOwner,sharedPropertyViewModel, sharedUtilsViewModel ,object : DiffUtil.ItemCallback<PropertyWithDetails>() {
             // Compare the id of the properties to know if they are the same or not (to know if the property has been updated or not) and compare the id of the properties
             override fun areItemsTheSame(oldItem: PropertyWithDetails, newItem: PropertyWithDetails): Boolean {
-                return oldItem.property.id == newItem.property.id
+                return oldItem.property?.id == newItem.property?.id
             }
             // Compare the content of the properties to know if they are the same or not (to know if the property has been updated or not) and compare the content of the properties
             override fun areContentsTheSame(oldItem: PropertyWithDetails, newItem: PropertyWithDetails): Boolean {

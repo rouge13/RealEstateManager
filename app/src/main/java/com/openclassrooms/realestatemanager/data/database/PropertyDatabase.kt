@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
  */
 @Database(
     entities = [PropertyEntity::class, AgentEntity::class, AddressEntity::class, PhotoEntity::class],
-    version = 54,
+    version = 55,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

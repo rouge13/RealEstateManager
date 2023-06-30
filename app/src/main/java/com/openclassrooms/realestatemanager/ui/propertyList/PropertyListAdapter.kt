@@ -28,25 +28,25 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
         // Bind the view to the data and set the onClickListener to open the property details
         fun bind(get: PropertyWithDetails) {
             // Set the data to the view
-            binding.propertyType.text = get.property.typeOfHouse
+            binding.propertyType.text = get.property?.typeOfHouse
             binding.propertySector.text = get.address?.boroughs?.takeIf { it.isNotBlank() }
             // Use coroutine scope to collect the value of getMoneyRateSelected
             CoroutineScope(Dispatchers.Main).launch {
                 sharedUtilsViewModel.getMoneyRateSelected.observe(lifecycleOwner) { isEuroSelected ->
                     // Convert the price to the selected currency and set it to the view
-                    val convertedPrice = get.property.price?.let { sharedPropertyViewModel.convertPropertyPrice(it, isEuroSelected) }
+                    val convertedPrice = get.property?.price?.let { sharedPropertyViewModel.convertPropertyPrice(it, isEuroSelected) }
                     binding.propertyValue.text = when (convertedPrice) {
                         is Int -> { if (isEuroSelected) { "$convertedPrice€" } else { "$${get.property.price}" } }
                         // When price or conversion is null
-                        else -> "$${get.property.price}"
+                        else -> "$${get.property?.price}"
                     }
                 }
             }
             // Set the image to the view
-            setImageInRecyclerView(get.property)
+            get.property?.let { setImageInRecyclerView(it) }
             // Set the sold text and alpha to the view if the property is sold or not
             val propertyLayout = binding.propertyLayout
-            if (get.property.isSold == true) {
+            if (get.property?.isSold == true) {
                 propertyLayout.alpha = 0.3f
                 binding.soldText.visibility = android.view.View.VISIBLE
             } else {
@@ -59,7 +59,7 @@ class PropertyListAdapter(private val lifecycleOwner: LifecycleOwner, private va
                 val position = this.bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val propertyWithDetails = getItem(position)
-                    Log.d("PropertyListAdapter", "Item clicked: ${propertyWithDetails.property.id}")
+                    Log.d("PropertyListAdapter", "Item clicked: ${propertyWithDetails.property?.id}")
                     onPropertyClick(propertyWithDetails)
                 }
             }

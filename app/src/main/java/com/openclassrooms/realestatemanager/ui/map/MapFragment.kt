@@ -127,7 +127,7 @@ class MapFragment : Fragment() {
         val marker = location?.let {
             // Add the marker to the map with the location of the property
             MarkerOptions().position(it)
-                .title(propertyWithDetails.property.typeOfHouse + "" + propertyWithDetails.property.id.toString())
+                .title(propertyWithDetails.property?.typeOfHouse + "" + propertyWithDetails.property?.id.toString())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
         }?.let {
             googleMap.addMarker(it)

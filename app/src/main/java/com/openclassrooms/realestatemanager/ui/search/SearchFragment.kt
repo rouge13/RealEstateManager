@@ -280,11 +280,11 @@ class SearchFragment : Fragment() {
     private fun initAgentsNames() {
         sharedAgentViewModel.allAgents.observe(viewLifecycleOwner) { agents ->
             val agentsNames = agents.map { it.name }.distinct()
-            initAgentsNames(agentsNames)
+            initAgentsNames(agentsNames.toMutableList())
         }
     }
 
-    private fun initAgentsNames(agentsNames: List<String>) {
+    private fun initAgentsNames(agentsNames: MutableList<String?>) {
         val multiAutoCompleteTextView = binding.propertyAgentSellerMultiAutoComplete
         val adapter = ArrayAdapter(
             requireContext(),
@@ -305,7 +305,7 @@ class SearchFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             sharedPropertyViewModel.getPropertiesWithDetails.collect { propertiesWithDetails ->
                 val typesOfHouse =
-                    propertiesWithDetails.mapNotNull { it.property.typeOfHouse }.distinct()
+                    propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
                 val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
                 val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
                 initTypesOfHouse(typesOfHouse)

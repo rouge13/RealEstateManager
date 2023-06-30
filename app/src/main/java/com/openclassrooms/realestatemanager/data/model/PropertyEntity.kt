@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.data.model
 
+import android.content.ContentValues
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -46,4 +47,31 @@ data class PropertyEntity(
     var lastUpdate: Long = System.currentTimeMillis()
 ) : Parcelable {
 
+
+    companion object {
+        // Getting content values for content provider from property entity
+        fun fromContentValues(values: ContentValues): PropertyEntity{
+            val property = PropertyEntity()
+            if (values.containsKey("id")) property.id = values.getAsInteger("id")
+            if (values.containsKey("price")) property.price = values.getAsInteger("price")
+            if (values.containsKey("squareFeet")) property.squareFeet = values.getAsInteger("squareFeet")
+            if (values.containsKey("roomsCount")) property.roomsCount = values.getAsInteger("roomsCount")
+            if (values.containsKey("bedroomsCount")) property.bedroomsCount = values.getAsInteger("bedroomsCount")
+            if (values.containsKey("bathroomsCount")) property.bathroomsCount = values.getAsInteger("bathroomsCount")
+            if (values.containsKey("description")) property.description = values.getAsString("description")
+            if (values.containsKey("typeOfHouse")) property.typeOfHouse = values.getAsString("typeOfHouse")
+            if (values.containsKey("isSold")) property.isSold = values.getAsBoolean("isSold")
+            if (values.containsKey("dateStartSelling")) property.dateStartSelling = values.getAsLong("dateStartSelling")
+            if (values.containsKey("dateSold")) property.dateSold = values.getAsLong("dateSold")
+            if (values.containsKey("agentId")) property.agentId = values.getAsInteger("agentId")
+            if (values.containsKey("primaryPhoto")) property.primaryPhoto = values.getAsString("primaryPhoto")
+            if (values.containsKey("schoolProximity")) property.schoolProximity = values.getAsBoolean("schoolProximity")
+            if (values.containsKey("parkProximity")) property.parkProximity = values.getAsBoolean("parkProximity")
+            if (values.containsKey("shoppingProximity")) property.shoppingProximity = values.getAsBoolean("shoppingProximity")
+            if (values.containsKey("restaurantProximity")) property.restaurantProximity = values.getAsBoolean("restaurantProximity")
+            if (values.containsKey("publicTransportProximity")) property.publicTransportProximity = values.getAsBoolean("publicTransportProximity")
+            if (values.containsKey("lastUpdate")) property.lastUpdate = values.getAsLong("lastUpdate")
+            return property
+        }
+    }
 }

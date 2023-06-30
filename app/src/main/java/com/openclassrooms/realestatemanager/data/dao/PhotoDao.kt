@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.data.dao
 
+import android.database.Cursor
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -19,6 +20,10 @@ interface PhotoDao {
     // Get all photos related to a property
     @Query("SELECT * FROM photo WHERE propertyId IS NULL OR propertyId = :propertyId")
     suspend fun getAllPhotosRelatedToASpecificProperty(propertyId: Int? = null): List<PhotoEntity>
+
+    // Insert photo for content provider
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertPhotoForContentProvider(photo: PhotoEntity): Long
 
     // Insert photo
     @Insert(onConflict = OnConflictStrategy.IGNORE)

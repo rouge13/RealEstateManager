@@ -42,6 +42,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+        <!-- For ContentProvider -->
+        <provider
+            android:name="com.openclassrooms.realestatemanager.data.provider.EstateContentProvider"
+            android:authorities="com.openclassrooms.realestatemanager.data.provider"
+            android:exported="false" />
+
     </application>
 
 </manifest>

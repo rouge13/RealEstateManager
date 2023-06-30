@@ -1,9 +1,17 @@
 package com.openclassrooms.realestatemanager.data.dao
 
+import android.database.Cursor
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
+import com.openclassrooms.realestatemanager.data.gathering.PropertyWithDetails
+import com.openclassrooms.realestatemanager.data.model.AddressEntity
+import com.openclassrooms.realestatemanager.data.model.AgentEntity
+import com.openclassrooms.realestatemanager.data.model.PhotoEntity
 import com.openclassrooms.realestatemanager.data.model.PropertyEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -16,9 +24,43 @@ interface PropertyDao {
     @Query("SELECT * FROM property ORDER BY id ASC")
     fun getAllProperties(): Flow<List<PropertyEntity>>
 
+    // Get all properties for content provider
+    @Query("SELECT * FROM property ORDER BY id ASC")
+    fun getAllPropertiesForContentProvider(): Cursor
+
     // Get property by id
     @Query("SELECT * FROM property WHERE id = :propertyId")
     fun getPropertyById(propertyId: Long): PropertyEntity
+
+    // Get property by id and return a cursor for content provider
+    @Query("SELECT * FROM property WHERE id = :propertyId")
+    fun getPropertyByIdCursorReturned(propertyId: Long): Cursor
+
+    // Delete property for content provider
+    @Query("DELETE FROM property WHERE id = :propertyId")
+    fun deletePropertyForContentProvider(propertyId: Long): Int
+
+    // Update property and return number of rows affected
+    @Update
+    fun updatePropertyForContentProvider(property: PropertyEntity): Int
+
+//    @Transaction
+//    @Query("SELECT * FROM property WHERE id=:propertyId")
+//    fun getPropertyWithDetailsById(propertyId: Long): LiveData<PropertyWithDetails>
+//
+    @Insert
+    fun insertForContentProvider(property: PropertyEntity): Long
+//
+//    @Insert
+//    fun insertForContentProvider(agent: AgentEntity): Long
+//
+//    @Insert
+//    fun insertForContentProvider(photo: PhotoEntity): Long
+//
+//    @Insert
+//    fun insertForContentProvider(address: AddressEntity): Long
+
+
 
     // Insert property and return id of inserted property and must convert later the Long type into Int
     @Insert(onConflict = OnConflictStrategy.IGNORE)

@@ -151,7 +151,7 @@ class AddAndModificationFragment : Fragment() {
                 sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
                     dateFormat?.let {
                         binding.dateSale.text =
-                            it.format(propertyWithDetails.property.dateStartSelling)
+                            it.format(propertyWithDetails.property!!.dateStartSelling)
                         initDate(propertyWithDetails, it)
                     }
                 }
@@ -204,13 +204,13 @@ class AddAndModificationFragment : Fragment() {
         // Init all agents names to display them in the autocomplete text view
         sharedAgentViewModel.allAgents.observe(viewLifecycleOwner) { agents ->
             val agentsNames = agents.map { it.name }.distinct()
-            initAgentNames(agentsNames)
+            initAgentNames(agentsNames.toMutableList())
         }
         // Check the lifecycle of the fragment to avoid memory leaks and collect the values of the required values to display them in the autocomplete text view using the flow of the sharedPropertyViewModel
         viewLifecycleOwner.lifecycleScope.launch {
             sharedPropertyViewModel.getPropertiesWithDetails.collect { propertiesWithDetails ->
                 // Map if not null, all the required values to display them in the autocomplete text view and init them
-                val typesOfHouse = propertiesWithDetails.mapNotNull { it.property.typeOfHouse }.distinct()
+                val typesOfHouse = propertiesWithDetails.mapNotNull { it.property?.typeOfHouse }.distinct()
                 val boroughs = propertiesWithDetails.mapNotNull { it.address?.boroughs }.distinct()
                 val cities = propertiesWithDetails.mapNotNull { it.address?.city }.distinct()
                 val zipCode = propertiesWithDetails.mapNotNull { it.address?.zipCode }.distinct()
@@ -262,7 +262,7 @@ class AddAndModificationFragment : Fragment() {
         autoCompleteTextView.threshold = 1
     }
 
-    private fun initAgentNames(agentsNames: List<String>) {
+    private fun initAgentNames(agentsNames: MutableList<String?>) {
         val autoCompleteTextView = binding.agentName
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, agentsNames)
         autoCompleteTextView.setAdapter(adapter)
@@ -341,9 +341,9 @@ class AddAndModificationFragment : Fragment() {
             sharedPropertyViewModel.getSelectedProperty.value?.let { propertyWithDetails ->
                 lifecycleScope.launch {
                     // Check if the required fields are filled and if a primary photo is selected
-                    if (requiredAllValidateInputsOk(collectPropertyInputsFromBinding()) && isPrimaryPhotoSelected(propertyWithDetails.property.id)) {
+                    if (requiredAllValidateInputsOk(collectPropertyInputsFromBinding()) && isPrimaryPhotoSelected(propertyWithDetails.property?.id)) {
                         // Update the property in the database and navigate to the property list fragment if the update is successful and show a toast message to confirm or else display a toast if not
-                        updatePhotosWithPropertyId(propertyWithDetails.property.id)
+                        updatePhotosWithPropertyId(propertyWithDetails.property?.id)
                         updatePropertyEntity(propertyWithDetails)
                         updateAddressEntity(propertyWithDetails)
                         findNavController().navigate(R.id.propertyListFragment)
@@ -410,7 +410,7 @@ class AddAndModificationFragment : Fragment() {
     private suspend fun updatePropertyEntity(propertyWithDetails: PropertyWithDetails) {
         // Update the property in the database and apply the changes to the property with all information required to insert a property
         val propertyEntity = propertyWithDetails.property
-        propertyEntity.apply {
+        propertyEntity?.apply {
             // Update the property with the new values
             propertyToUpdate(propertyWithDetails)
         }
@@ -419,15 +419,19 @@ class AddAndModificationFragment : Fragment() {
         val agent = sharedAgentViewModel.getAgentByName(agentName).firstOrNull()
         if (agent != null) {
             // The agent exists in the database, update the property with the agent id
-            propertyEntity.agentId = agent.id!!
-            sharedPropertyViewModel.updateProperty(propertyEntity)
+            propertyEntity?.agentId = agent.id!!
+            if (propertyEntity != null) {
+                sharedPropertyViewModel.updateProperty(propertyEntity)
+            }
 
         } else {
             // The agent doesn't exist in the database, create the agent and update the property with the agent id
             val createdAgentId = createAgentAndWait(agentName)
             if (createdAgentId != null) {
-                propertyEntity.agentId = createdAgentId
-                sharedPropertyViewModel.updateProperty(propertyEntity)
+                propertyEntity?.agentId = createdAgentId
+                if (propertyEntity != null) {
+                    sharedPropertyViewModel.updateProperty(propertyEntity)
+                }
             } else {
                 // Agent creation was canceled, perform cancel actions here
                 Toast.makeText(requireContext(), "Agent creation canceled", Toast.LENGTH_SHORT).show()
@@ -436,7 +440,7 @@ class AddAndModificationFragment : Fragment() {
             }
         }
         // Update the property in the database
-        updatePhotosWithPropertyId(propertyId = propertyEntity.id!!)
+        updatePhotosWithPropertyId(propertyId = propertyEntity?.id!!)
     }
 
     private suspend fun insertPropertyEntity(): Long? {
@@ -514,13 +518,13 @@ class AddAndModificationFragment : Fragment() {
 
     private fun PropertyEntity.propertyToUpdate(propertyWithDetails: PropertyWithDetails) {
         // Property to update with the new values and check if the property is sold or not to update the date sold  else set the date sold to null
-        id = propertyWithDetails.property.id
+        id = propertyWithDetails.property?.id
         if (binding.propertySwitchSold.isChecked) {
             sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) { dateFormat ->
                 dateSold = converters.dateToTimestamp(dateFormat.parse(binding.propertyDateText.text.toString()))
             }
 
-        } else if (!binding.propertySwitchSold.isChecked && propertyWithDetails.property.dateSold != null) {
+        } else if (!binding.propertySwitchSold.isChecked && propertyWithDetails.property?.dateSold != null) {
             dateSold = null
         }
         isSold = binding.propertySwitchSold.isChecked
@@ -587,7 +591,7 @@ class AddAndModificationFragment : Fragment() {
 
     private fun initDate(propertyWithDetails: PropertyWithDetails, dateFormat: SimpleDateFormat) {
         // Init the date with the date of the property if the property is sold or not and if the date is null or not and set the right format of the date to display it
-        if (propertyWithDetails.property.isSold == true) {
+        if (propertyWithDetails.property?.isSold == true) {
             val dateSold = propertyWithDetails.property.dateSold?.let { Date(it) }
             if (propertyWithDetails.property.dateSold == null) {
                 binding.propertyDateText.text = dateFormat.format(System.currentTimeMillis())
@@ -595,8 +599,8 @@ class AddAndModificationFragment : Fragment() {
                 binding.propertyDateText.text = "${dateSold?.let { dateFormat.format(it) }}"
             }
         } else {
-            val dateSale = propertyWithDetails.property.dateStartSelling?.let { Date(it) }
-            if (propertyWithDetails.property.dateStartSelling == null) {
+            val dateSale = propertyWithDetails.property?.dateStartSelling?.let { Date(it) }
+            if (propertyWithDetails.property?.dateStartSelling == null) {
                 binding.propertyDateText.text = dateFormat.format(System.currentTimeMillis())
             } else {
                 binding.propertyDateText.text = "${dateSale?.let { dateFormat.format(it) }}"
@@ -606,22 +610,22 @@ class AddAndModificationFragment : Fragment() {
 
     private fun initAllSwitch(propertyWithDetails: PropertyWithDetails) {
         // Init all the switch with the value of the property
-        propertyWithDetails.property.isSold?.let {
+        propertyWithDetails.property?.isSold?.let {
             binding.propertySwitchSold.isChecked = it
         }
-        propertyWithDetails.property.schoolProximity?.let {
+        propertyWithDetails.property?.schoolProximity?.let {
             binding.propertySwitchSchool.isChecked = it
         }
-        propertyWithDetails.property.parkProximity?.let {
+        propertyWithDetails.property?.parkProximity?.let {
             binding.propertySwitchPark.isChecked = it
         }
-        propertyWithDetails.property.shoppingProximity?.let {
+        propertyWithDetails.property?.shoppingProximity?.let {
             binding.propertySwitchShopping.isChecked = it
         }
-        propertyWithDetails.property.restaurantProximity?.let {
+        propertyWithDetails.property?.restaurantProximity?.let {
             binding.propertySwitchRestaurant.isChecked = it
         }
-        propertyWithDetails.property.publicTransportProximity?.let {
+        propertyWithDetails.property?.publicTransportProximity?.let {
             binding.propertySwitchPublicTransport.isChecked = it
         }
     }
@@ -706,16 +710,16 @@ class AddAndModificationFragment : Fragment() {
             if (isEuroSelected == true) {
                 binding.propertyPriceText.setText(R.string.price_in_euros)
                 binding.propertyPrice.setText(
-                    propertyWithDetails.property.price?.let { it1 ->
+                    propertyWithDetails.property?.price?.let { it1 ->
                         Utils.convertDollarsToEuros(it1).toString()
                     }
                 )
             } else {
                 binding.propertyPriceText.setText(R.string.price_in_dollars)
-                propertyWithDetails.property.price?.let { binding.propertyPrice.setText(it.toString()) }
+                propertyWithDetails.property?.price?.let { binding.propertyPrice.setText(it.toString()) }
             }
         }
-        propertyWithDetails.property.agentId?.let {
+        propertyWithDetails.property?.agentId?.let {
             sharedAgentViewModel.getAgentData(it).observe(viewLifecycleOwner) { agent ->
                 agent?.let { binding.agentName.setText(agent.name) }
             }
@@ -725,12 +729,12 @@ class AddAndModificationFragment : Fragment() {
     }
 
     private fun initAllOtherPropertyEditText(propertyWithDetails: PropertyWithDetails) {
-        propertyWithDetails.property.squareFeet?.let { binding.propertySquareFeet.setText(it.toString()) }
-        propertyWithDetails.property.roomsCount?.let { binding.propertyRoomsCount.setText(it.toString()) }
-        propertyWithDetails.property.bedroomsCount?.let { binding.propertyBedroomsCount.setText(it.toString()) }
-        propertyWithDetails.property.bathroomsCount?.let { binding.propertyBathroomsCount.setText(it.toString()) }
-        binding.propertyDescription.setText(propertyWithDetails.property.description)
-        propertyWithDetails.property.typeOfHouse.let { binding.propertyType.setText(it) }
+        propertyWithDetails.property?.squareFeet?.let { binding.propertySquareFeet.setText(it.toString()) }
+        propertyWithDetails.property?.roomsCount?.let { binding.propertyRoomsCount.setText(it.toString()) }
+        propertyWithDetails.property?.bedroomsCount?.let { binding.propertyBedroomsCount.setText(it.toString()) }
+        propertyWithDetails.property?.bathroomsCount?.let { binding.propertyBathroomsCount.setText(it.toString()) }
+        binding.propertyDescription.setText(propertyWithDetails.property?.description)
+        propertyWithDetails.property?.typeOfHouse.let { binding.propertyType.setText(it) }
     }
 
     private fun initAllAddressEditText(propertyWithDetails: PropertyWithDetails) {
