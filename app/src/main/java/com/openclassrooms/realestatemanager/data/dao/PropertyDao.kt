@@ -44,23 +44,8 @@ interface PropertyDao {
     @Update
     fun updatePropertyForContentProvider(property: PropertyEntity): Int
 
-//    @Transaction
-//    @Query("SELECT * FROM property WHERE id=:propertyId")
-//    fun getPropertyWithDetailsById(propertyId: Long): LiveData<PropertyWithDetails>
-//
     @Insert
     fun insertForContentProvider(property: PropertyEntity): Long
-//
-//    @Insert
-//    fun insertForContentProvider(agent: AgentEntity): Long
-//
-//    @Insert
-//    fun insertForContentProvider(photo: PhotoEntity): Long
-//
-//    @Insert
-//    fun insertForContentProvider(address: AddressEntity): Long
-
-
 
     // Insert property and return id of inserted property and must convert later the Long type into Int
     @Insert(onConflict = OnConflictStrategy.IGNORE)

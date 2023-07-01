@@ -32,7 +32,7 @@ class UtilsTest {
         val monthValue = calendar.get(Calendar.MONTH) + 1 // In java Calendar.MONTH is zero-based.
         val month = if (monthValue < 10) "0$monthValue" else monthValue.toString()
         val year = calendar.get(Calendar.YEAR)
-        val expected = "$day/$month/$year"
+        val expected = "${String.format("%02d", day)}/$month/${year}"
         val result = Utils.todayDateFranceFormat.format(Date())
         assertEquals(expected, result)
     }
@@ -44,7 +44,7 @@ class UtilsTest {
         val monthValue = calendar.get(Calendar.MONTH) + 1 // In java Calendar.MONTH is zero-based.
         val month = if (monthValue < 10) "0$monthValue" else monthValue.toString()
         val year = calendar.get(Calendar.YEAR)
-        val expected = "$year/$month/$day"
+        val expected = "${year}/$month/${String.format("%02d", day)}"
         val result = Utils.todayDateUsaFormat.format(Date())
         assertEquals(expected, result)
     }

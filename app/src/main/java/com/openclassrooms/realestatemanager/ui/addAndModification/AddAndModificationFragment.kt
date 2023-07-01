@@ -42,6 +42,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 
 /**
@@ -310,7 +311,9 @@ class AddAndModificationFragment : Fragment() {
                     val selectedMonth = month + 1 // Add 1 to the month value
                     val selectedDate = "$selectedMonth/$dayOfMonth/$year"
                     sharedUtilsViewModel.getDateFormatSelected.observe(viewLifecycleOwner) {
-                        binding.propertyDateText.text = it.format(selectedDate)
+                        val selectedDateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+                        val date = selectedDateFormat.parse(selectedDate)
+                        binding.propertyDateText.text = date?.let { it1 -> it.format(it1) }
                     }
 
                 },
